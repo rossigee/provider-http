@@ -201,7 +201,7 @@ func (c *external) deployAction(ctx context.Context, cr *v1alpha2.Request, actio
 		return err
 	}
 
-	details, err := c.http.SendRequest(ctx, mapping.Method, requestDetails.Url, requestDetails.Body, requestDetails.Headers, cr.Spec.ForProvider.InsecureSkipTLSVerify)
+	details, err := c.sendHTTPRequest(ctx, mapping.Method, requestDetails.Url, requestDetails.Body, requestDetails.Headers, cr)
 	datapatcher.ApplyResponseDataToSecrets(ctx, c.localKube, c.logger, &details.HttpResponse, cr.Spec.ForProvider.SecretInjectionConfigs, cr)
 
 	statusHandler, err := statushandler.NewStatusHandler(ctx, cr, details, err, c.localKube, c.logger)
@@ -237,4 +237,15 @@ func (c *external) Delete(ctx context.Context, mg resource.Managed) error {
 	}
 
 	return errors.Wrap(c.deployAction(ctx, cr, v1alpha2.ActionRemove), errFailedToSendHttpRequest)
+}
+
+// sendHTTPRequest sends HTTP request using the appropriate method based on TLS configuration
+func (c *external) sendHTTPRequest(ctx context.Context, method string, url string, body httpClient.Data, headers httpClient.Data, cr *v1alpha2.Request) (httpClient.HttpDetails, error) {
+	// Use new TLS-aware method if TLS configuration is provided
+	if cr.Spec.ForProvider.TLSConfig != nil {
+		return c.http.SendRequestWithTLS(ctx, method, url, body, headers, cr.Spec.ForProvider.TLSConfig)
+	}
+
+	// Fall back to old method for backward compatibility
+	return c.http.SendRequest(ctx, method, url, body, headers, cr.Spec.ForProvider.InsecureSkipTLSVerify)
 }

@@ -44,7 +44,11 @@ type DisposableRequestParameters struct {
 	RollbackRetriesLimit *int32 `json:"rollbackRetriesLimit,omitempty"`
 
 	// InsecureSkipTLSVerify, when set to true, skips TLS certificate checks for the HTTP request
+	// Deprecated: Use TLSConfig.InsecureSkipVerify for new implementations.
 	InsecureSkipTLSVerify bool `json:"insecureSkipTLSVerify,omitempty"`
+
+	// TLSConfig specifies the TLS configuration for HTTP requests.
+	TLSConfig *common.TLSConfig `json:"tlsConfig,omitempty"`
 
 	// ExpectedResponse is a jq filter expression used to evaluate the HTTP response and determine if it matches the expected criteria.
 	// The expression should return a boolean; if true, the response is considered expected.

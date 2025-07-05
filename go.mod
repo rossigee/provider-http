@@ -7,6 +7,7 @@ require (
 	github.com/crossplane/crossplane-tools v0.0.0-20240522174801-1ad3d4c87f21
 	github.com/google/go-cmp v0.6.0
 	github.com/pkg/errors v0.9.1
+	github.com/stretchr/testify v1.8.4
 	gopkg.in/alecthomas/kingpin.v2 v2.2.6
 	k8s.io/apimachinery v0.29.1
 	k8s.io/client-go v0.29.1
@@ -22,6 +23,7 @@ require (
 	github.com/google/gnostic-models v0.6.8 // indirect
 	github.com/itchyny/timefmt-go v0.1.5 // indirect
 	github.com/matttproud/golang_protobuf_extensions/v2 v2.0.0 // indirect
+	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/xhit/go-str2duration/v2 v2.1.0 // indirect
 )
 

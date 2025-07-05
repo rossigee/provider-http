@@ -195,7 +195,7 @@ func (c *external) deployAction(ctx context.Context, cr *v1alpha2.DisposableRequ
 
 	bodyData := httpClient.Data{Encrypted: cr.Spec.ForProvider.Body, Decrypted: sensitiveBody}
 	headersData := httpClient.Data{Encrypted: cr.Spec.ForProvider.Headers, Decrypted: sensitiveHeaders}
-	details, err := c.http.SendRequest(ctx, cr.Spec.ForProvider.Method, cr.Spec.ForProvider.URL, bodyData, headersData, cr.Spec.ForProvider.InsecureSkipTLSVerify)
+	details, err := c.sendHTTPRequest(ctx, cr.Spec.ForProvider.Method, cr.Spec.ForProvider.URL, bodyData, headersData, cr)
 
 	sensitiveResponse := details.HttpResponse
 	resource := &utils.RequestResource{
@@ -329,4 +329,15 @@ func WithCustomPollIntervalHook() managed.ReconcilerOption {
 		// Default poll interval if the next reconcile time is in the past
 		return defaultPollInterval
 	})
+}
+
+// sendHTTPRequest sends HTTP request using the appropriate method based on TLS configuration
+func (c *external) sendHTTPRequest(ctx context.Context, method string, url string, body httpClient.Data, headers httpClient.Data, cr *v1alpha2.DisposableRequest) (httpClient.HttpDetails, error) {
+	// Use new TLS-aware method if TLS configuration is provided
+	if cr.Spec.ForProvider.TLSConfig != nil {
+		return c.http.SendRequestWithTLS(ctx, method, url, body, headers, cr.Spec.ForProvider.TLSConfig)
+	}
+
+	// Fall back to old method for backward compatibility
+	return c.http.SendRequest(ctx, method, url, body, headers, cr.Spec.ForProvider.InsecureSkipTLSVerify)
 }

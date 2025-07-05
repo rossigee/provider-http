@@ -466,8 +466,9 @@ spec:
                     - message: Field 'forProvider.headers' is immutable
                       rule: self == oldSelf
                   insecureSkipTLSVerify:
-                    description: InsecureSkipTLSVerify, when set to true, skips TLS
-                      certificate checks for the HTTP request
+                    description: |-
+                      InsecureSkipTLSVerify, when set to true, skips TLS certificate checks for the HTTP request
+                      Deprecated: Use TLSConfig.InsecureSkipVerify for new implementations.
                     type: boolean
                   method:
                     type: string
@@ -579,6 +580,30 @@ spec:
                     description: ShouldLoopInfinitely specifies whether the reconciliation
                       should loop indefinitely.
                     type: boolean
+                  tlsConfig:
+                    description: TLSConfig specifies the TLS configuration for HTTP
+                      requests.
+                    properties:
+                      caData:
+                        description: |-
+                          CAData contains the CA certificate data in PEM format for verifying the server's certificate.
+                          This is useful for self-signed certificates or private CA certificates.
+                        type: string
+                      clientCertData:
+                        description: ClientCertData contains the client certificate
+                          data in PEM format for mutual TLS authentication.
+                        type: string
+                      clientKeyData:
+                        description: ClientKeyData contains the client private key
+                          data in PEM format for mutual TLS authentication.
+                        type: string
+                      insecureSkipVerify:
+                        description: |-
+                          InsecureSkipVerify controls whether the client verifies the server's certificate chain and host name.
+                          If InsecureSkipVerify is true, crypto/tls accepts any certificate presented by the server
+                          and any host name in that certificate. This should be used only for testing.
+                        type: boolean
+                    type: object
                   url:
                     type: string
                     x-kubernetes-validations:

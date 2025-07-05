@@ -22,6 +22,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/crossplane-contrib/provider-http/apis/common"
 	"github.com/crossplane-contrib/provider-http/apis/disposablerequest/v1alpha2"
 	httpClient "github.com/crossplane-contrib/provider-http/internal/clients/http"
 	"github.com/crossplane-contrib/provider-http/internal/utils"
@@ -111,6 +112,15 @@ type MockHttpClient struct {
 
 func (c *MockHttpClient) SendRequest(ctx context.Context, method string, url string, body httpClient.Data, headers httpClient.Data, skipTLSVerify bool) (resp httpClient.HttpDetails, err error) {
 	return c.MockSendRequest(ctx, method, url, body, headers, skipTLSVerify)
+}
+
+func (c *MockHttpClient) SendRequestWithTLS(ctx context.Context, method string, url string, body httpClient.Data, headers httpClient.Data, tlsConfig *common.TLSConfig) (resp httpClient.HttpDetails, err error) {
+	// For testing purposes, just call the regular SendRequest with insecureSkipVerify flag
+	skipTLS := false
+	if tlsConfig != nil {
+		skipTLS = tlsConfig.InsecureSkipVerify
+	}
+	return c.MockSendRequest(ctx, method, url, body, headers, skipTLS)
 }
 
 type notHttpDisposableRequest struct {

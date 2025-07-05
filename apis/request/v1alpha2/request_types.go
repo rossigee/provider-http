@@ -55,7 +55,11 @@ type RequestParameters struct {
 	WaitTimeout *metav1.Duration `json:"waitTimeout,omitempty"`
 
 	// InsecureSkipTLSVerify, when set to true, skips TLS certificate checks for the HTTP request
+	// Deprecated: Use TLSConfig.InsecureSkipVerify for new implementations.
 	InsecureSkipTLSVerify bool `json:"insecureSkipTLSVerify,omitempty"`
+
+	// TLSConfig specifies the TLS configuration for HTTP requests.
+	TLSConfig *common.TLSConfig `json:"tlsConfig,omitempty"`
 
 	// SecretInjectionConfig specifies the secrets receiving patches for response data.
 	SecretInjectionConfigs []common.SecretInjectionConfig `json:"secretInjectionConfigs,omitempty"`
