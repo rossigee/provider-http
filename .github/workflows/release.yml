@@ -1,0 +1,86 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+env:
+  GO_VERSION: '1.24.5'
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          submodules: true
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.PAT_TOKEN }}
+
+      - name: Get Version
+        id: version
+        run: |
+          VERSION=${GITHUB_REF#refs/tags/}
+          echo "version=${VERSION}" >> $GITHUB_OUTPUT
+          echo "version_no_v=${VERSION#v}" >> $GITHUB_OUTPUT
+
+      - name: Build and Package
+        run: |
+          make generate
+          make build
+          make docker-build
+          make xpkg.build
+
+      - name: Build and Push Docker Images
+        run: |
+          # Build and push to GitHub Container Registry
+          docker tag ghcr.io/rossigee/provider-http:latest ghcr.io/rossigee/provider-http:${{ steps.version.outputs.version_no_v }}
+          docker push ghcr.io/rossigee/provider-http:${{ steps.version.outputs.version_no_v }}
+          docker push ghcr.io/rossigee/provider-http:latest
+
+      - name: Generate Changelog
+        id: changelog
+        run: |
+          # Simple changelog generation
+          PREVIOUS_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")
+          if [ -n "$PREVIOUS_TAG" ]; then
+            echo "## Changes since $PREVIOUS_TAG" > changelog.txt
+            git log --oneline $PREVIOUS_TAG..HEAD >> changelog.txt
+          else
+            echo "## Initial Release" > changelog.txt
+            echo "First release of provider-http for Crossplane" >> changelog.txt
+            echo "" >> changelog.txt
+            echo "### Features" >> changelog.txt
+            echo "- HTTP request management with declarative configuration" >> changelog.txt
+            echo "- Support for request and disposable request resources" >> changelog.txt
+            echo "- Authentication configuration and credential management" >> changelog.txt
+            echo "- Response validation and status handling" >> changelog.txt
+            echo "- Integration with Crossplane resource lifecycle" >> changelog.txt
+          fi
+
+      - name: Create GitHub Release
+        id: create_release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: Release ${{ steps.version.outputs.version }}
+          body_path: changelog.txt
+          files: _output/xpkg/linux_amd64/provider-http-*.xpkg
+          draft: false
+          prerelease: false
