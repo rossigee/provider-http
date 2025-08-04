@@ -1,6 +1,6 @@
 module github.com/crossplane-contrib/provider-http
 
-go 1.22.1
+go 1.24.5
 
 require (
 	github.com/crossplane/crossplane-runtime v1.17.0-rc.0.0.20240513123822-e50f51abfed2
