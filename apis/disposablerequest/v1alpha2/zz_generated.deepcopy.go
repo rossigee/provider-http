@@ -21,7 +21,7 @@ limitations under the License.
 package v1alpha2
 
 import (
-	"github.com/crossplane-contrib/provider-http/apis/common"
+	"github.com/rossigee/provider-http/apis/common"
 	"k8s.io/apimachinery/pkg/apis/meta/v1"
 	runtime "k8s.io/apimachinery/pkg/runtime"
 )

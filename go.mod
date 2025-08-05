@@ -1,4 +1,4 @@
-module github.com/crossplane-contrib/provider-http
+module github.com/rossigee/provider-http
 
 go 1.24.5
 

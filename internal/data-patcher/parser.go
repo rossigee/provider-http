@@ -10,7 +10,7 @@ import (
 	corev1 "k8s.io/api/core/v1"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
-	kubehandler "github.com/crossplane-contrib/provider-http/internal/kube-handler"
+	kubehandler "github.com/rossigee/provider-http/internal/kube-handler"
 	"github.com/crossplane/crossplane-runtime/pkg/logging"
 )
 

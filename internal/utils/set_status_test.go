@@ -4,9 +4,9 @@ import (
 	"context"
 	"testing"
 
-	v1alpha1_disposable "github.com/crossplane-contrib/provider-http/apis/disposablerequest/v1alpha2"
-	v1alpha1_request "github.com/crossplane-contrib/provider-http/apis/request/v1alpha2"
-	httpClient "github.com/crossplane-contrib/provider-http/internal/clients/http"
+	v1alpha1_disposable "github.com/rossigee/provider-http/apis/disposablerequest/v1alpha2"
+	v1alpha1_request "github.com/rossigee/provider-http/apis/request/v1alpha2"
+	httpClient "github.com/rossigee/provider-http/internal/clients/http"
 	"github.com/pkg/errors"
 
 	"github.com/crossplane/crossplane-runtime/pkg/test"

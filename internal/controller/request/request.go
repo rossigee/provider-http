@@ -33,15 +33,15 @@ import (
 	"github.com/crossplane/crossplane-runtime/pkg/reconciler/managed"
 	"github.com/crossplane/crossplane-runtime/pkg/resource"
 
-	"github.com/crossplane-contrib/provider-http/apis/request/v1alpha2"
-	apisv1alpha1 "github.com/crossplane-contrib/provider-http/apis/v1alpha1"
-	httpClient "github.com/crossplane-contrib/provider-http/internal/clients/http"
-	"github.com/crossplane-contrib/provider-http/internal/controller/request/observe"
-	"github.com/crossplane-contrib/provider-http/internal/controller/request/requestgen"
-	"github.com/crossplane-contrib/provider-http/internal/controller/request/requestmapping"
-	"github.com/crossplane-contrib/provider-http/internal/controller/request/statushandler"
-	datapatcher "github.com/crossplane-contrib/provider-http/internal/data-patcher"
-	"github.com/crossplane-contrib/provider-http/internal/utils"
+	"github.com/rossigee/provider-http/apis/request/v1alpha2"
+	apisv1alpha1 "github.com/rossigee/provider-http/apis/v1alpha1"
+	httpClient "github.com/rossigee/provider-http/internal/clients/http"
+	"github.com/rossigee/provider-http/internal/controller/request/observe"
+	"github.com/rossigee/provider-http/internal/controller/request/requestgen"
+	"github.com/rossigee/provider-http/internal/controller/request/requestmapping"
+	"github.com/rossigee/provider-http/internal/controller/request/statushandler"
+	datapatcher "github.com/rossigee/provider-http/internal/data-patcher"
+	"github.com/rossigee/provider-http/internal/utils"
 )
 
 const (

@@ -22,9 +22,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/crossplane-contrib/provider-http/apis/disposablerequest/v1alpha2"
-	httpClient "github.com/crossplane-contrib/provider-http/internal/clients/http"
-	"github.com/crossplane-contrib/provider-http/internal/utils"
+	"github.com/rossigee/provider-http/apis/disposablerequest/v1alpha2"
+	httpClient "github.com/rossigee/provider-http/internal/clients/http"
+	"github.com/rossigee/provider-http/internal/utils"
 	xpv1 "github.com/crossplane/crossplane-runtime/apis/common/v1"
 	"github.com/google/go-cmp/cmp"
 	"github.com/pkg/errors"
@@ -287,13 +287,10 @@ func Test_deployAction(t *testing.T) {
 		failuresIndex int32
 		statusCode    int
 	}
-	type shouldCheckStatus struct {
-		condition bool
-	}
 	cases := map[string]struct {
-		args args
-		want want
-		shouldCheckStatus
+		args              args
+		want              want
+		shouldCheckStatus bool
 	}{
 		"SuccessUpdateStatusRequestFailure": {
 			args: args{
@@ -357,9 +354,7 @@ func Test_deployAction(t *testing.T) {
 				failuresIndex: 1,
 				statusCode:    400,
 			},
-			shouldCheckStatus: shouldCheckStatus{
-				condition: true,
-			},
+			shouldCheckStatus: true,
 		},
 		"SuccessUpdateStatusSuccessfulRequest": {
 			args: args{
@@ -394,9 +389,7 @@ func Test_deployAction(t *testing.T) {
 				err:        nil,
 				statusCode: 200,
 			},
-			shouldCheckStatus: shouldCheckStatus{
-				condition: true,
-			},
+			shouldCheckStatus: true,
 		},
 	}
 	for name, tc := range cases {

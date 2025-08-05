@@ -22,15 +22,15 @@ import (
 	"strconv"
 	"time"
 
-	datapatcher "github.com/crossplane-contrib/provider-http/internal/data-patcher"
-	"github.com/crossplane-contrib/provider-http/internal/jq"
+	datapatcher "github.com/rossigee/provider-http/internal/data-patcher"
+	"github.com/rossigee/provider-http/internal/jq"
 	"github.com/crossplane/crossplane-runtime/pkg/logging"
 	"github.com/pkg/errors"
 	"k8s.io/apimachinery/pkg/types"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
-	json_util "github.com/crossplane-contrib/provider-http/internal/json"
+	json_util "github.com/rossigee/provider-http/internal/json"
 	xpv1 "github.com/crossplane/crossplane-runtime/apis/common/v1"
 	"github.com/crossplane/crossplane-runtime/pkg/controller"
 	"github.com/crossplane/crossplane-runtime/pkg/event"
@@ -38,10 +38,10 @@ import (
 	"github.com/crossplane/crossplane-runtime/pkg/reconciler/managed"
 	"github.com/crossplane/crossplane-runtime/pkg/resource"
 
-	"github.com/crossplane-contrib/provider-http/apis/disposablerequest/v1alpha2"
-	apisv1alpha1 "github.com/crossplane-contrib/provider-http/apis/v1alpha1"
-	httpClient "github.com/crossplane-contrib/provider-http/internal/clients/http"
-	"github.com/crossplane-contrib/provider-http/internal/utils"
+	"github.com/rossigee/provider-http/apis/disposablerequest/v1alpha2"
+	apisv1alpha1 "github.com/rossigee/provider-http/apis/v1alpha1"
+	httpClient "github.com/rossigee/provider-http/internal/clients/http"
+	"github.com/rossigee/provider-http/internal/utils"
 )
 
 const (
