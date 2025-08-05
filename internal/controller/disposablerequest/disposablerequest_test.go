@@ -420,7 +420,7 @@ func Test_deployAction(t *testing.T) {
 				}
 			}
 
-			if tc.shouldCheckStatus.condition {
+			if tc.shouldCheckStatus {
 				if diff := cmp.Diff(tc.args.cr.Spec.ForProvider.Body, tc.args.cr.Status.Response.Body); diff != "" {
 					t.Fatalf("deployAction(...): -want Status.Response.Body, +got Status.Response.Body: %s", diff)
 				}

@@ -110,7 +110,7 @@ func (c *external) determineIfRemoved(ctx context.Context, cr *v1alpha2.Request,
 // isObjectValidForObservation checks if the object is valid for observation
 func (c *external) isObjectValidForObservation(cr *v1alpha2.Request) bool {
 	return cr.Status.Response.StatusCode != 0 &&
-		!(cr.Status.RequestDetails.Method == http.MethodPost && utils.IsHTTPError(cr.Status.Response.StatusCode))
+		(cr.Status.RequestDetails.Method != http.MethodPost || !utils.IsHTTPError(cr.Status.Response.StatusCode))
 }
 
 // requestDetails generates the request details for a given method or action.
