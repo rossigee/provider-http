@@ -11,7 +11,7 @@ import (
 	datapatcher "github.com/rossigee/provider-http/internal/data-patcher"
 	"github.com/rossigee/provider-http/internal/jq"
 	"github.com/rossigee/provider-http/internal/utils"
-	"github.com/crossplane/crossplane-runtime/pkg/logging"
+	"github.com/crossplane/crossplane-runtime/v2/pkg/logging"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 

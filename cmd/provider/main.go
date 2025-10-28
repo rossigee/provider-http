@@ -19,22 +19,25 @@ package main
 import (
 	"os"
 	"path/filepath"
+	"runtime"
 	"time"
 
 	"sigs.k8s.io/controller-runtime/pkg/cache"
+	"sigs.k8s.io/controller-runtime/pkg/healthz"
 
 	"gopkg.in/alecthomas/kingpin.v2"
 	"k8s.io/client-go/tools/leaderelection/resourcelock"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/log/zap"
 
-	"github.com/crossplane/crossplane-runtime/pkg/controller"
-	"github.com/crossplane/crossplane-runtime/pkg/feature"
-	"github.com/crossplane/crossplane-runtime/pkg/logging"
-	"github.com/crossplane/crossplane-runtime/pkg/ratelimiter"
+	"github.com/crossplane/crossplane-runtime/v2/pkg/controller"
+	"github.com/crossplane/crossplane-runtime/v2/pkg/feature"
+	"github.com/crossplane/crossplane-runtime/v2/pkg/logging"
+	"github.com/crossplane/crossplane-runtime/v2/pkg/ratelimiter"
 
 	"github.com/rossigee/provider-http/apis"
 	template "github.com/rossigee/provider-http/internal/controller"
+	"github.com/rossigee/provider-http/internal/version"
 )
 
 func main() {
@@ -54,6 +57,18 @@ func main() {
 	zl := zap.New(zap.UseDevMode(*debug))
 	log := logging.NewLogrLogger(zl.WithName("provider-http"))
 	ctrl.SetLogger(zl)
+
+	log.Info("Provider starting up",
+		"provider", "provider-http",
+		"version", version.Version,
+		"go-version", runtime.Version(),
+		"platform", runtime.GOOS+"/"+runtime.GOARCH,
+		"timeout", timeout.String(),
+		"sync-interval", syncInterval.String(),
+		"poll-interval", pollInterval.String(),
+		"max-reconcile-rate", *maxReconcileRate,
+		"leader-election", *leaderElection,
+		"debug-mode", *debug)
 
 	cfg, err := ctrl.GetConfig()
 	kingpin.FatalIfError(err, "Cannot get API server rest config")
@@ -87,5 +102,9 @@ func main() {
 	}
 
 	kingpin.FatalIfError(template.Setup(mgr, o, *timeout), "Cannot setup Template controllers")
+
+	kingpin.FatalIfError(mgr.AddHealthzCheck("healthz", healthz.Ping), "Cannot add health check")
+	kingpin.FatalIfError(mgr.AddReadyzCheck("readyz", healthz.Ping), "Cannot add ready check")
+
 	kingpin.FatalIfError(mgr.Start(ctrl.SetupSignalHandler()), "Cannot start controller manager")
 }

@@ -33,7 +33,7 @@ GO_STATIC_PACKAGES = $(GO_PROJECT)/cmd/provider
 GO_SUBDIRS += cmd internal apis
 GO111MODULE = on
 # Override golangci-lint version for modern Go support
-GOLANGCILINT_VERSION ?= 2.3.1
+GOLANGCILINT_VERSION ?= 2.4.0
 -include build/makelib/golang.mk
 
 # ====================================================================================
@@ -43,7 +43,7 @@ UP_VERSION = v0.28.0
 UPTEST_VERSION = v0.11.1
 UP_CHANNEL = stable
 USE_HELM3 = true
-CROSSPLANE_VERSION = 1.14.6
+CROSSPLANE_VERSION = 2.0.2
 
 -include build/makelib/k8s_tools.mk
 
@@ -74,7 +74,7 @@ XPKG_REG_ORGS ?= ghcr.io/rossigee
 XPKG_REG_ORGS_NO_PROMOTE ?= ghcr.io/rossigee
 
 # Optional registries (can be enabled via environment variables)
-# To enable Harbor: export ENABLE_HARBOR_PUBLISH=true make publish XPKG_REG_ORGS=harbor.golder.lan/library
+# Harbor publishing has been removed - using only ghcr.io/rossigee
 # To enable Upbound: export ENABLE_UPBOUND_PUBLISH=true make publish XPKG_REG_ORGS=xpkg.upbound.io/crossplane-contrib
 XPKGS = provider-http
 -include build/makelib/xpkg.mk
@@ -82,6 +82,15 @@ XPKGS = provider-http
 # NOTE(hasheddan): we force image building to happen prior to xpkg build so that
 # we ensure image is present in daemon.
 xpkg.build.provider-http: do.build.images
+
+# Ensure publish only happens on release branches
+publish.artifacts:
+	@if ! echo "$(BRANCH_NAME)" | grep -qE "$(subst $(SPACE),|,main|master|release-.*)"; then \ 
+		$(ERR) Publishing is only allowed on branches matching: main|master|release-.* (current: $(BRANCH_NAME)); \ 
+		exit 1; \ 
+	fi
+	$(foreach r,$(XPKG_REG_ORGS), $(foreach x,$(XPKGS),@$(MAKE) xpkg.release.publish.$(r).$(x)))
+	$(foreach r,$(REGISTRY_ORGS), $(foreach i,$(IMAGES),@$(MAKE) img.release.publish.$(r).$(i)))
 
 # Generate a coverage report for cobertura applying exclusions on
 # - generated file
