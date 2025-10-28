@@ -18,20 +18,21 @@ package request
 
 import (
 	"context"
+	"fmt"
 	"time"
 
-	"github.com/crossplane/crossplane-runtime/pkg/logging"
+	"github.com/crossplane/crossplane-runtime/v2/pkg/logging"
 	"github.com/pkg/errors"
 	"k8s.io/apimachinery/pkg/types"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
-	xpv1 "github.com/crossplane/crossplane-runtime/apis/common/v1"
-	"github.com/crossplane/crossplane-runtime/pkg/controller"
-	"github.com/crossplane/crossplane-runtime/pkg/event"
-	"github.com/crossplane/crossplane-runtime/pkg/ratelimiter"
-	"github.com/crossplane/crossplane-runtime/pkg/reconciler/managed"
-	"github.com/crossplane/crossplane-runtime/pkg/resource"
+	xpv1 "github.com/crossplane/crossplane-runtime/v2/apis/common/v1"
+	"github.com/crossplane/crossplane-runtime/v2/pkg/controller"
+	"github.com/crossplane/crossplane-runtime/v2/pkg/event"
+	"github.com/crossplane/crossplane-runtime/v2/pkg/ratelimiter"
+	"github.com/crossplane/crossplane-runtime/v2/pkg/reconciler/managed"
+	"github.com/crossplane/crossplane-runtime/v2/pkg/resource"
 
 	"github.com/rossigee/provider-http/apis/request/v1alpha2"
 	apisv1alpha1 "github.com/rossigee/provider-http/apis/v1alpha1"
@@ -61,21 +62,17 @@ const (
 // Setup adds a controller that reconciles Request managed resources.
 func Setup(mgr ctrl.Manager, o controller.Options, timeout time.Duration) error {
 	name := managed.ControllerName(v1alpha2.RequestGroupKind)
-	cps := []managed.ConnectionPublisher{managed.NewAPISecretPublisher(mgr.GetClient(), mgr.GetScheme())}
-
 	r := managed.NewReconciler(mgr,
 		resource.ManagedKind(v1alpha2.RequestGroupVersionKind),
 		managed.WithExternalConnecter(&connector{
 			logger:          o.Logger,
 			kube:            mgr.GetClient(),
-			usage:           resource.NewProviderConfigUsageTracker(mgr.GetClient(), &apisv1alpha1.ProviderConfigUsage{}),
 			newHttpClientFn: httpClient.NewClient,
 		}),
 		managed.WithLogger(o.Logger.WithValues("controller", name)),
 		managed.WithPollInterval(o.PollInterval),
 		managed.WithTimeout(timeout),
-		managed.WithRecorder(event.NewAPIRecorder(mgr.GetEventRecorderFor(name))),
-		managed.WithConnectionPublishers(cps...))
+		managed.WithRecorder(event.NewAPIRecorder(mgr.GetEventRecorderFor(name))))
 
 	return ctrl.NewControllerManagedBy(mgr).
 		Named(name).
@@ -90,7 +87,6 @@ func Setup(mgr ctrl.Manager, o controller.Options, timeout time.Duration) error 
 type connector struct {
 	logger          logging.Logger
 	kube            client.Client
-	usage           resource.Tracker
 	newHttpClientFn func(log logging.Logger, timeout time.Duration, creds string) (httpClient.Client, error)
 }
 
@@ -102,10 +98,6 @@ func (c *connector) Connect(ctx context.Context, mg resource.Managed) (managed.E
 	}
 
 	l := c.logger.WithValues("request", cr.Name)
-
-	if err := c.usage.Track(ctx, mg); err != nil {
-		return nil, errors.Wrap(err, errTrackPCUsage)
-	}
 
 	pc := &apisv1alpha1.ProviderConfig{}
 	n := types.NamespacedName{Name: cr.GetProviderConfigReference().Name}
@@ -181,10 +173,13 @@ func (c *external) Observe(ctx context.Context, mg resource.Managed) (managed.Ex
 		return managed.ExternalObservation{}, errors.Wrap(err, " failed updating status")
 	}
 
+	// Generate connection details from request
+	connectionDetails := c.generateConnectionDetails(cr)
+
 	return managed.ExternalObservation{
 		ResourceExists:    true,
 		ResourceUpToDate:  synced,
-		ConnectionDetails: nil,
+		ConnectionDetails: connectionDetails,
 	}, nil
 }
 
@@ -218,7 +213,17 @@ func (c *external) Create(ctx context.Context, mg resource.Managed) (managed.Ext
 		return managed.ExternalCreation{}, errors.New(errNotRequest)
 	}
 
-	return managed.ExternalCreation{}, errors.Wrap(c.deployAction(ctx, cr, v1alpha2.ActionCreate), errFailedToSendHttpRequest)
+	err := c.deployAction(ctx, cr, v1alpha2.ActionCreate)
+	if err != nil {
+		return managed.ExternalCreation{}, errors.Wrap(err, errFailedToSendHttpRequest)
+	}
+
+	// Generate connection details from request
+	connectionDetails := c.generateConnectionDetails(cr)
+	
+	return managed.ExternalCreation{
+		ConnectionDetails: connectionDetails,
+	}, nil
 }
 
 func (c *external) Update(ctx context.Context, mg resource.Managed) (managed.ExternalUpdate, error) {
@@ -242,4 +247,22 @@ func (c *external) Delete(ctx context.Context, mg resource.Managed) (managed.Ext
 func (c *external) Disconnect(ctx context.Context) error {
 	// Nothing to disconnect for HTTP client
 	return nil
+}
+
+// generateConnectionDetails creates connection details from HTTP request configuration
+func (c *external) generateConnectionDetails(cr *v1alpha2.Request) managed.ConnectionDetails {
+	details := managed.ConnectionDetails{}
+	
+	// Add basic request information from RequestDetails
+	if cr.Status.RequestDetails.Method != "" {
+		details["method"] = []byte(cr.Status.RequestDetails.Method)
+	}
+	if cr.Status.RequestDetails.URL != "" {
+		details["url"] = []byte(cr.Status.RequestDetails.URL)
+	}
+	if cr.Status.Response.StatusCode != 0 {
+		details["statusCode"] = []byte(fmt.Sprintf("%d", cr.Status.Response.StatusCode))
+	}
+	
+	return details
 }
