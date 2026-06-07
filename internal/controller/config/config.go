@@ -41,7 +41,7 @@ func Setup(mgr ctrl.Manager, o controller.Options, timeout time.Duration) error 
 
 	r := providerconfig.NewReconciler(mgr, of,
 		providerconfig.WithLogger(o.Logger.WithValues("controller", name)),
-		providerconfig.WithRecorder(event.NewAPIRecorder(mgr.GetEventRecorderFor(name))))
+		providerconfig.WithRecorder(event.NewAPIRecorder(mgr.GetEventRecorder(name))))
 
 	return ctrl.NewControllerManagedBy(mgr).
 		Named(name).

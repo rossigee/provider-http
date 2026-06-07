@@ -33,7 +33,7 @@ GO_STATIC_PACKAGES = $(GO_PROJECT)/cmd/provider
 GO_SUBDIRS += cmd internal apis
 GO111MODULE = on
 # Override golangci-lint version for modern Go support
-GOLANGCILINT_VERSION ?= 2.4.0
+GOLANGCILINT_VERSION ?= 2.12.2
 -include build/makelib/golang.mk
 
 # ====================================================================================

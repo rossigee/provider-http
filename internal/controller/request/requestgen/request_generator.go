@@ -16,7 +16,6 @@ import (
 	json_util "github.com/rossigee/provider-http/internal/json"
 	"github.com/rossigee/provider-http/internal/utils"
 
-	"golang.org/x/exp/maps"
 )
 
 type RequestDetails struct {
@@ -63,7 +62,9 @@ func GenerateRequestContext(forProvider v1alpha2.RequestParameters, patchedRespo
 		"response": patchedResponse,
 	})
 
-	maps.Copy(baseMap, statusMap)
+	for k, v := range statusMap {
+		baseMap[k] = v
+	}
 	json_util.ConvertJSONStringsToMaps(&baseMap)
 
 	return baseMap

@@ -22,7 +22,7 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 
-	xpv1 "github.com/crossplane/crossplane-runtime/v2/apis/common/v1"
+	xpv1 "github.com/crossplane/crossplane/apis/v2/core/v2"
 )
 
 // RequestParameters are the configurable fields of a Request.
@@ -52,7 +52,7 @@ type Payload struct {
 
 // A RequestSpec defines the desired state of a Request.
 type RequestSpec struct {
-	xpv1.ResourceSpec `json:",inline"`
+	xpv1.ClusterManagedResourceSpec `json:",inline"`
 	ForProvider       RequestParameters `json:"forProvider"`
 }
 
@@ -65,7 +65,7 @@ type Response struct {
 
 // A RequestStatus represents the observed state of a Request.
 type RequestStatus struct {
-	xpv1.ResourceStatus `json:",inline"`
+	xpv1.ManagedResourceStatus `json:",inline"`
 	Response            Response `json:"response,omitempty"`
 	Cache               Cache    `json:"cache,omitempty"`
 	Failed              int32    `json:"failed,omitempty"`

@@ -22,7 +22,7 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 
-	xpv1 "github.com/crossplane/crossplane-runtime/v2/apis/common/v1"
+	xpv1 "github.com/crossplane/crossplane/apis/v2/core/v2"
 )
 
 // DisposableRequestParameters are the configurable fields of a DisposableRequest.
@@ -52,7 +52,7 @@ type DisposableRequestParameters struct {
 
 // A DisposableRequestSpec defines the desired state of a DisposableRequest.
 type DisposableRequestSpec struct {
-	xpv1.ResourceSpec `json:",inline"`
+	xpv1.ClusterManagedResourceSpec `json:",inline"`
 
 	ForProvider DisposableRequestParameters `json:"forProvider"`
 }
@@ -72,7 +72,7 @@ type Mapping struct {
 
 // A DisposableRequestStatus represents the observed state of a DisposableRequest.
 type DisposableRequestStatus struct {
-	xpv1.ResourceStatus `json:",inline"`
+	xpv1.ManagedResourceStatus `json:",inline"`
 	Response            Response `json:"response,omitempty"`
 	Failed              int32    `json:"failed,omitempty"`
 	Error               string   `json:"error,omitempty"`
