@@ -17,6 +17,7 @@ limitations under the License.
 package main
 
 import (
+	"context"
 	"os"
 	"path/filepath"
 	"runtime"
@@ -37,6 +38,7 @@ import (
 
 	"github.com/rossigee/provider-http/apis"
 	template "github.com/rossigee/provider-http/internal/controller"
+	"github.com/rossigee/provider-http/internal/tracing"
 	"github.com/rossigee/provider-http/internal/version"
 )
 
@@ -56,6 +58,12 @@ func main() {
 
 	zl := zap.New(zap.UseDevMode(*debug))
 	log := logging.NewLogrLogger(zl.WithName("provider-http"))
+
+	shutdownTracing := tracing.Init("provider-http")
+	defer shutdownTracing(context.Background())
+
+	shutdownTracing(context.Background())
+
 	ctrl.SetLogger(zl)
 
 	log.Info("Provider starting up",
