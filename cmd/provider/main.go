@@ -62,7 +62,6 @@ func main() {
 	shutdownTracing := tracing.Init("provider-http")
 	defer shutdownTracing(context.Background())
 
-	shutdownTracing(context.Background())
 
 	ctrl.SetLogger(zl)
 

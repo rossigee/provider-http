@@ -42,6 +42,7 @@ import (
 	"github.com/rossigee/provider-http/internal/controller/request/requestmapping"
 	"github.com/rossigee/provider-http/internal/controller/request/statushandler"
 	datapatcher "github.com/rossigee/provider-http/internal/data-patcher"
+	"github.com/rossigee/provider-http/internal/tracing"
 	"github.com/rossigee/provider-http/internal/utils"
 )
 
@@ -136,6 +137,9 @@ type external struct {
 }
 
 func (c *external) Observe(ctx context.Context, mg resource.Managed) (managed.ExternalObservation, error) {
+	ctx, span := tracing.StartSpanWithAttrs(ctx, "request.observe", "Request", mg.GetName(), "observe")
+	defer span.End()
+
 	cr, ok := mg.(*v1alpha2.Request)
 	if !ok {
 		return managed.ExternalObservation{}, errors.New(errNotRequest)
@@ -208,6 +212,9 @@ func (c *external) deployAction(ctx context.Context, cr *v1alpha2.Request, actio
 }
 
 func (c *external) Create(ctx context.Context, mg resource.Managed) (managed.ExternalCreation, error) {
+	ctx, span := tracing.StartSpanWithAttrs(ctx, "request.create", "Request", mg.GetName(), "create")
+	defer span.End()
+
 	cr, ok := mg.(*v1alpha2.Request)
 	if !ok {
 		return managed.ExternalCreation{}, errors.New(errNotRequest)
@@ -227,6 +234,9 @@ func (c *external) Create(ctx context.Context, mg resource.Managed) (managed.Ext
 }
 
 func (c *external) Update(ctx context.Context, mg resource.Managed) (managed.ExternalUpdate, error) {
+	ctx, span := tracing.StartSpanWithAttrs(ctx, "request.update", "Request", mg.GetName(), "update")
+	defer span.End()
+
 	cr, ok := mg.(*v1alpha2.Request)
 	if !ok {
 		return managed.ExternalUpdate{}, errors.New(errNotRequest)
@@ -236,6 +246,9 @@ func (c *external) Update(ctx context.Context, mg resource.Managed) (managed.Ext
 }
 
 func (c *external) Delete(ctx context.Context, mg resource.Managed) (managed.ExternalDelete, error) {
+	_, span := tracing.StartSpanWithAttrs(ctx, "request.delete", "Request", mg.GetName(), "delete")
+	defer span.End()
+
 	cr, ok := mg.(*v1alpha2.Request)
 	if !ok {
 		return managed.ExternalDelete{}, errors.New(errNotRequest)

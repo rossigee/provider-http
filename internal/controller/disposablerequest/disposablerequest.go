@@ -24,6 +24,7 @@ import (
 
 	datapatcher "github.com/rossigee/provider-http/internal/data-patcher"
 	"github.com/rossigee/provider-http/internal/jq"
+	"github.com/rossigee/provider-http/internal/tracing"
 	"github.com/crossplane/crossplane-runtime/v2/pkg/logging"
 	"github.com/pkg/errors"
 	"k8s.io/apimachinery/pkg/types"
@@ -136,6 +137,9 @@ type external struct {
 }
 
 func (c *external) Observe(ctx context.Context, mg resource.Managed) (managed.ExternalObservation, error) {
+	ctx, span := tracing.StartSpanWithAttrs(ctx, "disposablerequest.observe", "DisposableRequest", mg.GetName(), "observe")
+	defer span.End()
+
 	cr, ok := mg.(*v1alpha2.DisposableRequest)
 	if !ok {
 		return managed.ExternalObservation{}, errors.New(errNotDisposableRequest)
@@ -262,6 +266,9 @@ func (c *external) isResponseAsExpected(cr *v1alpha2.DisposableRequest, res http
 }
 
 func (c *external) Create(ctx context.Context, mg resource.Managed) (managed.ExternalCreation, error) {
+	ctx, span := tracing.StartSpanWithAttrs(ctx, "disposablerequest.create", "DisposableRequest", mg.GetName(), "create")
+	defer span.End()
+
 	cr, ok := mg.(*v1alpha2.DisposableRequest)
 	if !ok {
 		return managed.ExternalCreation{}, errors.New(errNotDisposableRequest)
@@ -275,6 +282,9 @@ func (c *external) Create(ctx context.Context, mg resource.Managed) (managed.Ext
 }
 
 func (c *external) Update(ctx context.Context, mg resource.Managed) (managed.ExternalUpdate, error) {
+	ctx, span := tracing.StartSpanWithAttrs(ctx, "disposablerequest.update", "DisposableRequest", mg.GetName(), "update")
+	defer span.End()
+
 	cr, ok := mg.(*v1alpha2.DisposableRequest)
 	if !ok {
 		return managed.ExternalUpdate{}, errors.New(errNotDisposableRequest)
@@ -287,7 +297,10 @@ func (c *external) Update(ctx context.Context, mg resource.Managed) (managed.Ext
 	return managed.ExternalUpdate{}, errors.Wrap(c.deployAction(ctx, cr), errFailedToSendHttpDisposableRequest)
 }
 
-func (c *external) Delete(_ context.Context, _ resource.Managed) (managed.ExternalDelete, error) {
+func (c *external) Delete(ctx context.Context, mg resource.Managed) (managed.ExternalDelete, error) {
+	_, span := tracing.StartSpanWithAttrs(ctx, "disposablerequest.delete", "DisposableRequest", mg.GetName(), "delete")
+	defer span.End()
+
 	return managed.ExternalDelete{}, nil
 }
 
