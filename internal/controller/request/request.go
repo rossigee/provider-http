@@ -144,6 +144,8 @@ func (c *external) Observe(ctx context.Context, mg resource.Managed) (managed.Ex
 		defer span.End()
 
 	}
+	_, span := tracing.StartSpanWithAttrs(ctx, "request.observe", "Request", cr.GetName(), "observe")
+	defer span.End()
 
 	observeRequestDetails, err := c.isUpToDate(ctx, cr)
 	if err != nil && err.Error() == observe.ErrObjectNotFound {
@@ -219,6 +221,8 @@ func (c *external) Create(ctx context.Context, mg resource.Managed) (managed.Ext
 		defer span.End()
 
 	}
+	_, span := tracing.StartSpanWithAttrs(ctx, "request.create", "Request", cr.GetName(), "create")
+	defer span.End()
 
 	err := c.deployAction(ctx, cr, v1alpha2.ActionCreate)
 	if err != nil {
@@ -241,6 +245,8 @@ func (c *external) Update(ctx context.Context, mg resource.Managed) (managed.Ext
 		defer span.End()
 
 	}
+	_, span := tracing.StartSpanWithAttrs(ctx, "request.update", "Request", cr.GetName(), "update")
+	defer span.End()
 
 	return managed.ExternalUpdate{}, errors.Wrap(c.deployAction(ctx, cr, v1alpha2.ActionUpdate), errFailedToSendHttpRequest)
 }
@@ -253,6 +259,8 @@ func (c *external) Delete(ctx context.Context, mg resource.Managed) (managed.Ext
 		defer span.End()
 
 	}
+	_, span := tracing.StartSpanWithAttrs(ctx, "request.delete", "Request", cr.GetName(), "delete")
+	defer span.End()
 
 	return managed.ExternalDelete{}, errors.Wrap(c.deployAction(ctx, cr, v1alpha2.ActionRemove), errFailedToSendHttpRequest)
 }

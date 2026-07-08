@@ -144,6 +144,8 @@ func (c *external) Observe(ctx context.Context, mg resource.Managed) (managed.Ex
 		defer span.End()
 
 	}
+	_, span := tracing.StartSpanWithAttrs(ctx, "disposablerequest.observe", "DisposableRequest", cr.GetName(), "observe")
+	defer span.End()
 
 	if !cr.Status.Synced {
 		return managed.ExternalObservation{
@@ -273,6 +275,8 @@ func (c *external) Create(ctx context.Context, mg resource.Managed) (managed.Ext
 		defer span.End()
 
 	}
+	_, span := tracing.StartSpanWithAttrs(ctx, "disposablerequest.create", "DisposableRequest", cr.GetName(), "create")
+	defer span.End()
 
 	if err := utils.IsRequestValid(cr.Spec.ForProvider.Method, cr.Spec.ForProvider.URL); err != nil {
 		return managed.ExternalCreation{}, err
@@ -289,6 +293,8 @@ func (c *external) Update(ctx context.Context, mg resource.Managed) (managed.Ext
 		defer span.End()
 
 	}
+	_, span := tracing.StartSpanWithAttrs(ctx, "disposablerequest.update", "DisposableRequest", cr.GetName(), "update")
+	defer span.End()
 
 	if err := utils.IsRequestValid(cr.Spec.ForProvider.Method, cr.Spec.ForProvider.URL); err != nil {
 		return managed.ExternalUpdate{}, err
