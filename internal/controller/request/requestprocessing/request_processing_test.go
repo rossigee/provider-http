@@ -1,10 +1,9 @@
 package requestprocessing
 
 import (
-	"testing"
-
 	"github.com/crossplane/crossplane-runtime/v2/pkg/test"
 	"github.com/google/go-cmp/cmp"
+	"testing"
 )
 
 var testHeaders = map[string][]string{

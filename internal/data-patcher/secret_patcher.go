@@ -3,18 +3,17 @@ package datapatcher
 import (
 	"context"
 	"fmt"
-	"strconv"
-	"strings"
-
-	"github.com/rossigee/provider-http/apis/common"
-	httpClient "github.com/rossigee/provider-http/internal/clients/http"
-	"github.com/rossigee/provider-http/internal/jq"
-	json_util "github.com/rossigee/provider-http/internal/json"
-	kubehandler "github.com/rossigee/provider-http/internal/kube-handler"
 	"github.com/crossplane/crossplane-runtime/v2/pkg/logging"
 	"github.com/pkg/errors"
-	corev1 "k8s.io/api/core/v1"
+	"github.com/rossigee/provider-http/apis/common"
+	"github.com/rossigee/provider-http/internal/clients/http"
+	"github.com/rossigee/provider-http/internal/jq"
+	"github.com/rossigee/provider-http/internal/json"
+	"github.com/rossigee/provider-http/internal/kube-handler"
+	"k8s.io/api/core/v1"
 	"sigs.k8s.io/controller-runtime/pkg/client"
+	"strconv"
+	"strings"
 )
 
 const (

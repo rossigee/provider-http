@@ -4,15 +4,14 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"strings"
-	"testing"
-
 	"github.com/crossplane/crossplane-runtime/v2/pkg/test"
 	"github.com/google/go-cmp/cmp"
-	errorspkg "github.com/pkg/errors"
-	corev1 "k8s.io/api/core/v1"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"github.com/pkg/errors"
+	"k8s.io/api/core/v1"
+	"k8s.io/apimachinery/pkg/apis/meta/v1"
 	"sigs.k8s.io/controller-runtime/pkg/client"
+	"strings"
+	"testing"
 )
 
 var (

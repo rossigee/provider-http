@@ -18,13 +18,12 @@ package v1alpha2
 
 import (
 	"reflect"
-
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime/schema"
-
 	"github.com/rossigee/provider-http/apis/common"
-	xpv1 "github.com/crossplane/crossplane/apis/v2/core/v2"
+	"github.com/crossplane/crossplane/apis/v2/core/v2"
 )
+
 
 // DisposableRequestParameters are the configurable fields of a DisposableRequest.
 type DisposableRequestParameters struct {
@@ -127,7 +126,4 @@ var (
 	DisposableRequestKindAPIVersion   = DisposableRequestKind + "." + SchemeGroupVersion.String()
 	DisposableRequestGroupVersionKind = SchemeGroupVersion.WithKind(DisposableRequestKind)
 )
-
-func init() {
-	SchemeBuilder.Register(&DisposableRequest{}, &DisposableRequestList{})
 }

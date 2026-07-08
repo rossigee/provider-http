@@ -2,11 +2,9 @@ package jq
 
 import (
 	"fmt"
-	"sync"
-
-	"github.com/pkg/errors"
-
 	"github.com/itchyny/gojq"
+	"github.com/pkg/errors"
+	"sync"
 )
 
 const (

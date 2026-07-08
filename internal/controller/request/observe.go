@@ -2,16 +2,15 @@ package request
 
 import (
 	"context"
-	"net/http"
-
+	"github.com/pkg/errors"
 	"github.com/rossigee/provider-http/apis/request/v1alpha2"
-	httpClient "github.com/rossigee/provider-http/internal/clients/http"
+	"github.com/rossigee/provider-http/internal/clients/http"
 	"github.com/rossigee/provider-http/internal/controller/request/observe"
 	"github.com/rossigee/provider-http/internal/controller/request/requestgen"
 	"github.com/rossigee/provider-http/internal/controller/request/requestmapping"
-	datapatcher "github.com/rossigee/provider-http/internal/data-patcher"
+	"github.com/rossigee/provider-http/internal/data-patcher"
 	"github.com/rossigee/provider-http/internal/utils"
-	"github.com/pkg/errors"
+	"net/http"
 )
 
 const (

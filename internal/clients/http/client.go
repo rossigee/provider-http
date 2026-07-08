@@ -6,11 +6,10 @@ import (
 	"crypto/tls"
 	"encoding/json"
 	"fmt"
+	"github.com/crossplane/crossplane-runtime/v2/pkg/logging"
 	"io"
 	"net/http"
 	"time"
-
-	"github.com/crossplane/crossplane-runtime/v2/pkg/logging"
 )
 
 const (

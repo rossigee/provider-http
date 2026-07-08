@@ -19,31 +19,28 @@ package request
 import (
 	"context"
 	"fmt"
-	"time"
-
-	"github.com/crossplane/crossplane-runtime/v2/pkg/logging"
-	"github.com/pkg/errors"
-	"k8s.io/apimachinery/pkg/types"
-	ctrl "sigs.k8s.io/controller-runtime"
-	"sigs.k8s.io/controller-runtime/pkg/client"
-
 	"github.com/crossplane/crossplane-runtime/v2/pkg/controller"
 	"github.com/crossplane/crossplane-runtime/v2/pkg/event"
+	"github.com/crossplane/crossplane-runtime/v2/pkg/logging"
 	"github.com/crossplane/crossplane-runtime/v2/pkg/ratelimiter"
 	"github.com/crossplane/crossplane-runtime/v2/pkg/reconciler/managed"
 	"github.com/crossplane/crossplane-runtime/v2/pkg/resource"
-	xpv1 "github.com/crossplane/crossplane/apis/v2/core/v2"
-
+	"github.com/crossplane/crossplane/apis/v2/core/v2"
+	"github.com/pkg/errors"
 	"github.com/rossigee/provider-http/apis/request/v1alpha2"
-	apisv1alpha1 "github.com/rossigee/provider-http/apis/v1alpha1"
-	httpClient "github.com/rossigee/provider-http/internal/clients/http"
+	"github.com/rossigee/provider-http/apis/v1alpha1"
+	"github.com/rossigee/provider-http/internal/clients/http"
 	"github.com/rossigee/provider-http/internal/controller/request/observe"
 	"github.com/rossigee/provider-http/internal/controller/request/requestgen"
 	"github.com/rossigee/provider-http/internal/controller/request/requestmapping"
 	"github.com/rossigee/provider-http/internal/controller/request/statushandler"
-	datapatcher "github.com/rossigee/provider-http/internal/data-patcher"
+	"github.com/rossigee/provider-http/internal/data-patcher"
 	"github.com/rossigee/provider-http/internal/tracing"
 	"github.com/rossigee/provider-http/internal/utils"
+	"k8s.io/apimachinery/pkg/types"
+	"sigs.k8s.io/controller-runtime"
+	"sigs.k8s.io/controller-runtime/pkg/client"
+	"time"
 )
 
 const (

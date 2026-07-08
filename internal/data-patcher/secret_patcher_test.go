@@ -1,15 +1,14 @@
 package datapatcher
 
 import (
-	"testing"
-
-	"github.com/rossigee/provider-http/apis/common"
-	httpClient "github.com/rossigee/provider-http/internal/clients/http"
 	"github.com/crossplane/crossplane-runtime/v2/pkg/logging"
 	"github.com/google/go-cmp/cmp"
-	corev1 "k8s.io/api/core/v1"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"github.com/rossigee/provider-http/apis/common"
+	"github.com/rossigee/provider-http/internal/clients/http"
+	"k8s.io/api/core/v1"
+	"k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/utils/ptr"
+	"testing"
 )
 
 func TestIsSecretDataUpToDate(t *testing.T) {

@@ -2,8 +2,7 @@ package utils
 
 import (
 	"context"
-
-	httpClient "github.com/rossigee/provider-http/internal/clients/http"
+	"github.com/rossigee/provider-http/internal/clients/http"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 

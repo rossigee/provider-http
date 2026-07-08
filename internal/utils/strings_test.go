@@ -1,9 +1,8 @@
 package utils
 
 import (
-	"testing"
-
 	"github.com/google/go-cmp/cmp"
+	"testing"
 )
 
 func Test_ConvertStringToJQQuery(t *testing.T) {
