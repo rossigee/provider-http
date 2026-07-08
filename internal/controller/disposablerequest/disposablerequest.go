@@ -22,22 +22,22 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/crossplane/crossplane-runtime/v2/pkg/logging"
+	"github.com/pkg/errors"
 	datapatcher "github.com/rossigee/provider-http/internal/data-patcher"
 	"github.com/rossigee/provider-http/internal/jq"
 	"github.com/rossigee/provider-http/internal/tracing"
-	"github.com/crossplane/crossplane-runtime/v2/pkg/logging"
-	"github.com/pkg/errors"
 	"k8s.io/apimachinery/pkg/types"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
-	json_util "github.com/rossigee/provider-http/internal/json"
-	xpv1 "github.com/crossplane/crossplane/apis/v2/core/v2"
 	"github.com/crossplane/crossplane-runtime/v2/pkg/controller"
 	"github.com/crossplane/crossplane-runtime/v2/pkg/event"
 	"github.com/crossplane/crossplane-runtime/v2/pkg/ratelimiter"
 	"github.com/crossplane/crossplane-runtime/v2/pkg/reconciler/managed"
 	"github.com/crossplane/crossplane-runtime/v2/pkg/resource"
+	xpv1 "github.com/crossplane/crossplane/apis/v2/core/v2"
+	json_util "github.com/rossigee/provider-http/internal/json"
 
 	"github.com/rossigee/provider-http/apis/disposablerequest/v1alpha2"
 	apisv1alpha1 "github.com/rossigee/provider-http/apis/v1alpha1"
@@ -137,12 +137,12 @@ type external struct {
 }
 
 func (c *external) Observe(ctx context.Context, mg resource.Managed) (managed.ExternalObservation, error) {
-	ctx, span := tracing.StartSpanWithAttrs(ctx, "disposablerequest.observe", "DisposableRequest", mg.GetName(), "observe")
-	defer span.End()
-
 	cr, ok := mg.(*v1alpha2.DisposableRequest)
 	if !ok {
 		return managed.ExternalObservation{}, errors.New(errNotDisposableRequest)
+		_, span := tracing.StartSpanWithAttrs(ctx, "disposablerequest.observe", "DisposableRequest", cr.GetName(), "observe")
+		defer span.End()
+
 	}
 
 	if !cr.Status.Synced {
@@ -266,12 +266,12 @@ func (c *external) isResponseAsExpected(cr *v1alpha2.DisposableRequest, res http
 }
 
 func (c *external) Create(ctx context.Context, mg resource.Managed) (managed.ExternalCreation, error) {
-	ctx, span := tracing.StartSpanWithAttrs(ctx, "disposablerequest.create", "DisposableRequest", mg.GetName(), "create")
-	defer span.End()
-
 	cr, ok := mg.(*v1alpha2.DisposableRequest)
 	if !ok {
 		return managed.ExternalCreation{}, errors.New(errNotDisposableRequest)
+		_, span := tracing.StartSpanWithAttrs(ctx, "disposablerequest.create", "DisposableRequest", cr.GetName(), "create")
+		defer span.End()
+
 	}
 
 	if err := utils.IsRequestValid(cr.Spec.ForProvider.Method, cr.Spec.ForProvider.URL); err != nil {
@@ -282,12 +282,12 @@ func (c *external) Create(ctx context.Context, mg resource.Managed) (managed.Ext
 }
 
 func (c *external) Update(ctx context.Context, mg resource.Managed) (managed.ExternalUpdate, error) {
-	ctx, span := tracing.StartSpanWithAttrs(ctx, "disposablerequest.update", "DisposableRequest", mg.GetName(), "update")
-	defer span.End()
-
 	cr, ok := mg.(*v1alpha2.DisposableRequest)
 	if !ok {
 		return managed.ExternalUpdate{}, errors.New(errNotDisposableRequest)
+		_, span := tracing.StartSpanWithAttrs(ctx, "disposablerequest.update", "DisposableRequest", cr.GetName(), "update")
+		defer span.End()
+
 	}
 
 	if err := utils.IsRequestValid(cr.Spec.ForProvider.Method, cr.Spec.ForProvider.URL); err != nil {

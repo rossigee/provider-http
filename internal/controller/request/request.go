@@ -27,12 +27,12 @@ import (
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
-	xpv1 "github.com/crossplane/crossplane/apis/v2/core/v2"
 	"github.com/crossplane/crossplane-runtime/v2/pkg/controller"
 	"github.com/crossplane/crossplane-runtime/v2/pkg/event"
 	"github.com/crossplane/crossplane-runtime/v2/pkg/ratelimiter"
 	"github.com/crossplane/crossplane-runtime/v2/pkg/reconciler/managed"
 	"github.com/crossplane/crossplane-runtime/v2/pkg/resource"
+	xpv1 "github.com/crossplane/crossplane/apis/v2/core/v2"
 
 	"github.com/rossigee/provider-http/apis/request/v1alpha2"
 	apisv1alpha1 "github.com/rossigee/provider-http/apis/v1alpha1"
@@ -137,12 +137,12 @@ type external struct {
 }
 
 func (c *external) Observe(ctx context.Context, mg resource.Managed) (managed.ExternalObservation, error) {
-	ctx, span := tracing.StartSpanWithAttrs(ctx, "request.observe", "Request", mg.GetName(), "observe")
-	defer span.End()
-
 	cr, ok := mg.(*v1alpha2.Request)
 	if !ok {
 		return managed.ExternalObservation{}, errors.New(errNotRequest)
+		_, span := tracing.StartSpanWithAttrs(ctx, "request.observe", "Request", cr.GetName(), "observe")
+		defer span.End()
+
 	}
 
 	observeRequestDetails, err := c.isUpToDate(ctx, cr)
@@ -212,12 +212,12 @@ func (c *external) deployAction(ctx context.Context, cr *v1alpha2.Request, actio
 }
 
 func (c *external) Create(ctx context.Context, mg resource.Managed) (managed.ExternalCreation, error) {
-	ctx, span := tracing.StartSpanWithAttrs(ctx, "request.create", "Request", mg.GetName(), "create")
-	defer span.End()
-
 	cr, ok := mg.(*v1alpha2.Request)
 	if !ok {
 		return managed.ExternalCreation{}, errors.New(errNotRequest)
+		_, span := tracing.StartSpanWithAttrs(ctx, "request.create", "Request", cr.GetName(), "create")
+		defer span.End()
+
 	}
 
 	err := c.deployAction(ctx, cr, v1alpha2.ActionCreate)
@@ -227,31 +227,31 @@ func (c *external) Create(ctx context.Context, mg resource.Managed) (managed.Ext
 
 	// Generate connection details from request
 	connectionDetails := c.generateConnectionDetails(cr)
-	
+
 	return managed.ExternalCreation{
 		ConnectionDetails: connectionDetails,
 	}, nil
 }
 
 func (c *external) Update(ctx context.Context, mg resource.Managed) (managed.ExternalUpdate, error) {
-	ctx, span := tracing.StartSpanWithAttrs(ctx, "request.update", "Request", mg.GetName(), "update")
-	defer span.End()
-
 	cr, ok := mg.(*v1alpha2.Request)
 	if !ok {
 		return managed.ExternalUpdate{}, errors.New(errNotRequest)
+		_, span := tracing.StartSpanWithAttrs(ctx, "request.update", "Request", cr.GetName(), "update")
+		defer span.End()
+
 	}
 
 	return managed.ExternalUpdate{}, errors.Wrap(c.deployAction(ctx, cr, v1alpha2.ActionUpdate), errFailedToSendHttpRequest)
 }
 
 func (c *external) Delete(ctx context.Context, mg resource.Managed) (managed.ExternalDelete, error) {
-	_, span := tracing.StartSpanWithAttrs(ctx, "request.delete", "Request", mg.GetName(), "delete")
-	defer span.End()
-
 	cr, ok := mg.(*v1alpha2.Request)
 	if !ok {
 		return managed.ExternalDelete{}, errors.New(errNotRequest)
+		_, span := tracing.StartSpanWithAttrs(ctx, "request.delete", "Request", cr.GetName(), "delete")
+		defer span.End()
+
 	}
 
 	return managed.ExternalDelete{}, errors.Wrap(c.deployAction(ctx, cr, v1alpha2.ActionRemove), errFailedToSendHttpRequest)
@@ -265,7 +265,7 @@ func (c *external) Disconnect(ctx context.Context) error {
 // generateConnectionDetails creates connection details from HTTP request configuration
 func (c *external) generateConnectionDetails(cr *v1alpha2.Request) managed.ConnectionDetails {
 	details := managed.ConnectionDetails{}
-	
+
 	// Add basic request information from RequestDetails
 	if cr.Status.RequestDetails.Method != "" {
 		details["method"] = []byte(cr.Status.RequestDetails.Method)
@@ -276,6 +276,6 @@ func (c *external) generateConnectionDetails(cr *v1alpha2.Request) managed.Conne
 	if cr.Status.Response.StatusCode != 0 {
 		details["statusCode"] = []byte(fmt.Sprintf("%d", cr.Status.Response.StatusCode))
 	}
-	
+
 	return details
 }
