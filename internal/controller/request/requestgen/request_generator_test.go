@@ -6,7 +6,7 @@ import (
 	"github.com/crossplane/crossplane-runtime/v2/pkg/test"
 	"github.com/google/go-cmp/cmp"
 	"github.com/rossigee/provider-http/apis/request/v1alpha2"
-	"github.com/rossigee/provider-http/internal/clients/http"
+	httpClient "github.com/rossigee/provider-http/internal/clients/http"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"testing"
 )

@@ -3,10 +3,11 @@ package kubehandler
 import (
 	"context"
 	"fmt"
+
 	"github.com/pkg/errors"
-	"k8s.io/api/core/v1"
-	"k8s.io/apimachinery/pkg/api/errors"
-	"k8s.io/apimachinery/pkg/apis/meta/v1"
+	corev1 "k8s.io/api/core/v1"
+	k8serrors "k8s.io/apimachinery/pkg/api/errors"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 )
@@ -38,7 +39,7 @@ func GetSecret(ctx context.Context, kubeClient client.Client, name string, names
 func GetOrCreateSecret(ctx context.Context, kubeClient client.Client, name, namespace string, owner metav1.Object) (*corev1.Secret, error) {
 	secret, err := GetSecret(ctx, kubeClient, name, namespace)
 	if err != nil {
-		if errs.IsNotFound(err) {
+		if k8serrors.IsNotFound(err) {
 			return createSecret(ctx, kubeClient, name, namespace, owner)
 		}
 		return nil, err

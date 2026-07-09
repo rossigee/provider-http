@@ -21,7 +21,8 @@ limitations under the License.
 package v1alpha1
 
 import (
-	"k8s.io/apimachinery/pkg/apis/meta/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
@@ -175,7 +176,7 @@ func (in *RequestParameters) DeepCopyInto(out *RequestParameters) {
 	}
 	if in.WaitTimeout != nil {
 		in, out := &in.WaitTimeout, &out.WaitTimeout
-		*out = new(v1.Duration)
+		*out = new(metav1.Duration)
 		**out = **in
 	}
 }

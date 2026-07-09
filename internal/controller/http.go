@@ -21,7 +21,7 @@ import (
 	"github.com/rossigee/provider-http/internal/controller/config"
 	"github.com/rossigee/provider-http/internal/controller/disposablerequest"
 	"github.com/rossigee/provider-http/internal/controller/request"
-	"sigs.k8s.io/controller-runtime"
+	ctrl "sigs.k8s.io/controller-runtime"
 	"time"
 )
 

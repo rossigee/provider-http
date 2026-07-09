@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"github.com/crossplane/crossplane-runtime/v2/pkg/logging"
 	"github.com/rossigee/provider-http/apis/request/v1alpha2"
-	"github.com/rossigee/provider-http/internal/clients/http"
+	httpClient "github.com/rossigee/provider-http/internal/clients/http"
 	"github.com/rossigee/provider-http/internal/controller/request/requestgen"
 	"github.com/rossigee/provider-http/internal/controller/request/responseconverter"
 	"github.com/rossigee/provider-http/internal/data-patcher"

@@ -18,11 +18,11 @@ limitations under the License.
 package apis
 
 import (
-	"github.com/rossigee/provider-http/apis/disposablerequest/v1alpha2"
-	"github.com/rossigee/provider-http/apis/disposablerequest/v1beta1"
-	"github.com/rossigee/provider-http/apis/request/v1alpha2"
-	"github.com/rossigee/provider-http/apis/request/v1beta1"
-	"github.com/rossigee/provider-http/apis/v1alpha1"
+	httpv1alpha1 "github.com/rossigee/provider-http/apis/v1alpha1"
+	disposablerequestv1alpha1 "github.com/rossigee/provider-http/apis/disposablerequest/v1alpha1"
+	disposablerequestv1beta1 "github.com/rossigee/provider-http/apis/disposablerequest/v1beta1"
+	requestv1alpha1 "github.com/rossigee/provider-http/apis/request/v1alpha1"
+	requestv1beta1 "github.com/rossigee/provider-http/apis/request/v1beta1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 

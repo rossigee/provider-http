@@ -2,7 +2,7 @@ package responseconverter
 
 import (
 	"github.com/rossigee/provider-http/apis/request/v1alpha2"
-	"github.com/rossigee/provider-http/internal/clients/http"
+	httpClient "github.com/rossigee/provider-http/internal/clients/http"
 )
 
 // Convert HttpResponse to Response

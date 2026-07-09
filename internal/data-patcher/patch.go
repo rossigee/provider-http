@@ -7,10 +7,10 @@ import (
 	"github.com/pkg/errors"
 	"github.com/rossigee/provider-http/apis/common"
 	"github.com/rossigee/provider-http/apis/request/v1alpha2"
-	"github.com/rossigee/provider-http/internal/clients/http"
+	httpClient "github.com/rossigee/provider-http/internal/clients/http"
 	"github.com/rossigee/provider-http/internal/kube-handler"
-	"k8s.io/api/core/v1"
-	"k8s.io/apimachinery/pkg/apis/meta/v1"
+	corev1 "k8s.io/api/core/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
@@ -90,7 +90,7 @@ func patchResponseDataToSecret(ctx context.Context, localKube client.Client, log
 }
 
 // applySecretConfig applies the secret configuration to the secret.
-func applySecretConfig(ctx context.Context, localKube client.Client, logger logging.Logger, data *httpClient.HttpResponse, secretConfig common.SecretInjectionConfig, secret *v1.Secret) error {
+func applySecretConfig(ctx context.Context, localKube client.Client, logger logging.Logger, data *httpClient.HttpResponse, secretConfig common.SecretInjectionConfig, secret *corev1.Secret) error {
 	var err error
 
 	if secretConfig.KeyMappings != nil {

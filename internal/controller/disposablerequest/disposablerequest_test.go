@@ -21,13 +21,13 @@ import (
 	"github.com/crossplane/crossplane-runtime/v2/pkg/logging"
 	"github.com/crossplane/crossplane-runtime/v2/pkg/resource"
 	"github.com/crossplane/crossplane-runtime/v2/pkg/test"
-	"github.com/crossplane/crossplane/apis/v2/core/v2"
+	xpv1 "github.com/crossplane/crossplane/apis/v2/core/v2"
 	"github.com/google/go-cmp/cmp"
 	"github.com/pkg/errors"
 	"github.com/rossigee/provider-http/apis/disposablerequest/v1alpha2"
-	"github.com/rossigee/provider-http/internal/clients/http"
+	httpClient "github.com/rossigee/provider-http/internal/clients/http"
 	"github.com/rossigee/provider-http/internal/utils"
-	"k8s.io/apimachinery/pkg/apis/meta/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"strconv"
 	"testing"
@@ -59,7 +59,7 @@ var testHeaders = map[string][]string{
 	"programming_languages": {"Go", "Python", "JavaScript"},
 }
 
-var testTimeout = &v1.Duration{
+var testTimeout = &metav1.Duration{
 	Duration: 5 * time.Minute,
 }
 
@@ -73,7 +73,7 @@ type httpDisposableRequestModifier func(request *v1alpha2.DisposableRequest)
 
 func httpDisposableRequest(rm ...httpDisposableRequestModifier) *v1alpha2.DisposableRequest {
 	r := &v1alpha2.DisposableRequest{
-		ObjectMeta: v1.ObjectMeta{
+		ObjectMeta: metav1.ObjectMeta{
 			Name:      testDisposableRequestName,
 			Namespace: testNamespace,
 		},

@@ -25,11 +25,11 @@ import (
 	"github.com/crossplane/crossplane-runtime/v2/pkg/ratelimiter"
 	"github.com/crossplane/crossplane-runtime/v2/pkg/reconciler/managed"
 	"github.com/crossplane/crossplane-runtime/v2/pkg/resource"
-	"github.com/crossplane/crossplane/apis/v2/core/v2"
+	xpv1 "github.com/crossplane/crossplane/apis/v2/core/v2"
 	"github.com/pkg/errors"
 	"github.com/rossigee/provider-http/apis/request/v1alpha2"
-	"github.com/rossigee/provider-http/apis/v1alpha1"
-	"github.com/rossigee/provider-http/internal/clients/http"
+	apisv1alpha1 "github.com/rossigee/provider-http/apis/v1alpha1"
+	httpClient "github.com/rossigee/provider-http/internal/clients/http"
 	"github.com/rossigee/provider-http/internal/controller/request/observe"
 	"github.com/rossigee/provider-http/internal/controller/request/requestgen"
 	"github.com/rossigee/provider-http/internal/controller/request/requestmapping"
@@ -38,7 +38,7 @@ import (
 	"github.com/rossigee/provider-http/internal/tracing"
 	"github.com/rossigee/provider-http/internal/utils"
 	"k8s.io/apimachinery/pkg/types"
-	"sigs.k8s.io/controller-runtime"
+	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"time"
 )
@@ -137,13 +137,10 @@ func (c *external) Observe(ctx context.Context, mg resource.Managed) (managed.Ex
 	cr, ok := mg.(*v1alpha2.Request)
 	if !ok {
 		return managed.ExternalObservation{}, errors.New(errNotRequest)
-		_, span := tracing.StartSpanWithAttrs(ctx, "request.observe", "Request", cr.GetName(), "observe")
-		defer span.End()
-
 	}
 	_, span := tracing.StartSpanWithAttrs(ctx, "request.observe", "Request", cr.GetName(), "observe")
 	defer span.End()
-
+	
 	observeRequestDetails, err := c.isUpToDate(ctx, cr)
 	if err != nil && err.Error() == observe.ErrObjectNotFound {
 		return managed.ExternalObservation{
@@ -214,9 +211,6 @@ func (c *external) Create(ctx context.Context, mg resource.Managed) (managed.Ext
 	cr, ok := mg.(*v1alpha2.Request)
 	if !ok {
 		return managed.ExternalCreation{}, errors.New(errNotRequest)
-		_, span := tracing.StartSpanWithAttrs(ctx, "request.create", "Request", cr.GetName(), "create")
-		defer span.End()
-
 	}
 	_, span := tracing.StartSpanWithAttrs(ctx, "request.create", "Request", cr.GetName(), "create")
 	defer span.End()
@@ -238,9 +232,6 @@ func (c *external) Update(ctx context.Context, mg resource.Managed) (managed.Ext
 	cr, ok := mg.(*v1alpha2.Request)
 	if !ok {
 		return managed.ExternalUpdate{}, errors.New(errNotRequest)
-		_, span := tracing.StartSpanWithAttrs(ctx, "request.update", "Request", cr.GetName(), "update")
-		defer span.End()
-
 	}
 	_, span := tracing.StartSpanWithAttrs(ctx, "request.update", "Request", cr.GetName(), "update")
 	defer span.End()
@@ -252,9 +243,6 @@ func (c *external) Delete(ctx context.Context, mg resource.Managed) (managed.Ext
 	cr, ok := mg.(*v1alpha2.Request)
 	if !ok {
 		return managed.ExternalDelete{}, errors.New(errNotRequest)
-		_, span := tracing.StartSpanWithAttrs(ctx, "request.delete", "Request", cr.GetName(), "delete")
-		defer span.End()
-
 	}
 	_, span := tracing.StartSpanWithAttrs(ctx, "request.delete", "Request", cr.GetName(), "delete")
 	defer span.End()

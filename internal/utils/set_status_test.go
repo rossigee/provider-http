@@ -5,9 +5,9 @@ import (
 	"github.com/crossplane/crossplane-runtime/v2/pkg/test"
 	"github.com/google/go-cmp/cmp"
 	"github.com/pkg/errors"
-	"github.com/rossigee/provider-http/apis/disposablerequest/v1alpha2"
-	"github.com/rossigee/provider-http/apis/request/v1alpha2"
-	"github.com/rossigee/provider-http/internal/clients/http"
+	v1alpha1_disposable "github.com/rossigee/provider-http/apis/disposablerequest/v1alpha1"
+	v1alpha1_request "github.com/rossigee/provider-http/apis/request/v1alpha1"
+	httpClient "github.com/rossigee/provider-http/internal/clients/http"
 	"testing"
 )
 

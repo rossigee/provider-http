@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"github.com/crossplane/crossplane-runtime/v2/pkg/logging"
 	"github.com/rossigee/provider-http/internal/kube-handler"
-	"k8s.io/api/core/v1"
+	corev1 "k8s.io/api/core/v1"
 	"regexp"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"strings"

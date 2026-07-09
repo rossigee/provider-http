@@ -2,14 +2,14 @@ package utils
 
 import (
 	"github.com/google/go-cmp/cmp"
-	"k8s.io/apimachinery/pkg/apis/meta/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"testing"
 	"time"
 )
 
 var limit int32 = 3
 var failures int32 = 2
-var testTimeout = &v1.Duration{Duration: 5 * time.Second}
+var testTimeout = &metav1.Duration{Duration: 5 * time.Second}
 
 func Test_ShouldRetry(t *testing.T) {
 	type args struct {
@@ -150,7 +150,7 @@ func Test_RollBackEnabled(t *testing.T) {
 
 func Test_WaitTimeout(t *testing.T) {
 	type args struct {
-		timeout *v1.Duration
+		timeout *metav1.Duration
 	}
 	type want struct {
 		result time.Duration

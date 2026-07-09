@@ -25,18 +25,18 @@ import (
 	"github.com/crossplane/crossplane-runtime/v2/pkg/ratelimiter"
 	"github.com/crossplane/crossplane-runtime/v2/pkg/reconciler/managed"
 	"github.com/crossplane/crossplane-runtime/v2/pkg/resource"
-	"github.com/crossplane/crossplane/apis/v2/core/v2"
+	xpv1 "github.com/crossplane/crossplane/apis/v2/core/v2"
 	"github.com/pkg/errors"
 	"github.com/rossigee/provider-http/apis/disposablerequest/v1alpha2"
-	"github.com/rossigee/provider-http/apis/v1alpha1"
-	"github.com/rossigee/provider-http/internal/clients/http"
+	apisv1alpha1 "github.com/rossigee/provider-http/apis/v1alpha1"
+	httpClient "github.com/rossigee/provider-http/internal/clients/http"
 	"github.com/rossigee/provider-http/internal/data-patcher"
 	"github.com/rossigee/provider-http/internal/jq"
-	"github.com/rossigee/provider-http/internal/json"
+	json_util "github.com/rossigee/provider-http/internal/json"
 	"github.com/rossigee/provider-http/internal/tracing"
 	"github.com/rossigee/provider-http/internal/utils"
 	"k8s.io/apimachinery/pkg/types"
-	"sigs.k8s.io/controller-runtime"
+	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"strconv"
 	"time"
@@ -137,9 +137,6 @@ func (c *external) Observe(ctx context.Context, mg resource.Managed) (managed.Ex
 	cr, ok := mg.(*v1alpha2.DisposableRequest)
 	if !ok {
 		return managed.ExternalObservation{}, errors.New(errNotDisposableRequest)
-		_, span := tracing.StartSpanWithAttrs(ctx, "disposablerequest.observe", "DisposableRequest", cr.GetName(), "observe")
-		defer span.End()
-
 	}
 	_, span := tracing.StartSpanWithAttrs(ctx, "disposablerequest.observe", "DisposableRequest", cr.GetName(), "observe")
 	defer span.End()
@@ -268,9 +265,6 @@ func (c *external) Create(ctx context.Context, mg resource.Managed) (managed.Ext
 	cr, ok := mg.(*v1alpha2.DisposableRequest)
 	if !ok {
 		return managed.ExternalCreation{}, errors.New(errNotDisposableRequest)
-		_, span := tracing.StartSpanWithAttrs(ctx, "disposablerequest.create", "DisposableRequest", cr.GetName(), "create")
-		defer span.End()
-
 	}
 	_, span := tracing.StartSpanWithAttrs(ctx, "disposablerequest.create", "DisposableRequest", cr.GetName(), "create")
 	defer span.End()
@@ -286,9 +280,6 @@ func (c *external) Update(ctx context.Context, mg resource.Managed) (managed.Ext
 	cr, ok := mg.(*v1alpha2.DisposableRequest)
 	if !ok {
 		return managed.ExternalUpdate{}, errors.New(errNotDisposableRequest)
-		_, span := tracing.StartSpanWithAttrs(ctx, "disposablerequest.update", "DisposableRequest", cr.GetName(), "update")
-		defer span.End()
-
 	}
 	_, span := tracing.StartSpanWithAttrs(ctx, "disposablerequest.update", "DisposableRequest", cr.GetName(), "update")
 	defer span.End()
