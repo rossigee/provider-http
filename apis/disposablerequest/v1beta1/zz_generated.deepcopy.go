@@ -21,8 +21,7 @@ limitations under the License.
 package v1beta1
 
 import (
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-
+	"k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
@@ -106,7 +105,7 @@ func (in *DisposableRequestParameters) DeepCopyInto(out *DisposableRequestParame
 	}
 	if in.WaitTimeout != nil {
 		in, out := &in.WaitTimeout, &out.WaitTimeout
-		*out = new(metav1.Duration)
+		*out = new(v1.Duration)
 		**out = **in
 	}
 	if in.RollbackRetriesLimit != nil {
