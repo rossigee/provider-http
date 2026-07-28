@@ -27,6 +27,8 @@ import (
 	"github.com/rossigee/provider-http/internal/tracing"
 	"github.com/rossigee/provider-http/internal/version"
 	"gopkg.in/alecthomas/kingpin.v2"
+	apimachineryruntime "k8s.io/apimachinery/pkg/runtime"
+	"k8s.io/client-go/kubernetes/scheme"
 	"k8s.io/client-go/tools/leaderelection/resourcelock"
 	"os"
 	"path/filepath"
@@ -72,6 +74,10 @@ func main() {
 		"leader-election", *leaderElection,
 		"debug-mode", *debug)
 
+	s := apimachineryruntime.NewScheme()
+	kingpin.FatalIfError(scheme.AddToScheme(s), "Cannot add k8s types to scheme")
+	kingpin.FatalIfError(apis.AddToScheme(s), "Cannot add Http APIs to scheme")
+
 	cfg, err := ctrl.GetConfig()
 	kingpin.FatalIfError(err, "Cannot get API server rest config")
 
@@ -86,6 +92,7 @@ func main() {
 		// hundreds of reconciles per second and ~200rps to the API
 		// server. Switching to Leases only and longer leases appears to
 		// alleviate this.
+		Scheme:                       s,
 		LeaderElection:             *leaderElection,
 		LeaderElectionID:           "crossplane-leader-election-cp-provider-template",
 		LeaderElectionResourceLock: resourcelock.LeasesResourceLock,
@@ -93,7 +100,6 @@ func main() {
 		RenewDeadline:              func() *time.Duration { d := 50 * time.Second; return &d }(),
 	})
 	kingpin.FatalIfError(err, "Cannot create controller manager")
-	kingpin.FatalIfError(apis.AddToScheme(mgr.GetScheme()), "Cannot add Http APIs to scheme")
 
 	o := controller.Options{
 		Logger:                  log,

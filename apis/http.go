@@ -20,8 +20,10 @@ package apis
 import (
 	httpv1alpha1 "github.com/rossigee/provider-http/apis/v1alpha1"
 	disposablerequestv1alpha1 "github.com/rossigee/provider-http/apis/disposablerequest/v1alpha1"
+	disposablerequestv1alpha2 "github.com/rossigee/provider-http/apis/disposablerequest/v1alpha2"
 	disposablerequestv1beta1 "github.com/rossigee/provider-http/apis/disposablerequest/v1beta1"
 	requestv1alpha1 "github.com/rossigee/provider-http/apis/request/v1alpha1"
+	requestv1alpha2 "github.com/rossigee/provider-http/apis/request/v1alpha2"
 	requestv1beta1 "github.com/rossigee/provider-http/apis/request/v1beta1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
@@ -31,7 +33,9 @@ func init() {
 	AddToSchemes = append(AddToSchemes,
 		httpv1alpha1.SchemeBuilder.AddToScheme,
 		disposablerequestv1alpha1.SchemeBuilder.AddToScheme,
+		disposablerequestv1alpha2.SchemeBuilder.AddToScheme,
 		requestv1alpha1.SchemeBuilder.AddToScheme,
+		requestv1alpha2.SchemeBuilder.AddToScheme,
 		disposablerequestv1beta1.SchemeBuilder.AddToScheme,
 		requestv1beta1.SchemeBuilder.AddToScheme,
 	)
