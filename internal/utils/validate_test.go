@@ -1,11 +1,12 @@
 package utils
 
 import (
+	"net/http"
+	"testing"
+
 	"github.com/crossplane/crossplane-runtime/v2/pkg/test"
 	"github.com/google/go-cmp/cmp"
 	"github.com/pkg/errors"
-	"net/http"
-	"testing"
 )
 
 func Test_IsRequestValid(t *testing.T) {

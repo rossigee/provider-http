@@ -1,9 +1,10 @@
 package json
 
 import (
+	"testing"
+
 	"github.com/google/go-cmp/cmp"
 	"github.com/rossigee/provider-http/apis/request/v1alpha2"
-	"testing"
 )
 
 var (

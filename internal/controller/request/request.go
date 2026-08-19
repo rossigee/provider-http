@@ -19,6 +19,8 @@ package request
 import (
 	"context"
 	"fmt"
+	"time"
+
 	"github.com/crossplane/crossplane-runtime/v2/pkg/controller"
 	"github.com/crossplane/crossplane-runtime/v2/pkg/event"
 	"github.com/crossplane/crossplane-runtime/v2/pkg/logging"
@@ -34,13 +36,12 @@ import (
 	"github.com/rossigee/provider-http/internal/controller/request/requestgen"
 	"github.com/rossigee/provider-http/internal/controller/request/requestmapping"
 	"github.com/rossigee/provider-http/internal/controller/request/statushandler"
-	"github.com/rossigee/provider-http/internal/data-patcher"
+	datapatcher "github.com/rossigee/provider-http/internal/data-patcher"
 	"github.com/rossigee/provider-http/internal/tracing"
 	"github.com/rossigee/provider-http/internal/utils"
 	"k8s.io/apimachinery/pkg/types"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
-	"time"
 )
 
 const (

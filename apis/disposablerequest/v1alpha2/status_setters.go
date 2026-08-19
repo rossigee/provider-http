@@ -1,8 +1,9 @@
 package v1alpha2
 
 import (
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"time"
+
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 func (d *DisposableRequest) SetStatusCode(statusCode int) {

@@ -3,16 +3,17 @@ package requestgen
 import (
 	"context"
 	"fmt"
+	"strings"
+
 	"github.com/crossplane/crossplane-runtime/v2/pkg/logging"
 	"github.com/pkg/errors"
 	"github.com/rossigee/provider-http/apis/request/v1alpha2"
 	httpClient "github.com/rossigee/provider-http/internal/clients/http"
 	"github.com/rossigee/provider-http/internal/controller/request/requestprocessing"
-	"github.com/rossigee/provider-http/internal/data-patcher"
+	datapatcher "github.com/rossigee/provider-http/internal/data-patcher"
 	json_util "github.com/rossigee/provider-http/internal/json"
 	"github.com/rossigee/provider-http/internal/utils"
 	"sigs.k8s.io/controller-runtime/pkg/client"
-	"strings"
 )
 
 type RequestDetails struct {

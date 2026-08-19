@@ -17,12 +17,13 @@ limitations under the License.
 package controller
 
 import (
+	"time"
+
 	"github.com/crossplane/crossplane-runtime/v2/pkg/controller"
 	"github.com/rossigee/provider-http/internal/controller/config"
 	"github.com/rossigee/provider-http/internal/controller/disposablerequest"
 	"github.com/rossigee/provider-http/internal/controller/request"
 	ctrl "sigs.k8s.io/controller-runtime"
-	"time"
 )
 
 // Setup creates all http controllers with the supplied logger and adds them to

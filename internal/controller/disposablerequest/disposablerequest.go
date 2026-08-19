@@ -19,6 +19,9 @@ package disposablerequest
 import (
 	"context"
 	"fmt"
+	"strconv"
+	"time"
+
 	"github.com/crossplane/crossplane-runtime/v2/pkg/controller"
 	"github.com/crossplane/crossplane-runtime/v2/pkg/event"
 	"github.com/crossplane/crossplane-runtime/v2/pkg/logging"
@@ -30,7 +33,7 @@ import (
 	"github.com/rossigee/provider-http/apis/disposablerequest/v1alpha2"
 	apisv1alpha1 "github.com/rossigee/provider-http/apis/v1alpha1"
 	httpClient "github.com/rossigee/provider-http/internal/clients/http"
-	"github.com/rossigee/provider-http/internal/data-patcher"
+	datapatcher "github.com/rossigee/provider-http/internal/data-patcher"
 	"github.com/rossigee/provider-http/internal/jq"
 	json_util "github.com/rossigee/provider-http/internal/json"
 	"github.com/rossigee/provider-http/internal/tracing"
@@ -38,8 +41,6 @@ import (
 	"k8s.io/apimachinery/pkg/types"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
-	"strconv"
-	"time"
 )
 
 const (

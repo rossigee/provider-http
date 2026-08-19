@@ -3,12 +3,13 @@ package observe
 import (
 	"context"
 	"fmt"
+
 	"github.com/crossplane/crossplane-runtime/v2/pkg/logging"
 	"github.com/rossigee/provider-http/apis/request/v1alpha2"
 	httpClient "github.com/rossigee/provider-http/internal/clients/http"
 	"github.com/rossigee/provider-http/internal/controller/request/requestgen"
 	"github.com/rossigee/provider-http/internal/controller/request/responseconverter"
-	"github.com/rossigee/provider-http/internal/data-patcher"
+	datapatcher "github.com/rossigee/provider-http/internal/data-patcher"
 	"github.com/rossigee/provider-http/internal/jq"
 	"github.com/rossigee/provider-http/internal/utils"
 	"sigs.k8s.io/controller-runtime/pkg/client"

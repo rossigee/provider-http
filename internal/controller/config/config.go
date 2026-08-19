@@ -17,6 +17,8 @@ limitations under the License.
 package config
 
 import (
+	"time"
+
 	"github.com/crossplane/crossplane-runtime/v2/pkg/controller"
 	"github.com/crossplane/crossplane-runtime/v2/pkg/event"
 	"github.com/crossplane/crossplane-runtime/v2/pkg/ratelimiter"
@@ -24,7 +26,6 @@ import (
 	"github.com/crossplane/crossplane-runtime/v2/pkg/resource"
 	"github.com/rossigee/provider-http/apis/v1alpha1"
 	ctrl "sigs.k8s.io/controller-runtime"
-	"time"
 )
 
 // Setup adds a controller that reconciles ProviderConfigs by accounting for

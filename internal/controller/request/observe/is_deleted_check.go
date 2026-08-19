@@ -2,11 +2,12 @@ package observe
 
 import (
 	"context"
+	"net/http"
+
 	"github.com/crossplane/crossplane-runtime/v2/pkg/logging"
 	"github.com/pkg/errors"
 	"github.com/rossigee/provider-http/apis/request/v1alpha2"
 	httpClient "github.com/rossigee/provider-http/internal/clients/http"
-	"net/http"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 

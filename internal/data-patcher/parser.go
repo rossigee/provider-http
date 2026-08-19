@@ -3,12 +3,13 @@ package datapatcher
 import (
 	"context"
 	"fmt"
-	"github.com/crossplane/crossplane-runtime/v2/pkg/logging"
-	"github.com/rossigee/provider-http/internal/kube-handler"
-	corev1 "k8s.io/api/core/v1"
 	"regexp"
-	"sigs.k8s.io/controller-runtime/pkg/client"
 	"strings"
+
+	"github.com/crossplane/crossplane-runtime/v2/pkg/logging"
+	kubehandler "github.com/rossigee/provider-http/internal/kube-handler"
+	corev1 "k8s.io/api/core/v1"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 const (

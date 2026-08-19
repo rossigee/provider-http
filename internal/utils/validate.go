@@ -1,8 +1,9 @@
 package utils
 
 import (
-	"github.com/pkg/errors"
 	"net/url"
+
+	"github.com/pkg/errors"
 )
 
 const (

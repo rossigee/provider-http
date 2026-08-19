@@ -18,6 +18,10 @@ package disposablerequest
 
 import (
 	"context"
+	"strconv"
+	"testing"
+	"time"
+
 	"github.com/crossplane/crossplane-runtime/v2/pkg/logging"
 	"github.com/crossplane/crossplane-runtime/v2/pkg/resource"
 	"github.com/crossplane/crossplane-runtime/v2/pkg/test"
@@ -29,9 +33,6 @@ import (
 	"github.com/rossigee/provider-http/internal/utils"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"sigs.k8s.io/controller-runtime/pkg/client"
-	"strconv"
-	"testing"
-	"time"
 )
 
 // Unlike many Kubernetes projects Crossplane does not use third party testing

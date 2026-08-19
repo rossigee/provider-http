@@ -2,10 +2,11 @@ package requestmapping
 
 import (
 	"fmt"
+	"net/http"
+
 	"github.com/crossplane/crossplane-runtime/v2/pkg/logging"
 	"github.com/pkg/errors"
 	"github.com/rossigee/provider-http/apis/request/v1alpha2"
-	"net/http"
 )
 
 const (

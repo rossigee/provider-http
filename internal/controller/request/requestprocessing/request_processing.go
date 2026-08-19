@@ -2,6 +2,7 @@ package requestprocessing
 
 import (
 	"encoding/json"
+
 	"github.com/rossigee/provider-http/internal/jq"
 )
 

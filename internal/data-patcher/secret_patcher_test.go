@@ -1,6 +1,8 @@
 package datapatcher
 
 import (
+	"testing"
+
 	"github.com/crossplane/crossplane-runtime/v2/pkg/logging"
 	"github.com/google/go-cmp/cmp"
 	"github.com/rossigee/provider-http/apis/common"
@@ -8,7 +10,6 @@ import (
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/utils/ptr"
-	"testing"
 )
 
 func TestIsSecretDataUpToDate(t *testing.T) {

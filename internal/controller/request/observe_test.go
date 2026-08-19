@@ -2,6 +2,9 @@ package request
 
 import (
 	"context"
+	"net/http"
+	"testing"
+
 	"github.com/crossplane/crossplane-runtime/v2/pkg/logging"
 	"github.com/crossplane/crossplane-runtime/v2/pkg/test"
 	"github.com/google/go-cmp/cmp"
@@ -11,9 +14,7 @@ import (
 	"github.com/rossigee/provider-http/internal/controller/request/observe"
 	"github.com/rossigee/provider-http/internal/controller/request/requestgen"
 	"github.com/rossigee/provider-http/internal/controller/request/requestmapping"
-	"net/http"
 	"sigs.k8s.io/controller-runtime/pkg/client"
-	"testing"
 )
 
 var (

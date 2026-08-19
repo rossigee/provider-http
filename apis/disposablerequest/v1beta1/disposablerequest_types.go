@@ -17,10 +17,11 @@ limitations under the License.
 package v1beta1
 
 import (
+	"reflect"
+
 	xpv1 "github.com/crossplane/crossplane/apis/v2/core/v2"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime/schema"
-	"reflect"
 )
 
 // DisposableRequestParameters are the configurable fields of a DisposableRequest.

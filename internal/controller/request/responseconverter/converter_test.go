@@ -1,10 +1,11 @@
 package responseconverter
 
 import (
+	"testing"
+
 	"github.com/google/go-cmp/cmp"
 	"github.com/rossigee/provider-http/apis/request/v1alpha2"
 	httpClient "github.com/rossigee/provider-http/internal/clients/http"
-	"testing"
 )
 
 var testHeaders = map[string][]string{

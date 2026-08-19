@@ -2,6 +2,8 @@ package request
 
 import (
 	"context"
+	"testing"
+
 	"github.com/crossplane/crossplane-runtime/v2/pkg/logging"
 	"github.com/crossplane/crossplane-runtime/v2/pkg/resource"
 	"github.com/crossplane/crossplane-runtime/v2/pkg/test"
@@ -12,7 +14,6 @@ import (
 	httpClient "github.com/rossigee/provider-http/internal/clients/http"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"sigs.k8s.io/controller-runtime/pkg/client"
-	"testing"
 )
 
 var (

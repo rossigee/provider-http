@@ -3,6 +3,9 @@ package statushandler
 import (
 	"context"
 	"fmt"
+	"net/http"
+	"strconv"
+
 	"github.com/crossplane/crossplane-runtime/v2/pkg/logging"
 	"github.com/pkg/errors"
 	"github.com/rossigee/provider-http/apis/request/v1alpha2"
@@ -11,9 +14,7 @@ import (
 	"github.com/rossigee/provider-http/internal/controller/request/responseconverter"
 	"github.com/rossigee/provider-http/internal/utils"
 	"k8s.io/apimachinery/pkg/types"
-	"net/http"
 	"sigs.k8s.io/controller-runtime/pkg/client"
-	"strconv"
 )
 
 // RequestStatusHandler is the interface to interact with status setting for v1alpha2.Request
