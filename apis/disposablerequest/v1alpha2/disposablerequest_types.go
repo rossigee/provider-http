@@ -17,13 +17,12 @@ limitations under the License.
 package v1alpha2
 
 import (
-	"reflect"
+	xpv1 "github.com/crossplane/crossplane/apis/v2/core/v2"
+	"github.com/rossigee/provider-http/apis/common"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime/schema"
-	"github.com/rossigee/provider-http/apis/common"
-	xpv1 "github.com/crossplane/crossplane/apis/v2/core/v2"
+	"reflect"
 )
-
 
 // DisposableRequestParameters are the configurable fields of a DisposableRequest.
 type DisposableRequestParameters struct {
@@ -63,7 +62,7 @@ type DisposableRequestParameters struct {
 // A DisposableRequestSpec defines the desired state of a DisposableRequest.
 type DisposableRequestSpec struct {
 	xpv1.ClusterManagedResourceSpec `json:",inline"`
-	ForProvider       DisposableRequestParameters `json:"forProvider"`
+	ForProvider                     DisposableRequestParameters `json:"forProvider"`
 }
 
 type Response struct {
@@ -82,11 +81,11 @@ type Mapping struct {
 // A DisposableRequestStatus represents the observed state of a DisposableRequest.
 type DisposableRequestStatus struct {
 	xpv1.ManagedResourceStatus `json:",inline"`
-	Response            Response `json:"response,omitempty"`
-	Failed              int32    `json:"failed,omitempty"`
-	Error               string   `json:"error,omitempty"`
-	Synced              bool     `json:"synced,omitempty"`
-	RequestDetails      Mapping  `json:"requestDetails,omitempty"`
+	Response                   Response `json:"response,omitempty"`
+	Failed                     int32    `json:"failed,omitempty"`
+	Error                      string   `json:"error,omitempty"`
+	Synced                     bool     `json:"synced,omitempty"`
+	RequestDetails             Mapping  `json:"requestDetails,omitempty"`
 
 	// LastReconcileTime records the last time the resource was reconciled.
 	LastReconcileTime metav1.Time `json:"lastReconcileTime,omitempty"`

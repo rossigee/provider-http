@@ -140,7 +140,7 @@ func (c *external) Observe(ctx context.Context, mg resource.Managed) (managed.Ex
 	}
 	_, span := tracing.StartSpanWithAttrs(ctx, "request.observe", "Request", cr.GetName(), "observe")
 	defer span.End()
-	
+
 	observeRequestDetails, err := c.isUpToDate(ctx, cr)
 	if err != nil && err.Error() == observe.ErrObjectNotFound {
 		return managed.ExternalObservation{

@@ -17,12 +17,11 @@ limitations under the License.
 package v1beta1
 
 import (
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	xpv1 "github.com/crossplane/crossplane/apis/v2/core/v2"
-	"reflect"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime/schema"
+	"reflect"
 )
-
 
 // DisposableRequestParameters are the configurable fields of a DisposableRequest.
 type DisposableRequestParameters struct {
@@ -72,11 +71,11 @@ type Mapping struct {
 // A DisposableRequestStatus represents the observed state of a DisposableRequest.
 type DisposableRequestStatus struct {
 	xpv1.ManagedResourceStatus `json:",inline"`
-	Response            Response `json:"response,omitempty"`
-	Failed              int32    `json:"failed,omitempty"`
-	Error               string   `json:"error,omitempty"`
-	Synced              bool     `json:"synced,omitempty"`
-	RequestDetails      Mapping  `json:"requestDetails,omitempty"`
+	Response                   Response `json:"response,omitempty"`
+	Failed                     int32    `json:"failed,omitempty"`
+	Error                      string   `json:"error,omitempty"`
+	Synced                     bool     `json:"synced,omitempty"`
+	RequestDetails             Mapping  `json:"requestDetails,omitempty"`
 }
 
 // +kubebuilder:object:root=true

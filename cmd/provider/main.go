@@ -92,7 +92,7 @@ func main() {
 		// hundreds of reconciles per second and ~200rps to the API
 		// server. Switching to Leases only and longer leases appears to
 		// alleviate this.
-		Scheme:                       s,
+		Scheme:                     s,
 		LeaderElection:             *leaderElection,
 		LeaderElectionID:           "crossplane-leader-election-cp-provider-template",
 		LeaderElectionResourceLock: resourcelock.LeasesResourceLock,
