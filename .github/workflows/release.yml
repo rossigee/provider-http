@@ -65,17 +65,15 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ github.token }}
 
+      - name: Setup build tools
+        run: make build.init
+
       - name: Build and Publish All Artifacts
         run: |
           set -e
 
           export VERSION="${{ steps.version.outputs.version }}"
           export BRANCH_NAME="master"
-
-          # CRITICAL: Override BRANCH_NAME to bypass release branch filter
-          # When pushing tags, git is in detached HEAD state and branch detection fails.
-          # Without this, publish.artifacts becomes an empty target that silently succeeds.
-          # See: build/makelib/xpkg.mk:125-127 and build/makelib/common.mk:87
 
           make publish \
             REGISTRY_ORGS="${REGISTRY_ORGS}" \
@@ -95,7 +93,6 @@ jobs:
           echo "Verifying container image publication..."
           echo "Registry: ${REGISTRY_PATH}"
 
-          # Verify version tag
           if docker pull "${REGISTRY_PATH}:${VERSION}" > /dev/null 2>&1; then
             DIGEST=$(docker inspect "${REGISTRY_PATH}:${VERSION}" --format='{{index .RepoDigests 0}}' | cut -d'@' -f2)
             echo "✅ Verified container image ${VERSION}"
@@ -104,7 +101,6 @@ jobs:
             echo "⚠️  Could not verify container image (may still be building)"
           fi
 
-          # Verify latest tag
           if docker pull "${REGISTRY_PATH}:latest" > /dev/null 2>&1; then
             echo "✅ Latest tag verified"
           else
