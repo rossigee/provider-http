@@ -28,6 +28,7 @@ import (
 	xpv1 "github.com/crossplane/crossplane/apis/v2/core/v2"
 	"github.com/google/go-cmp/cmp"
 	"github.com/pkg/errors"
+	"github.com/rossigee/provider-http/apis/common"
 	"github.com/rossigee/provider-http/apis/disposablerequest/v1alpha2"
 	httpClient "github.com/rossigee/provider-http/internal/clients/http"
 	"github.com/rossigee/provider-http/internal/utils"
@@ -110,6 +111,15 @@ type MockHttpClient struct {
 
 func (c *MockHttpClient) SendRequest(ctx context.Context, method string, url string, body httpClient.Data, headers httpClient.Data, skipTLSVerify bool) (resp httpClient.HttpDetails, err error) {
 	return c.MockSendRequest(ctx, method, url, body, headers, skipTLSVerify)
+}
+
+func (c *MockHttpClient) SendRequestWithTLS(ctx context.Context, method string, url string, body httpClient.Data, headers httpClient.Data, tlsConfig *common.TLSConfig) (resp httpClient.HttpDetails, err error) {
+	// For testing purposes, just call the regular SendRequest with insecureSkipVerify flag
+	skipTLS := false
+	if tlsConfig != nil {
+		skipTLS = tlsConfig.InsecureSkipVerify
+	}
+	return c.MockSendRequest(ctx, method, url, body, headers, skipTLS)
 }
 
 type notHttpDisposableRequest struct {

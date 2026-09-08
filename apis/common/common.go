@@ -14,3 +14,21 @@ limitations under the License.
 // Package common contains shared types that are used in multiple CRDs.
 // +kubebuilder:object:generate=true
 package common
+
+// TLSConfig represents the TLS configuration for HTTP requests.
+type TLSConfig struct {
+	// CAData contains the CA certificate data in PEM format for verifying the server's certificate.
+	// This is useful for self-signed certificates or private CA certificates.
+	CAData string `json:"caData,omitempty"`
+
+	// ClientCertData contains the client certificate data in PEM format for mutual TLS authentication.
+	ClientCertData string `json:"clientCertData,omitempty"`
+
+	// ClientKeyData contains the client private key data in PEM format for mutual TLS authentication.
+	ClientKeyData string `json:"clientKeyData,omitempty"`
+
+	// InsecureSkipVerify controls whether the client verifies the server's certificate chain and host name.
+	// If InsecureSkipVerify is true, crypto/tls accepts any certificate presented by the server
+	// and any host name in that certificate. This should be used only for testing.
+	InsecureSkipVerify bool `json:"insecureSkipVerify,omitempty"`
+}

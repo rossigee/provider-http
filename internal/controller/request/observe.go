@@ -66,7 +66,7 @@ func (c *external) isUpToDate(ctx context.Context, cr *v1alpha2.Request) (Observ
 		return FailedObserve(), err
 	}
 
-	details, responseErr := c.http.SendRequest(ctx, mapping.Method, requestDetails.Url, requestDetails.Body, requestDetails.Headers, cr.Spec.ForProvider.InsecureSkipTLSVerify)
+	details, responseErr := c.sendHTTPRequest(ctx, mapping.Method, requestDetails.Url, requestDetails.Body, requestDetails.Headers, cr)
 	// The initial observation of an object requires a successful HTTP response
 	// to be considered existing.
 	if !utils.IsHTTPSuccess(details.HttpResponse.StatusCode) && objectNotCreated {
