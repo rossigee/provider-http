@@ -5,15 +5,15 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/crossplane-contrib/provider-http/apis/request/v1alpha2"
-	httpClient "github.com/crossplane-contrib/provider-http/internal/clients/http"
-	"github.com/crossplane-contrib/provider-http/internal/controller/request/observe"
-	"github.com/crossplane-contrib/provider-http/internal/controller/request/requestgen"
-	"github.com/crossplane-contrib/provider-http/internal/controller/request/requestmapping"
-	"github.com/crossplane/crossplane-runtime/pkg/logging"
-	"github.com/crossplane/crossplane-runtime/pkg/test"
+	"github.com/crossplane/crossplane-runtime/v2/pkg/logging"
+	"github.com/crossplane/crossplane-runtime/v2/pkg/test"
 	"github.com/google/go-cmp/cmp"
 	"github.com/pkg/errors"
+	"github.com/rossigee/provider-http/apis/request/v1alpha2"
+	httpClient "github.com/rossigee/provider-http/internal/clients/http"
+	"github.com/rossigee/provider-http/internal/controller/request/observe"
+	"github.com/rossigee/provider-http/internal/controller/request/requestgen"
+	"github.com/rossigee/provider-http/internal/controller/request/requestmapping"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 

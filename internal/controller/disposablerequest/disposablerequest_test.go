@@ -22,19 +22,18 @@ import (
 	"testing"
 	"time"
 
-	"github.com/crossplane-contrib/provider-http/apis/common"
-	"github.com/crossplane-contrib/provider-http/apis/disposablerequest/v1alpha2"
-	httpClient "github.com/crossplane-contrib/provider-http/internal/clients/http"
-	"github.com/crossplane-contrib/provider-http/internal/utils"
-	xpv1 "github.com/crossplane/crossplane-runtime/apis/common/v1"
+	"github.com/crossplane/crossplane-runtime/v2/pkg/logging"
+	"github.com/crossplane/crossplane-runtime/v2/pkg/resource"
+	"github.com/crossplane/crossplane-runtime/v2/pkg/test"
+	xpv1 "github.com/crossplane/crossplane/apis/v2/core/v2"
 	"github.com/google/go-cmp/cmp"
 	"github.com/pkg/errors"
-	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"github.com/rossigee/provider-http/apis/common"
+	"github.com/rossigee/provider-http/apis/disposablerequest/v1alpha2"
+	httpClient "github.com/rossigee/provider-http/internal/clients/http"
+	"github.com/rossigee/provider-http/internal/utils"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"sigs.k8s.io/controller-runtime/pkg/client"
-
-	"github.com/crossplane/crossplane-runtime/pkg/logging"
-	"github.com/crossplane/crossplane-runtime/pkg/resource"
-	"github.com/crossplane/crossplane-runtime/pkg/test"
 )
 
 // Unlike many Kubernetes projects Crossplane does not use third party testing
@@ -62,7 +61,7 @@ var testHeaders = map[string][]string{
 	"programming_languages": {"Go", "Python", "JavaScript"},
 }
 
-var testTimeout = &v1.Duration{
+var testTimeout = &metav1.Duration{
 	Duration: 5 * time.Minute,
 }
 
@@ -76,12 +75,12 @@ type httpDisposableRequestModifier func(request *v1alpha2.DisposableRequest)
 
 func httpDisposableRequest(rm ...httpDisposableRequestModifier) *v1alpha2.DisposableRequest {
 	r := &v1alpha2.DisposableRequest{
-		ObjectMeta: v1.ObjectMeta{
+		ObjectMeta: metav1.ObjectMeta{
 			Name:      testDisposableRequestName,
 			Namespace: testNamespace,
 		},
 		Spec: v1alpha2.DisposableRequestSpec{
-			ResourceSpec: xpv1.ResourceSpec{
+			ClusterManagedResourceSpec: xpv1.ClusterManagedResourceSpec{
 				ProviderConfigReference: &xpv1.Reference{
 					Name: providerName,
 				},
@@ -297,13 +296,10 @@ func Test_deployAction(t *testing.T) {
 		failuresIndex int32
 		statusCode    int
 	}
-	type shouldCheckStatus struct {
-		condition bool
-	}
 	cases := map[string]struct {
-		args args
-		want want
-		shouldCheckStatus
+		args              args
+		want              want
+		shouldCheckStatus bool
 	}{
 		"SuccessUpdateStatusRequestFailure": {
 			args: args{
@@ -367,9 +363,7 @@ func Test_deployAction(t *testing.T) {
 				failuresIndex: 1,
 				statusCode:    400,
 			},
-			shouldCheckStatus: shouldCheckStatus{
-				condition: true,
-			},
+			shouldCheckStatus: true,
 		},
 		"SuccessUpdateStatusSuccessfulRequest": {
 			args: args{
@@ -404,9 +398,7 @@ func Test_deployAction(t *testing.T) {
 				err:        nil,
 				statusCode: 200,
 			},
-			shouldCheckStatus: shouldCheckStatus{
-				condition: true,
-			},
+			shouldCheckStatus: true,
 		},
 	}
 	for name, tc := range cases {
@@ -430,7 +422,7 @@ func Test_deployAction(t *testing.T) {
 				}
 			}
 
-			if tc.shouldCheckStatus.condition {
+			if tc.shouldCheckStatus {
 				if diff := cmp.Diff(tc.args.cr.Spec.ForProvider.Body, tc.args.cr.Status.Response.Body); diff != "" {
 					t.Fatalf("deployAction(...): -want Status.Response.Body, +got Status.Response.Body: %s", diff)
 				}

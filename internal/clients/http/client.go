@@ -11,8 +11,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/crossplane-contrib/provider-http/apis/common"
-	"github.com/crossplane/crossplane-runtime/pkg/logging"
+	"github.com/crossplane/crossplane-runtime/v2/pkg/logging"
+	"github.com/rossigee/provider-http/apis/common"
 )
 
 const (

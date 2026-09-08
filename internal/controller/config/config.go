@@ -19,14 +19,13 @@ package config
 import (
 	"time"
 
-	"github.com/crossplane/crossplane-runtime/pkg/controller"
-	"github.com/crossplane/crossplane-runtime/pkg/event"
-	"github.com/crossplane/crossplane-runtime/pkg/ratelimiter"
-	"github.com/crossplane/crossplane-runtime/pkg/reconciler/providerconfig"
-	"github.com/crossplane/crossplane-runtime/pkg/resource"
+	"github.com/crossplane/crossplane-runtime/v2/pkg/controller"
+	"github.com/crossplane/crossplane-runtime/v2/pkg/event"
+	"github.com/crossplane/crossplane-runtime/v2/pkg/ratelimiter"
+	"github.com/crossplane/crossplane-runtime/v2/pkg/reconciler/providerconfig"
+	"github.com/crossplane/crossplane-runtime/v2/pkg/resource"
+	"github.com/rossigee/provider-http/apis/v1alpha1"
 	ctrl "sigs.k8s.io/controller-runtime"
-
-	"github.com/crossplane-contrib/provider-http/apis/v1alpha1"
 )
 
 // Setup adds a controller that reconciles ProviderConfigs by accounting for
@@ -36,12 +35,13 @@ func Setup(mgr ctrl.Manager, o controller.Options, timeout time.Duration) error 
 
 	of := resource.ProviderConfigKinds{
 		Config:    v1alpha1.ProviderConfigGroupVersionKind,
+		Usage:     v1alpha1.ProviderConfigUsageGroupVersionKind,
 		UsageList: v1alpha1.ProviderConfigUsageListGroupVersionKind,
 	}
 
 	r := providerconfig.NewReconciler(mgr, of,
 		providerconfig.WithLogger(o.Logger.WithValues("controller", name)),
-		providerconfig.WithRecorder(event.NewAPIRecorder(mgr.GetEventRecorderFor(name))))
+		providerconfig.WithRecorder(event.NewAPIRecorder(mgr.GetEventRecorder(name))))
 
 	return ctrl.NewControllerManagedBy(mgr).
 		Named(name).

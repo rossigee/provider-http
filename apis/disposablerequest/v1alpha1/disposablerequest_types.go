@@ -19,10 +19,9 @@ package v1alpha1
 import (
 	"reflect"
 
+	xpv1 "github.com/crossplane/crossplane/apis/v2/core/v2"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime/schema"
-
-	xpv1 "github.com/crossplane/crossplane-runtime/apis/common/v1"
 )
 
 // DisposableRequestParameters are the configurable fields of a DisposableRequest.
@@ -52,7 +51,7 @@ type DisposableRequestParameters struct {
 
 // A DisposableRequestSpec defines the desired state of a DisposableRequest.
 type DisposableRequestSpec struct {
-	xpv1.ResourceSpec `json:",inline"`
+	xpv1.ClusterManagedResourceSpec `json:",inline"`
 
 	ForProvider DisposableRequestParameters `json:"forProvider"`
 }
@@ -72,12 +71,12 @@ type Mapping struct {
 
 // A DisposableRequestStatus represents the observed state of a DisposableRequest.
 type DisposableRequestStatus struct {
-	xpv1.ResourceStatus `json:",inline"`
-	Response            Response `json:"response,omitempty"`
-	Failed              int32    `json:"failed,omitempty"`
-	Error               string   `json:"error,omitempty"`
-	Synced              bool     `json:"synced,omitempty"`
-	RequestDetails      Mapping  `json:"requestDetails,omitempty"`
+	xpv1.ManagedResourceStatus `json:",inline"`
+	Response                   Response `json:"response,omitempty"`
+	Failed                     int32    `json:"failed,omitempty"`
+	Error                      string   `json:"error,omitempty"`
+	Synced                     bool     `json:"synced,omitempty"`
+	RequestDetails             Mapping  `json:"requestDetails,omitempty"`
 }
 
 // +kubebuilder:object:root=true
@@ -85,7 +84,7 @@ type DisposableRequestStatus struct {
 // A DisposableRequest is an example API type.
 // +kubebuilder:printcolumn:name="READY",type="string",JSONPath=".status.conditions[?(@.type=='Ready')].status"
 // +kubebuilder:printcolumn:name="SYNCED",type="string",JSONPath=".status.conditions[?(@.type=='Synced')].status"
-// +kubebuilder:printcolumn:name="EXTERNAL-NAME",type="string",JSONPath=".metadata.annotations.crossplane\\.io/external-name"
+// +kubebuilder:printcolumn:name="EXTERNAL-NAME",type="string",JSONPath=".metadata.annotations.crossplane.io/external-name"
 // +kubebuilder:printcolumn:name="AGE",type="date",JSONPath=".metadata.creationTimestamp"
 // +kubebuilder:subresource:status
 // +kubebuilder:resource:scope=Cluster,categories={crossplane,managed,http}
@@ -113,7 +112,3 @@ var (
 	DisposableRequestKindAPIVersion   = DisposableRequestKind + "." + SchemeGroupVersion.String()
 	DisposableRequestGroupVersionKind = SchemeGroupVersion.WithKind(DisposableRequestKind)
 )
-
-func init() {
-	SchemeBuilder.Register(&DisposableRequest{}, &DisposableRequestList{})
-}

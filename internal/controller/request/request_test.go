@@ -4,18 +4,17 @@ import (
 	"context"
 	"testing"
 
-	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"sigs.k8s.io/controller-runtime/pkg/client"
-
-	"github.com/crossplane-contrib/provider-http/apis/common"
-	"github.com/crossplane-contrib/provider-http/apis/request/v1alpha2"
-	httpClient "github.com/crossplane-contrib/provider-http/internal/clients/http"
-	xpv1 "github.com/crossplane/crossplane-runtime/apis/common/v1"
-	"github.com/crossplane/crossplane-runtime/pkg/logging"
-	"github.com/crossplane/crossplane-runtime/pkg/resource"
-	"github.com/crossplane/crossplane-runtime/pkg/test"
+	"github.com/crossplane/crossplane-runtime/v2/pkg/logging"
+	"github.com/crossplane/crossplane-runtime/v2/pkg/resource"
+	"github.com/crossplane/crossplane-runtime/v2/pkg/test"
+	xpv1 "github.com/crossplane/crossplane/apis/v2/core/v2"
 	"github.com/google/go-cmp/cmp"
 	"github.com/pkg/errors"
+	"github.com/rossigee/provider-http/apis/common"
+	"github.com/rossigee/provider-http/apis/request/v1alpha2"
+	httpClient "github.com/rossigee/provider-http/internal/clients/http"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 var (
@@ -47,12 +46,12 @@ type httpRequestModifier func(request *v1alpha2.Request)
 
 func httpRequest(rm ...httpRequestModifier) *v1alpha2.Request {
 	r := &v1alpha2.Request{
-		ObjectMeta: v1.ObjectMeta{
+		ObjectMeta: metav1.ObjectMeta{
 			Name:      testRequestName,
 			Namespace: testNamespace,
 		},
 		Spec: v1alpha2.RequestSpec{
-			ResourceSpec: xpv1.ResourceSpec{
+			ClusterManagedResourceSpec: xpv1.ClusterManagedResourceSpec{
 				ProviderConfigReference: &xpv1.Reference{
 					Name: providerName,
 				},
@@ -340,7 +339,7 @@ func Test_httpExternal_Delete(t *testing.T) {
 				logger:    logging.NewNopLogger(),
 				http:      tc.args.http,
 			}
-			gotErr := e.Delete(context.Background(), tc.args.mg)
+			_, gotErr := e.Delete(context.Background(), tc.args.mg)
 			if diff := cmp.Diff(tc.want.err, gotErr, test.EquateErrors()); diff != "" {
 				t.Fatalf("e.Delete(...): -want error, +got error: %s", diff)
 			}

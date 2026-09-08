@@ -1,17 +1,15 @@
 package datapatcher
 
 import (
+	"context"
 	"fmt"
 	"regexp"
 	"strings"
 
-	"context"
-
+	"github.com/crossplane/crossplane-runtime/v2/pkg/logging"
+	kubehandler "github.com/rossigee/provider-http/internal/kube-handler"
 	corev1 "k8s.io/api/core/v1"
 	"sigs.k8s.io/controller-runtime/pkg/client"
-
-	kubehandler "github.com/crossplane-contrib/provider-http/internal/kube-handler"
-	"github.com/crossplane/crossplane-runtime/pkg/logging"
 )
 
 const (

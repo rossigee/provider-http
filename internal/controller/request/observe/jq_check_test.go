@@ -4,11 +4,11 @@ import (
 	"context"
 	"testing"
 
-	"github.com/crossplane-contrib/provider-http/apis/request/v1alpha2"
-	httpClient "github.com/crossplane-contrib/provider-http/internal/clients/http"
-	"github.com/crossplane/crossplane-runtime/pkg/logging"
-	"github.com/crossplane/crossplane-runtime/pkg/test"
+	"github.com/crossplane/crossplane-runtime/v2/pkg/logging"
+	"github.com/crossplane/crossplane-runtime/v2/pkg/test"
 	"github.com/google/go-cmp/cmp"
+	"github.com/rossigee/provider-http/apis/request/v1alpha2"
+	httpClient "github.com/rossigee/provider-http/internal/clients/http"
 )
 
 func Test_CustomCheck(t *testing.T) {

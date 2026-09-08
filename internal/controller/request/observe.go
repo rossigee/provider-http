@@ -4,14 +4,14 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/crossplane-contrib/provider-http/apis/request/v1alpha2"
-	httpClient "github.com/crossplane-contrib/provider-http/internal/clients/http"
-	"github.com/crossplane-contrib/provider-http/internal/controller/request/observe"
-	"github.com/crossplane-contrib/provider-http/internal/controller/request/requestgen"
-	"github.com/crossplane-contrib/provider-http/internal/controller/request/requestmapping"
-	datapatcher "github.com/crossplane-contrib/provider-http/internal/data-patcher"
-	"github.com/crossplane-contrib/provider-http/internal/utils"
 	"github.com/pkg/errors"
+	"github.com/rossigee/provider-http/apis/request/v1alpha2"
+	httpClient "github.com/rossigee/provider-http/internal/clients/http"
+	"github.com/rossigee/provider-http/internal/controller/request/observe"
+	"github.com/rossigee/provider-http/internal/controller/request/requestgen"
+	"github.com/rossigee/provider-http/internal/controller/request/requestmapping"
+	datapatcher "github.com/rossigee/provider-http/internal/data-patcher"
+	"github.com/rossigee/provider-http/internal/utils"
 )
 
 const (
@@ -110,7 +110,7 @@ func (c *external) determineIfRemoved(ctx context.Context, cr *v1alpha2.Request,
 // isObjectValidForObservation checks if the object is valid for observation
 func (c *external) isObjectValidForObservation(cr *v1alpha2.Request) bool {
 	return cr.Status.Response.StatusCode != 0 &&
-		!(cr.Status.RequestDetails.Method == http.MethodPost && utils.IsHTTPError(cr.Status.Response.StatusCode))
+		(cr.Status.RequestDetails.Method != http.MethodPost || !utils.IsHTTPError(cr.Status.Response.StatusCode))
 }
 
 // requestDetails generates the request details for a given method or action.

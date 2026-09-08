@@ -19,11 +19,10 @@ package v1alpha2
 import (
 	"reflect"
 
+	xpv1 "github.com/crossplane/crossplane/apis/v2/core/v2"
+	"github.com/rossigee/provider-http/apis/common"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime/schema"
-
-	"github.com/crossplane-contrib/provider-http/apis/common"
-	xpv1 "github.com/crossplane/crossplane-runtime/apis/common/v1"
 )
 
 // DisposableRequestParameters are the configurable fields of a DisposableRequest.
@@ -67,8 +66,8 @@ type DisposableRequestParameters struct {
 
 // A DisposableRequestSpec defines the desired state of a DisposableRequest.
 type DisposableRequestSpec struct {
-	xpv1.ResourceSpec `json:",inline"`
-	ForProvider       DisposableRequestParameters `json:"forProvider"`
+	xpv1.ClusterManagedResourceSpec `json:",inline"`
+	ForProvider                     DisposableRequestParameters `json:"forProvider"`
 }
 
 type Response struct {
@@ -86,12 +85,12 @@ type Mapping struct {
 
 // A DisposableRequestStatus represents the observed state of a DisposableRequest.
 type DisposableRequestStatus struct {
-	xpv1.ResourceStatus `json:",inline"`
-	Response            Response `json:"response,omitempty"`
-	Failed              int32    `json:"failed,omitempty"`
-	Error               string   `json:"error,omitempty"`
-	Synced              bool     `json:"synced,omitempty"`
-	RequestDetails      Mapping  `json:"requestDetails,omitempty"`
+	xpv1.ManagedResourceStatus `json:",inline"`
+	Response                   Response `json:"response,omitempty"`
+	Failed                     int32    `json:"failed,omitempty"`
+	Error                      string   `json:"error,omitempty"`
+	Synced                     bool     `json:"synced,omitempty"`
+	RequestDetails             Mapping  `json:"requestDetails,omitempty"`
 
 	// LastReconcileTime records the last time the resource was reconciled.
 	LastReconcileTime metav1.Time `json:"lastReconcileTime,omitempty"`
@@ -102,7 +101,7 @@ type DisposableRequestStatus struct {
 // A DisposableRequest is an example API type.
 // +kubebuilder:printcolumn:name="READY",type="string",JSONPath=".status.conditions[?(@.type=='Ready')].status"
 // +kubebuilder:printcolumn:name="SYNCED",type="string",JSONPath=".status.conditions[?(@.type=='Synced')].status"
-// +kubebuilder:printcolumn:name="EXTERNAL-NAME",type="string",JSONPath=".metadata.annotations.crossplane\\.io/external-name"
+// +kubebuilder:printcolumn:name="EXTERNAL-NAME",type="string",JSONPath=".metadata.annotations.crossplane.io/external-name"
 // +kubebuilder:printcolumn:name="AGE",type="date",JSONPath=".metadata.creationTimestamp"
 // +kubebuilder:subresource:status
 // +kubebuilder:resource:scope=Cluster,categories={crossplane,managed,http}
@@ -131,7 +130,3 @@ var (
 	DisposableRequestKindAPIVersion   = DisposableRequestKind + "." + SchemeGroupVersion.String()
 	DisposableRequestGroupVersionKind = SchemeGroupVersion.WithKind(DisposableRequestKind)
 )
-
-func init() {
-	SchemeBuilder.Register(&DisposableRequest{}, &DisposableRequestList{})
-}

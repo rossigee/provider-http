@@ -3,7 +3,7 @@ package requestprocessing
 import (
 	"encoding/json"
 
-	"github.com/crossplane-contrib/provider-http/internal/jq"
+	"github.com/rossigee/provider-http/internal/jq"
 )
 
 // ApplyJQOnStr applies a jq query to a Request, returning the result as a string.

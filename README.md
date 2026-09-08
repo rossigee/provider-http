@@ -1,82 +1,113 @@
 # provider-http
 
-`provider-http` is a Crossplane Provider designed to facilitate sending HTTP requests as resources.
+[![Build](https://github.com/rossigee/provider-http/actions/workflows/ci.yml/badge.svg)][build]
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
-## Installation
+[build]: https://github.com/rossigee/provider-http/actions/workflows/ci.yml
+[releases]: https://github.com/rossigee/provider-http/releases
 
-To install `provider-http`, you have two options:
+## Overview
 
-1. Using the Crossplane CLI in a Kubernetes cluster where Crossplane is installed:
+A generic [Crossplane](https://crossplane.io/) provider for managing arbitrary resources through HTTP requests. `Request` maps Crossplane's Create/Observe/Update/Delete lifecycle onto configurable HTTP calls (with JQ-based response mapping); `DisposableRequest` fires a one-shot HTTP call for cases like webhooks or notifications with no create/observe/update/delete lifecycle to track.
 
-   ```console
-   crossplane xpkg install provider xpkg.upbound.io/crossplane-contrib/provider-http:v1.0.10
-   ```
+## Container Registry
 
-2. Manually creating a Provider by applying the following YAML:
+- **Primary**: `ghcr.io/rossigee/provider-http:v1.2.1`
 
-   ```yaml
-   apiVersion: pkg.crossplane.io/v1
-   kind: Provider
-   metadata:
-     name: provider-http
-   spec:
-     package: "xpkg.upbound.io/crossplane-contrib/provider-http:v1.0.10"
-   ```
+## Features
 
-## Supported Resources
+- **Generic HTTP CRUD mapping**: define per-action (CREATE/OBSERVE/UPDATE/REMOVE) HTTP requests, or let method (GET/POST/PUT/DELETE) imply the action
+- **JQ-based templating**: request bodies, URLs, and up-to-date/removed checks are all evaluated with JQ expressions against prior responses
+- **Secret injection**: reference Kubernetes Secret values in headers/body via `{{ name:namespace:key }}` syntax
+- **Secret extraction**: patch response fields into new or existing Secrets via `secretInjectionConfigs`
+- **DisposableRequest**: fire-and-forget HTTP calls (e.g. webhooks, notifications) with optional rollback retries and custom expected-response checks
 
-`provider-http` supports the following resources:
+## Getting Started
 
-- **DisposableRequest:** Initiates a one-time HTTP request. See [DisposableRequest CRD documentation](resources-docs/disposablerequest_docs.md).
-- **Request:** Manages a resource through HTTP requests. See [Request CRD documentation](resources-docs/request_docs.md).
+### Prerequisites
+
+- Kubernetes with Crossplane installed
+- An HTTP endpoint to manage resources against
+
+### Installation
+
+```bash
+kubectl crossplane install provider ghcr.io/rossigee/provider-http:v1.2.1
+```
+
+### Configuration
+
+```yaml
+apiVersion: http.crossplane.io/v1alpha1
+kind: ProviderConfig
+metadata:
+  name: http-conf
+spec:
+  credentials:
+    source: None
+```
 
 ## Usage
-
-### DisposableRequest
-
-Create a `DisposableRequest` resource to initiate a single-use HTTP interaction:
 
 ```yaml
 apiVersion: http.crossplane.io/v1alpha2
 kind: DisposableRequest
 metadata:
-  name: example-disposable-request
+  name: send-notification
 spec:
-  # Add your DisposableRequest specification here
+  deletionPolicy: Orphan
+  forProvider:
+    url: http://flask-api.default.svc.cluster.local/v1/notify
+    method: POST
+    body: |
+      {
+        "recipient": "user@example.com",
+        "subject": "Alert",
+        "message": "Your action is required immediately."
+      }
+    headers:
+      Content-Type:
+        - application/json
+    expectedResponse: '.body.status == "sent"'
+    rollbackRetriesLimit: 5
+  providerConfigRef:
+    name: http-conf
 ```
 
-For more detailed examples and configuration options, refer to the [examples directory](examples/sample/).
+See `examples/sample/` for a full `Request` example covering CREATE/OBSERVE/UPDATE/REMOVE mappings, JQ-based up-to-date checks, and secret extraction.
 
-### Request
+## Resource Types
 
-Manage a resource through HTTP requests with a `Request` resource:
+| Resource | API Group | Description |
+|----------|-----------|-------------|
+| Request | `http.crossplane.io` (v1alpha1/v1alpha2), `http.m.crossplane.io` (v1beta1, namespaced) | Full CRUD lifecycle mapped to configurable HTTP requests |
+| DisposableRequest | `http.crossplane.io` (v1alpha1/v1alpha2), `http.m.crossplane.io` (v1beta1, namespaced) | One-shot HTTP request with no ongoing lifecycle |
+| ProviderConfig | `http.crossplane.io/v1alpha1` | Provider-level credentials configuration |
 
-```yaml
-apiVersion: http.crossplane.io/v1alpha2
-kind: Request
-metadata:
-  name: example-request
-spec:
-  # Add your Request specification here
-```
+## Development
 
-For more detailed examples and configuration options, refer to the [examples directory](examples/sample/).
+```bash
+# Build
+make build
 
-## Developing locally
-
-Run controller against the cluster:
-
-```
-make run
-```
-
-## Run tests
-
-```
+# Test
 make test
-make e2e
+
+# Lint
+make lint
+
+# Generate
+make generate
 ```
 
-## Troubleshooting
+## Contributing
 
-If you encounter any issues during installation or usage, refer to the [troubleshooting guide](https://docs.crossplane.io/knowledge-base/guides/troubleshoot/) for common problems and solutions.
+Issues and pull requests are welcome at [github.com/rossigee/provider-http](https://github.com/rossigee/provider-http).
+
+## License
+
+provider-http is under the Apache 2.0 license.
+
+## Implementation
+
+This provider is a native Crossplane controller that directly implements the provider APIs without using Terraform or upjet scaffolding. This approach yields smaller binaries, simpler code, and reduced dependencies.

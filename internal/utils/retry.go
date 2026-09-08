@@ -3,7 +3,7 @@ package utils
 import (
 	"time"
 
-	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 const (
@@ -26,7 +26,7 @@ func RetriesLimitReached(statusFailed int32, rollbackRetriesLimit *int32) bool {
 }
 
 // WaitTimeout returns the wait timeout duration.
-func WaitTimeout(timeout *v1.Duration) time.Duration {
+func WaitTimeout(timeout *metav1.Duration) time.Duration {
 	if timeout != nil {
 		return timeout.Duration
 	}

@@ -22,26 +22,25 @@ import (
 	"strconv"
 	"time"
 
-	datapatcher "github.com/crossplane-contrib/provider-http/internal/data-patcher"
-	"github.com/crossplane-contrib/provider-http/internal/jq"
-	"github.com/crossplane/crossplane-runtime/pkg/logging"
+	"github.com/crossplane/crossplane-runtime/v2/pkg/controller"
+	"github.com/crossplane/crossplane-runtime/v2/pkg/event"
+	"github.com/crossplane/crossplane-runtime/v2/pkg/logging"
+	"github.com/crossplane/crossplane-runtime/v2/pkg/ratelimiter"
+	"github.com/crossplane/crossplane-runtime/v2/pkg/reconciler/managed"
+	"github.com/crossplane/crossplane-runtime/v2/pkg/resource"
+	xpv1 "github.com/crossplane/crossplane/apis/v2/core/v2"
 	"github.com/pkg/errors"
+	"github.com/rossigee/provider-http/apis/disposablerequest/v1alpha2"
+	apisv1alpha1 "github.com/rossigee/provider-http/apis/v1alpha1"
+	httpClient "github.com/rossigee/provider-http/internal/clients/http"
+	datapatcher "github.com/rossigee/provider-http/internal/data-patcher"
+	"github.com/rossigee/provider-http/internal/jq"
+	json_util "github.com/rossigee/provider-http/internal/json"
+	"github.com/rossigee/provider-http/internal/tracing"
+	"github.com/rossigee/provider-http/internal/utils"
 	"k8s.io/apimachinery/pkg/types"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
-
-	json_util "github.com/crossplane-contrib/provider-http/internal/json"
-	xpv1 "github.com/crossplane/crossplane-runtime/apis/common/v1"
-	"github.com/crossplane/crossplane-runtime/pkg/controller"
-	"github.com/crossplane/crossplane-runtime/pkg/event"
-	"github.com/crossplane/crossplane-runtime/pkg/ratelimiter"
-	"github.com/crossplane/crossplane-runtime/pkg/reconciler/managed"
-	"github.com/crossplane/crossplane-runtime/pkg/resource"
-
-	"github.com/crossplane-contrib/provider-http/apis/disposablerequest/v1alpha2"
-	apisv1alpha1 "github.com/crossplane-contrib/provider-http/apis/v1alpha1"
-	httpClient "github.com/crossplane-contrib/provider-http/internal/clients/http"
-	"github.com/crossplane-contrib/provider-http/internal/utils"
 )
 
 const (
@@ -65,22 +64,18 @@ const (
 // Setup adds a controller that reconciles DisposableRequest managed resources.
 func Setup(mgr ctrl.Manager, o controller.Options, timeout time.Duration) error {
 	name := managed.ControllerName(v1alpha2.DisposableRequestGroupKind)
-	cps := []managed.ConnectionPublisher{managed.NewAPISecretPublisher(mgr.GetClient(), mgr.GetScheme())}
-
 	r := managed.NewReconciler(mgr,
 		resource.ManagedKind(v1alpha2.DisposableRequestGroupVersionKind),
-		managed.WithExternalConnecter(&connector{
+		managed.WithExternalConnector(&connector{
 			logger:          o.Logger,
 			kube:            mgr.GetClient(),
-			usage:           resource.NewProviderConfigUsageTracker(mgr.GetClient(), &apisv1alpha1.ProviderConfigUsage{}),
 			newHttpClientFn: httpClient.NewClient,
 		}),
 		managed.WithLogger(o.Logger.WithValues("controller", name)),
 		managed.WithPollInterval(o.PollInterval),
 		WithCustomPollIntervalHook(),
 		managed.WithTimeout(timeout),
-		managed.WithRecorder(event.NewAPIRecorder(mgr.GetEventRecorderFor(name))),
-		managed.WithConnectionPublishers(cps...))
+		managed.WithRecorder(event.NewAPIRecorder(mgr.GetEventRecorder(name))))
 
 	return ctrl.NewControllerManagedBy(mgr).
 		Named(name).
@@ -93,7 +88,6 @@ func Setup(mgr ctrl.Manager, o controller.Options, timeout time.Duration) error 
 type connector struct {
 	logger          logging.Logger
 	kube            client.Client
-	usage           resource.Tracker
 	newHttpClientFn func(log logging.Logger, timeout time.Duration, creds string) (httpClient.Client, error)
 }
 
@@ -106,17 +100,13 @@ func (c *connector) Connect(ctx context.Context, mg resource.Managed) (managed.E
 
 	l := c.logger.WithValues("disposableRequest", cr.Name)
 
-	if err := c.usage.Track(ctx, mg); err != nil {
-		return nil, errors.Wrap(err, errTrackPCUsage)
-	}
-
 	pc := &apisv1alpha1.ProviderConfig{}
 	n := types.NamespacedName{Name: cr.GetProviderConfigReference().Name}
 	if err := c.kube.Get(ctx, n, pc); err != nil {
 		return nil, errors.Wrap(err, errProviderNotRetrieved)
 	}
 
-	var creds string = ""
+	var creds string
 	if pc.Spec.Credentials.Source == xpv1.CredentialsSourceSecret {
 		data, err := resource.CommonCredentialExtractor(ctx, pc.Spec.Credentials.Source, c.kube, pc.Spec.Credentials.CommonCredentialSelectors)
 		if err != nil {
@@ -149,6 +139,8 @@ func (c *external) Observe(ctx context.Context, mg resource.Managed) (managed.Ex
 	if !ok {
 		return managed.ExternalObservation{}, errors.New(errNotDisposableRequest)
 	}
+	_, span := tracing.StartSpanWithAttrs(ctx, "disposablerequest.observe", "DisposableRequest", cr.GetName(), "observe")
+	defer span.End()
 
 	if !cr.Status.Synced {
 		return managed.ExternalObservation{
@@ -166,7 +158,7 @@ func (c *external) Observe(ctx context.Context, mg resource.Managed) (managed.Ex
 		return managed.ExternalObservation{}, errors.New(errFailedUpdateStatusConditions)
 	}
 
-	isUpToDate := !(utils.ShouldRetry(cr.Spec.ForProvider.RollbackRetriesLimit, cr.Status.Failed) && !utils.RetriesLimitReached(cr.Status.Failed, cr.Spec.ForProvider.RollbackRetriesLimit))
+	isUpToDate := !utils.ShouldRetry(cr.Spec.ForProvider.RollbackRetriesLimit, cr.Status.Failed) || utils.RetriesLimitReached(cr.Status.Failed, cr.Spec.ForProvider.RollbackRetriesLimit)
 
 	// If shouldLoopInfinitely is true, the resource should never be considered up-to-date
 	if cr.Spec.ForProvider.ShouldLoopInfinitely {
@@ -275,6 +267,8 @@ func (c *external) Create(ctx context.Context, mg resource.Managed) (managed.Ext
 	if !ok {
 		return managed.ExternalCreation{}, errors.New(errNotDisposableRequest)
 	}
+	_, span := tracing.StartSpanWithAttrs(ctx, "disposablerequest.create", "DisposableRequest", cr.GetName(), "create")
+	defer span.End()
 
 	if err := utils.IsRequestValid(cr.Spec.ForProvider.Method, cr.Spec.ForProvider.URL); err != nil {
 		return managed.ExternalCreation{}, err
@@ -288,6 +282,8 @@ func (c *external) Update(ctx context.Context, mg resource.Managed) (managed.Ext
 	if !ok {
 		return managed.ExternalUpdate{}, errors.New(errNotDisposableRequest)
 	}
+	_, span := tracing.StartSpanWithAttrs(ctx, "disposablerequest.update", "DisposableRequest", cr.GetName(), "update")
+	defer span.End()
 
 	if err := utils.IsRequestValid(cr.Spec.ForProvider.Method, cr.Spec.ForProvider.URL); err != nil {
 		return managed.ExternalUpdate{}, err
@@ -296,7 +292,15 @@ func (c *external) Update(ctx context.Context, mg resource.Managed) (managed.Ext
 	return managed.ExternalUpdate{}, errors.Wrap(c.deployAction(ctx, cr), errFailedToSendHttpDisposableRequest)
 }
 
-func (c *external) Delete(_ context.Context, _ resource.Managed) error {
+func (c *external) Delete(ctx context.Context, mg resource.Managed) (managed.ExternalDelete, error) {
+	_, span := tracing.StartSpanWithAttrs(ctx, "disposablerequest.delete", "DisposableRequest", mg.GetName(), "delete")
+	defer span.End()
+
+	return managed.ExternalDelete{}, nil
+}
+
+func (c *external) Disconnect(ctx context.Context) error {
+	// Nothing to disconnect for HTTP client
 	return nil
 }
 

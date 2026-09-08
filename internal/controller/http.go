@@ -19,12 +19,11 @@ package controller
 import (
 	"time"
 
-	"github.com/crossplane/crossplane-runtime/pkg/controller"
+	"github.com/crossplane/crossplane-runtime/v2/pkg/controller"
+	"github.com/rossigee/provider-http/internal/controller/config"
+	"github.com/rossigee/provider-http/internal/controller/disposablerequest"
+	"github.com/rossigee/provider-http/internal/controller/request"
 	ctrl "sigs.k8s.io/controller-runtime"
-
-	"github.com/crossplane-contrib/provider-http/internal/controller/config"
-	disposablerequest "github.com/crossplane-contrib/provider-http/internal/controller/disposablerequest"
-	request "github.com/crossplane-contrib/provider-http/internal/controller/request"
 )
 
 // Setup creates all http controllers with the supplied logger and adds them to

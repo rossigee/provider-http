@@ -5,18 +5,15 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/crossplane/crossplane-runtime/pkg/logging"
+	"github.com/crossplane/crossplane-runtime/v2/pkg/logging"
 	"github.com/pkg/errors"
+	"github.com/rossigee/provider-http/apis/request/v1alpha2"
+	httpClient "github.com/rossigee/provider-http/internal/clients/http"
+	"github.com/rossigee/provider-http/internal/controller/request/requestprocessing"
+	datapatcher "github.com/rossigee/provider-http/internal/data-patcher"
+	json_util "github.com/rossigee/provider-http/internal/json"
+	"github.com/rossigee/provider-http/internal/utils"
 	"sigs.k8s.io/controller-runtime/pkg/client"
-
-	"github.com/crossplane-contrib/provider-http/apis/request/v1alpha2"
-	httpClient "github.com/crossplane-contrib/provider-http/internal/clients/http"
-	"github.com/crossplane-contrib/provider-http/internal/controller/request/requestprocessing"
-	datapatcher "github.com/crossplane-contrib/provider-http/internal/data-patcher"
-	json_util "github.com/crossplane-contrib/provider-http/internal/json"
-	"github.com/crossplane-contrib/provider-http/internal/utils"
-
-	"golang.org/x/exp/maps"
 )
 
 type RequestDetails struct {
@@ -63,7 +60,9 @@ func GenerateRequestContext(forProvider v1alpha2.RequestParameters, patchedRespo
 		"response": patchedResponse,
 	})
 
-	maps.Copy(baseMap, statusMap)
+	for k, v := range statusMap {
+		baseMap[k] = v
+	}
 	json_util.ConvertJSONStringsToMaps(&baseMap)
 
 	return baseMap

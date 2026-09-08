@@ -17,12 +17,8 @@ limitations under the License.
 package v1alpha1
 
 import (
-	"reflect"
-
+	xpv1 "github.com/crossplane/crossplane/apis/v2/core/v2"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/apimachinery/pkg/runtime/schema"
-
-	xpv1 "github.com/crossplane/crossplane-runtime/apis/common/v1"
 )
 
 // A ProviderConfigSpec defines the desired state of a ProviderConfig.
@@ -67,16 +63,4 @@ type ProviderConfigList struct {
 	metav1.TypeMeta `json:",inline"`
 	metav1.ListMeta `json:"metadata,omitempty"`
 	Items           []ProviderConfig `json:"items"`
-}
-
-// ProviderConfig type metadata.
-var (
-	ProviderConfigKind             = reflect.TypeOf(ProviderConfig{}).Name()
-	ProviderConfigGroupKind        = schema.GroupKind{Group: Group, Kind: ProviderConfigKind}.String()
-	ProviderConfigKindAPIVersion   = ProviderConfigKind + "." + SchemeGroupVersion.String()
-	ProviderConfigGroupVersionKind = SchemeGroupVersion.WithKind(ProviderConfigKind)
-)
-
-func init() {
-	SchemeBuilder.Register(&ProviderConfig{}, &ProviderConfigList{})
 }

@@ -3,10 +3,10 @@ package datapatcher
 import (
 	"testing"
 
-	"github.com/crossplane-contrib/provider-http/apis/common"
-	httpClient "github.com/crossplane-contrib/provider-http/internal/clients/http"
-	"github.com/crossplane/crossplane-runtime/pkg/logging"
+	"github.com/crossplane/crossplane-runtime/v2/pkg/logging"
 	"github.com/google/go-cmp/cmp"
+	"github.com/rossigee/provider-http/apis/common"
+	httpClient "github.com/rossigee/provider-http/internal/clients/http"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/utils/ptr"

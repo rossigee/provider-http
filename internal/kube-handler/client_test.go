@@ -7,16 +7,16 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/crossplane/crossplane-runtime/pkg/test"
+	"github.com/crossplane/crossplane-runtime/v2/pkg/test"
 	"github.com/google/go-cmp/cmp"
-	errorspkg "github.com/pkg/errors"
+	pkgerrors "github.com/pkg/errors"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 var (
-	errBoom = errors.New("boom")
+	errBoom = pkgerrors.New("boom")
 )
 
 func createSpecificSecret(name, namespace, key, value string) *corev1.Secret {
@@ -90,7 +90,7 @@ func Test_GetSecret(t *testing.T) {
 			},
 			want: want{
 				result: nil,
-				err:    errorspkg.Wrap(errBoom, fmt.Sprintf(errGetSecret, "secret", "default")),
+				err:    pkgerrors.Wrap(errBoom, fmt.Sprintf(errGetSecret, "secret", "default")),
 			},
 		},
 	}
@@ -202,7 +202,7 @@ func Test_GetOrCreateSecret(t *testing.T) {
 			},
 			want: want{
 				result: nil,
-				err:    errorspkg.Wrap(errBoom, fmt.Sprintf(errGetSecret, "secret", "default")),
+				err:    pkgerrors.Wrap(errBoom, fmt.Sprintf(errGetSecret, "secret", "default")),
 			},
 		},
 	}
@@ -255,7 +255,7 @@ func Test_UpdateSecret(t *testing.T) {
 				secret: createSpecificSecret("update-secret-name", "update-secret-namespace", "update-key", "update-value"),
 			},
 			want: want{
-				err: errorspkg.Wrap(errBoom, errUpdateFailed),
+				err: pkgerrors.Wrap(errBoom, errUpdateFailed),
 			},
 		},
 	}
@@ -314,7 +314,7 @@ func Test_createSecret(t *testing.T) {
 			},
 			want: want{
 				result: nil,
-				err:    errorspkg.Wrap(errBoom, errCreateSecret),
+				err:    pkgerrors.Wrap(errBoom, errCreateSecret),
 			},
 		},
 	}

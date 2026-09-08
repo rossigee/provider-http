@@ -6,13 +6,13 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/crossplane-contrib/provider-http/apis/request/v1alpha2"
-	httpClient "github.com/crossplane-contrib/provider-http/internal/clients/http"
-	"github.com/crossplane-contrib/provider-http/internal/controller/request/requestgen"
-	"github.com/crossplane-contrib/provider-http/internal/controller/request/responseconverter"
-	"github.com/crossplane-contrib/provider-http/internal/utils"
-	"github.com/crossplane/crossplane-runtime/pkg/logging"
+	"github.com/crossplane/crossplane-runtime/v2/pkg/logging"
 	"github.com/pkg/errors"
+	"github.com/rossigee/provider-http/apis/request/v1alpha2"
+	httpClient "github.com/rossigee/provider-http/internal/clients/http"
+	"github.com/rossigee/provider-http/internal/controller/request/requestgen"
+	"github.com/rossigee/provider-http/internal/controller/request/responseconverter"
+	"github.com/rossigee/provider-http/internal/utils"
 	"k8s.io/apimachinery/pkg/types"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
@@ -106,7 +106,7 @@ func (r *requestStatusHandler) shouldSetCache(forProvider v1alpha2.RequestParame
 	for _, mapping := range forProvider.Mappings {
 		response := responseconverter.HttpResponseToV1alpha1Response(r.resource.HttpResponse)
 		requestDetails, _, ok := requestgen.GenerateRequestDetails(r.resource.RequestContext, r.resource.LocalClient, mapping, forProvider, response, r.logger)
-		if !(requestgen.IsRequestValid(requestDetails) && ok) {
+		if !requestgen.IsRequestValid(requestDetails) || !ok {
 			return false
 		}
 	}
