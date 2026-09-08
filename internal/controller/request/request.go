@@ -37,6 +37,7 @@ import (
 	"github.com/rossigee/provider-http/internal/controller/request/requestmapping"
 	"github.com/rossigee/provider-http/internal/controller/request/statushandler"
 	datapatcher "github.com/rossigee/provider-http/internal/data-patcher"
+	"github.com/rossigee/provider-http/internal/features"
 	"github.com/rossigee/provider-http/internal/tracing"
 	"github.com/rossigee/provider-http/internal/utils"
 	"k8s.io/apimachinery/pkg/types"
@@ -61,8 +62,7 @@ const (
 // Setup adds a controller that reconciles Request managed resources.
 func Setup(mgr ctrl.Manager, o controller.Options, timeout time.Duration) error {
 	name := managed.ControllerName(v1alpha2.RequestGroupKind)
-	r := managed.NewReconciler(mgr,
-		resource.ManagedKind(v1alpha2.RequestGroupVersionKind),
+	opts := []managed.ReconcilerOption{
 		managed.WithExternalConnector(&connector{
 			logger:          o.Logger,
 			kube:            mgr.GetClient(),
@@ -71,7 +71,14 @@ func Setup(mgr ctrl.Manager, o controller.Options, timeout time.Duration) error 
 		managed.WithLogger(o.Logger.WithValues("controller", name)),
 		managed.WithPollInterval(o.PollInterval),
 		managed.WithTimeout(timeout),
-		managed.WithRecorder(event.NewAPIRecorder(mgr.GetEventRecorder(name))))
+		managed.WithRecorder(event.NewAPIRecorder(mgr.GetEventRecorder(name))),
+	}
+	if o.Features.Enabled(features.EnableAlphaManagementPolicies) {
+		opts = append(opts, managed.WithManagementPolicies())
+	}
+	r := managed.NewReconciler(mgr,
+		resource.ManagedKind(v1alpha2.RequestGroupVersionKind),
+		opts...)
 
 	return ctrl.NewControllerManagedBy(mgr).
 		Named(name).

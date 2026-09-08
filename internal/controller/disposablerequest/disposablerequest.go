@@ -34,6 +34,7 @@ import (
 	apisv1alpha1 "github.com/rossigee/provider-http/apis/v1alpha1"
 	httpClient "github.com/rossigee/provider-http/internal/clients/http"
 	datapatcher "github.com/rossigee/provider-http/internal/data-patcher"
+	"github.com/rossigee/provider-http/internal/features"
 	"github.com/rossigee/provider-http/internal/jq"
 	json_util "github.com/rossigee/provider-http/internal/json"
 	"github.com/rossigee/provider-http/internal/tracing"
@@ -64,8 +65,7 @@ const (
 // Setup adds a controller that reconciles DisposableRequest managed resources.
 func Setup(mgr ctrl.Manager, o controller.Options, timeout time.Duration) error {
 	name := managed.ControllerName(v1alpha2.DisposableRequestGroupKind)
-	r := managed.NewReconciler(mgr,
-		resource.ManagedKind(v1alpha2.DisposableRequestGroupVersionKind),
+	opts := []managed.ReconcilerOption{
 		managed.WithExternalConnector(&connector{
 			logger:          o.Logger,
 			kube:            mgr.GetClient(),
@@ -75,7 +75,14 @@ func Setup(mgr ctrl.Manager, o controller.Options, timeout time.Duration) error 
 		managed.WithPollInterval(o.PollInterval),
 		WithCustomPollIntervalHook(),
 		managed.WithTimeout(timeout),
-		managed.WithRecorder(event.NewAPIRecorder(mgr.GetEventRecorder(name))))
+		managed.WithRecorder(event.NewAPIRecorder(mgr.GetEventRecorder(name))),
+	}
+	if o.Features.Enabled(features.EnableAlphaManagementPolicies) {
+		opts = append(opts, managed.WithManagementPolicies())
+	}
+	r := managed.NewReconciler(mgr,
+		resource.ManagedKind(v1alpha2.DisposableRequestGroupVersionKind),
+		opts...)
 
 	return ctrl.NewControllerManagedBy(mgr).
 		Named(name).
