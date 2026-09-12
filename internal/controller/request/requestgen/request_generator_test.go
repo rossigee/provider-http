@@ -7,7 +7,7 @@ import (
 	"github.com/crossplane/crossplane-runtime/v2/pkg/logging"
 	"github.com/crossplane/crossplane-runtime/v2/pkg/test"
 	"github.com/google/go-cmp/cmp"
-	"github.com/rossigee/provider-http/apis/request/v1alpha2"
+	"github.com/rossigee/provider-http/apis/request/v1beta1"
 	httpClient "github.com/rossigee/provider-http/internal/clients/http"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
@@ -24,49 +24,49 @@ var testHeaders2 = map[string][]string{
 }
 
 var (
-	testPostMapping = v1alpha2.Mapping{
+	testPostMapping = v1beta1.Mapping{
 		Method:  "POST",
 		Body:    "{ username: .payload.body.username, email: .payload.body.email }",
 		URL:     ".payload.baseUrl",
 		Headers: testHeaders,
 	}
 
-	testPutMapping = v1alpha2.Mapping{
+	testPutMapping = v1beta1.Mapping{
 		Method:  "PUT",
 		Body:    "{ username: \"john_doe_new_username\" }",
 		URL:     "(.payload.baseUrl + \"/\" + .response.body.id)",
 		Headers: testHeaders,
 	}
 
-	testGetMapping = v1alpha2.Mapping{
+	testGetMapping = v1beta1.Mapping{
 		Method: "GET",
 		URL:    "(.payload.baseUrl + \"/\" + .response.body.id)",
 	}
 
-	testDeleteMapping = v1alpha2.Mapping{
+	testDeleteMapping = v1beta1.Mapping{
 		Method: "DELETE",
 		URL:    "(.payload.baseUrl + \"/\" + .response.body.id)",
 	}
 )
 
 var (
-	testForProvider = v1alpha2.RequestParameters{
-		Payload: v1alpha2.Payload{
+	testForProvider = v1beta1.RequestParameters{
+		Payload: v1beta1.Payload{
 			Body:    "{\"username\": \"john_doe\", \"email\": \"john.doe@example.com\"}",
 			BaseUrl: "https://api.example.com/users",
 		},
-		Mappings: []v1alpha2.Mapping{
+		Mappings: []v1beta1.Mapping{
 			testPostMapping,
 			testGetMapping,
 			testPutMapping,
 			testDeleteMapping,
 		},
-		ExpectedResponseCheck: v1alpha2.ExpectedResponseCheck{
-			Type:  v1alpha2.ExpectedResponseCheckTypeCustom,
+		ExpectedResponseCheck: v1beta1.ExpectedResponseCheck{
+			Type:  v1beta1.ExpectedResponseCheckTypeCustom,
 			Logic: "logic example",
 		},
-		IsRemovedCheck: v1alpha2.ExpectedResponseCheck{
-			Type:  v1alpha2.ExpectedResponseCheckTypeCustom,
+		IsRemovedCheck: v1beta1.ExpectedResponseCheck{
+			Type:  v1beta1.ExpectedResponseCheckTypeCustom,
 			Logic: "logic example",
 		},
 	}
@@ -74,9 +74,9 @@ var (
 
 func Test_GenerateRequestDetails(t *testing.T) {
 	type args struct {
-		methodMapping v1alpha2.Mapping
-		forProvider   v1alpha2.RequestParameters
-		response      v1alpha2.Response
+		methodMapping v1beta1.Mapping
+		forProvider   v1beta1.RequestParameters
+		response      v1beta1.Response
 		logger        logging.Logger
 		localKube     client.Client
 	}
@@ -93,7 +93,7 @@ func Test_GenerateRequestDetails(t *testing.T) {
 			args: args{
 				methodMapping: testPostMapping,
 				forProvider:   testForProvider,
-				response:      v1alpha2.Response{},
+				response:      v1beta1.Response{},
 				logger:        logging.NewNopLogger(),
 			},
 			want: want{
@@ -116,7 +116,7 @@ func Test_GenerateRequestDetails(t *testing.T) {
 			args: args{
 				methodMapping: testPutMapping,
 				forProvider:   testForProvider,
-				response: v1alpha2.Response{
+				response: v1beta1.Response{
 					StatusCode: 200,
 					Body:       `{"id":"123","username":"john_doe"}`,
 					Headers:    testHeaders,
@@ -143,7 +143,7 @@ func Test_GenerateRequestDetails(t *testing.T) {
 			args: args{
 				methodMapping: testDeleteMapping,
 				forProvider:   testForProvider,
-				response: v1alpha2.Response{
+				response: v1beta1.Response{
 					StatusCode: 200,
 					Body:       `{"id":"123","username":"john_doe"}`,
 					Headers:    testHeaders,
@@ -170,7 +170,7 @@ func Test_GenerateRequestDetails(t *testing.T) {
 			args: args{
 				methodMapping: testGetMapping,
 				forProvider:   testForProvider,
-				response: v1alpha2.Response{
+				response: v1beta1.Response{
 					StatusCode: 200,
 					Body:       `{"id":"123","username":"john_doe"}`,
 					Headers:    testHeaders,
@@ -370,8 +370,8 @@ func Test_coalesceHeaders(t *testing.T) {
 
 func Test_generateRequestObject(t *testing.T) {
 	type args struct {
-		forProvider v1alpha2.RequestParameters
-		response    v1alpha2.Response
+		forProvider v1beta1.RequestParameters
+		response    v1beta1.Response
 	}
 	type want struct {
 		result map[string]interface{}
@@ -383,7 +383,7 @@ func Test_generateRequestObject(t *testing.T) {
 		"Success": {
 			args: args{
 				forProvider: testForProvider,
-				response: v1alpha2.Response{
+				response: v1beta1.Response{
 					StatusCode: 200,
 					Body:       `{"id": "123"}`,
 					Headers:    nil,
@@ -392,11 +392,11 @@ func Test_generateRequestObject(t *testing.T) {
 			want: want{
 				result: map[string]any{
 					"expectedResponseCheck": map[string]any{
-						"type":  v1alpha2.ExpectedResponseCheckTypeCustom,
+						"type":  v1beta1.ExpectedResponseCheckTypeCustom,
 						"logic": "logic example",
 					},
 					"isRemovedCheck": map[string]any{
-						"type":  v1alpha2.ExpectedResponseCheckTypeCustom,
+						"type":  v1beta1.ExpectedResponseCheckTypeCustom,
 						"logic": "logic example",
 					},
 					"mappings": []any{

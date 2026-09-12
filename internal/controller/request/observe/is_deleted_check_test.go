@@ -9,14 +9,14 @@ import (
 	"github.com/crossplane/crossplane-runtime/v2/pkg/test"
 	"github.com/google/go-cmp/cmp"
 	"github.com/pkg/errors"
-	"github.com/rossigee/provider-http/apis/request/v1alpha2"
+	"github.com/rossigee/provider-http/apis/request/v1beta1"
 	httpClient "github.com/rossigee/provider-http/internal/clients/http"
 )
 
 func Test_DefaultIsRemovedCheck(t *testing.T) {
 	type args struct {
 		ctx         context.Context
-		cr          *v1alpha2.Request
+		cr          *v1beta1.Request
 		details     httpClient.HttpDetails
 		responseErr error
 	}
@@ -32,7 +32,7 @@ func Test_DefaultIsRemovedCheck(t *testing.T) {
 		"ValidRemovedState": {
 			args: args{
 				ctx: context.Background(),
-				cr:  &v1alpha2.Request{},
+				cr:  &v1beta1.Request{},
 				details: httpClient.HttpDetails{
 					HttpResponse: httpClient.HttpResponse{
 						Body:       ``,
@@ -49,21 +49,21 @@ func Test_DefaultIsRemovedCheck(t *testing.T) {
 		"RemovedStateWithValidJSON": {
 			args: args{
 				ctx: context.Background(),
-				cr: &v1alpha2.Request{
-					Spec: v1alpha2.RequestSpec{
-						ForProvider: v1alpha2.RequestParameters{
-							Payload: v1alpha2.Payload{
+				cr: &v1beta1.Request{
+					Spec: v1beta1.RequestSpec{
+						ForProvider: v1beta1.RequestParameters{
+							Payload: v1beta1.Payload{
 								Body:    "{\"username\": \"john_doe\", \"email\": \"john.doe@example.com\"}",
 								BaseUrl: "https://api.example.com/users",
 							},
-							Mappings: []v1alpha2.Mapping{
+							Mappings: []v1beta1.Mapping{
 								testPostMapping,
 								testGetMapping,
 								testPutMapping,
 								testDeleteMapping,
 							},
-							ExpectedResponseCheck: v1alpha2.ExpectedResponseCheck{
-								Type: v1alpha2.ExpectedResponseCheckTypeDefault,
+							ExpectedResponseCheck: v1beta1.ExpectedResponseCheck{
+								Type: v1beta1.ExpectedResponseCheckTypeDefault,
 							},
 						},
 					},
@@ -83,7 +83,7 @@ func Test_DefaultIsRemovedCheck(t *testing.T) {
 		"ValidNotRemovedState": {
 			args: args{
 				ctx: context.Background(),
-				cr:  &v1alpha2.Request{},
+				cr:  &v1beta1.Request{},
 				details: httpClient.HttpDetails{
 					HttpResponse: httpClient.HttpResponse{
 						Body:       ``,
@@ -119,7 +119,7 @@ func Test_DefaultIsRemovedCheck(t *testing.T) {
 func Test_CustomIsRemovedCheck(t *testing.T) {
 	type args struct {
 		ctx         context.Context
-		cr          *v1alpha2.Request
+		cr          *v1beta1.Request
 		details     httpClient.HttpDetails
 		responseErr error
 	}
@@ -135,18 +135,18 @@ func Test_CustomIsRemovedCheck(t *testing.T) {
 		"CustomCheckPasses": {
 			args: args{
 				ctx: context.Background(),
-				cr: &v1alpha2.Request{
-					Spec: v1alpha2.RequestSpec{
-						ForProvider: v1alpha2.RequestParameters{
-							Payload: v1alpha2.Payload{
+				cr: &v1beta1.Request{
+					Spec: v1beta1.RequestSpec{
+						ForProvider: v1beta1.RequestParameters{
+							Payload: v1beta1.Payload{
 								Body: `{"password": "password"}`,
 							},
-							ExpectedResponseCheck: v1alpha2.ExpectedResponseCheck{
-								Type:  v1alpha2.ExpectedResponseCheckTypeCustom,
+							ExpectedResponseCheck: v1beta1.ExpectedResponseCheck{
+								Type:  v1beta1.ExpectedResponseCheckTypeCustom,
 								Logic: `.response.body.password == .payload.body.password`,
 							},
-							IsRemovedCheck: v1alpha2.ExpectedResponseCheck{
-								Type:  v1alpha2.ExpectedResponseCheckTypeCustom,
+							IsRemovedCheck: v1beta1.ExpectedResponseCheck{
+								Type:  v1beta1.ExpectedResponseCheckTypeCustom,
 								Logic: `.response.body.password == .payload.body.password`,
 							},
 						},
@@ -168,18 +168,18 @@ func Test_CustomIsRemovedCheck(t *testing.T) {
 		"CustomCheckFails": {
 			args: args{
 				ctx: context.Background(),
-				cr: &v1alpha2.Request{
-					Spec: v1alpha2.RequestSpec{
-						ForProvider: v1alpha2.RequestParameters{
-							Payload: v1alpha2.Payload{
+				cr: &v1beta1.Request{
+					Spec: v1beta1.RequestSpec{
+						ForProvider: v1beta1.RequestParameters{
+							Payload: v1beta1.Payload{
 								Body: `{"password": "password"}`,
 							},
-							ExpectedResponseCheck: v1alpha2.ExpectedResponseCheck{
-								Type:  v1alpha2.ExpectedResponseCheckTypeCustom,
+							ExpectedResponseCheck: v1beta1.ExpectedResponseCheck{
+								Type:  v1beta1.ExpectedResponseCheckTypeCustom,
 								Logic: `.response.body.password == .payload.body.password`,
 							},
-							IsRemovedCheck: v1alpha2.ExpectedResponseCheck{
-								Type:  v1alpha2.ExpectedResponseCheckTypeCustom,
+							IsRemovedCheck: v1beta1.ExpectedResponseCheck{
+								Type:  v1beta1.ExpectedResponseCheckTypeCustom,
 								Logic: `.response.body.password == .payload.body.password`,
 							},
 						},
@@ -201,10 +201,10 @@ func Test_CustomIsRemovedCheck(t *testing.T) {
 		"FailedParsing": {
 			args: args{
 				ctx: context.Background(),
-				cr: &v1alpha2.Request{
-					Spec: v1alpha2.RequestSpec{
-						ForProvider: v1alpha2.RequestParameters{
-							Payload: v1alpha2.Payload{
+				cr: &v1beta1.Request{
+					Spec: v1beta1.RequestSpec{
+						ForProvider: v1beta1.RequestParameters{
+							Payload: v1beta1.Payload{
 								Body: `{"password": "password"}`,
 							},
 						},

@@ -4,9 +4,9 @@ kind: CustomResourceDefinition
 metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.21.0
-  name: providerconfigs.http.crossplane.io
+  name: providerconfigs.http.m.crossplane.io
 spec:
-  group: http.crossplane.io
+  group: http.m.crossplane.io
   names:
     kind: ProviderConfig
     listKind: ProviderConfigList
@@ -22,7 +22,7 @@ spec:
       name: SECRET-NAME
       priority: 1
       type: string
-    name: v1alpha1
+    name: v1beta1
     schema:
       openAPIV3Schema:
         description: A ProviderConfig configures a Http provider.

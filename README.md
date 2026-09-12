@@ -38,7 +38,7 @@ kubectl crossplane install provider ghcr.io/rossigee/provider-http:v1.2.1
 ### Configuration
 
 ```yaml
-apiVersion: http.crossplane.io/v1alpha1
+apiVersion: http.m.crossplane.io/v1beta1
 kind: ProviderConfig
 metadata:
   name: http-conf
@@ -50,12 +50,11 @@ spec:
 ## Usage
 
 ```yaml
-apiVersion: http.crossplane.io/v1alpha2
+apiVersion: http.m.crossplane.io/v1beta1
 kind: DisposableRequest
 metadata:
   name: send-notification
 spec:
-  deletionPolicy: Orphan
   forProvider:
     url: http://flask-api.default.svc.cluster.local/v1/notify
     method: POST
@@ -80,9 +79,15 @@ See `examples/sample/` for a full `Request` example covering CREATE/OBSERVE/UPDA
 
 | Resource | API Group | Description |
 |----------|-----------|-------------|
-| Request | `http.crossplane.io` (v1alpha1/v1alpha2), `http.m.crossplane.io` (v1beta1, namespaced) | Full CRUD lifecycle mapped to configurable HTTP requests |
-| DisposableRequest | `http.crossplane.io` (v1alpha1/v1alpha2), `http.m.crossplane.io` (v1beta1, namespaced) | One-shot HTTP request with no ongoing lifecycle |
-| ProviderConfig | `http.crossplane.io/v1alpha1` | Provider-level credentials configuration |
+All resources are namespaced `http.m.crossplane.io/v1beta1` for Crossplane v2 multi-tenancy.
+
+| Resource | API Group | Description |
+|----------|-----------|-------------|
+| Request | `http.m.crossplane.io/v1beta1` | Full CRUD lifecycle mapped to configurable HTTP requests |
+| DisposableRequest | `http.m.crossplane.io/v1beta1` | One-shot HTTP request with no ongoing lifecycle |
+| ProviderConfig | `http.m.crossplane.io/v1beta1` | Provider-level credentials configuration (cluster-scoped) |
+
+See [docs/index.md](docs/index.md) for the full reference and [API coverage gaps](docs/index.md#api-coverage-gaps).
 
 ## Development
 

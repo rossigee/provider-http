@@ -4,53 +4,53 @@ import (
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
-	"github.com/rossigee/provider-http/apis/request/v1alpha2"
+	"github.com/rossigee/provider-http/apis/request/v1beta1"
 )
 
 var (
-	testPostMapping = v1alpha2.Mapping{
+	testPostMapping = v1beta1.Mapping{
 		Method: "POST",
 		Body:   "{ username: .payload.body.username, email: .payload.body.email }",
 		URL:    ".payload.baseUrl",
 		// Headers: testHeaders,
 	}
 
-	testPutMapping = v1alpha2.Mapping{
+	testPutMapping = v1beta1.Mapping{
 		Method: "PUT",
 		Body:   "{ username: \"john_doe_new_username\" }",
 		URL:    "(.payload.baseUrl + \"/\" + .response.body.id)",
 		// Headers: testHeaders,
 	}
 
-	testGetMapping = v1alpha2.Mapping{
+	testGetMapping = v1beta1.Mapping{
 		Method: "GET",
 		URL:    "(.payload.baseUrl + \"/\" + .response.body.id)",
 	}
 
-	testDeleteMapping = v1alpha2.Mapping{
+	testDeleteMapping = v1beta1.Mapping{
 		Method: "DELETE",
 		URL:    "(.payload.baseUrl + \"/\" + .response.body.id)",
 	}
 )
 
 var (
-	testForProvider = v1alpha2.RequestParameters{
-		Payload: v1alpha2.Payload{
+	testForProvider = v1beta1.RequestParameters{
+		Payload: v1beta1.Payload{
 			Body:    "{\"username\": \"john_doe\", \"email\": \"john.doe@example.com\"}",
 			BaseUrl: "https://api.example.com/users",
 		},
-		Mappings: []v1alpha2.Mapping{
+		Mappings: []v1beta1.Mapping{
 			testPostMapping,
 			testGetMapping,
 			testPutMapping,
 			testDeleteMapping,
 		},
-		ExpectedResponseCheck: v1alpha2.ExpectedResponseCheck{
-			Type:  v1alpha2.ExpectedResponseCheckTypeCustom,
+		ExpectedResponseCheck: v1beta1.ExpectedResponseCheck{
+			Type:  v1beta1.ExpectedResponseCheckTypeCustom,
 			Logic: "logic example",
 		},
-		IsRemovedCheck: v1alpha2.ExpectedResponseCheck{
-			Type:  v1alpha2.ExpectedResponseCheckTypeCustom,
+		IsRemovedCheck: v1beta1.ExpectedResponseCheck{
+			Type:  v1beta1.ExpectedResponseCheckTypeCustom,
 			Logic: "logic example",
 		},
 	}
@@ -278,11 +278,11 @@ func Test_StructToMap(t *testing.T) {
 			want: want{
 				result: map[string]any{
 					"expectedResponseCheck": map[string]any{
-						"type":  v1alpha2.ExpectedResponseCheckTypeCustom,
+						"type":  v1beta1.ExpectedResponseCheckTypeCustom,
 						"logic": "logic example",
 					},
 					"isRemovedCheck": map[string]any{
-						"type":  v1alpha2.ExpectedResponseCheckTypeCustom,
+						"type":  v1beta1.ExpectedResponseCheckTypeCustom,
 						"logic": "logic example",
 					},
 					"mappings": []any{

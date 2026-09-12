@@ -8,29 +8,29 @@ import (
 	"github.com/crossplane/crossplane-runtime/v2/pkg/test"
 	"github.com/google/go-cmp/cmp"
 	"github.com/pkg/errors"
-	"github.com/rossigee/provider-http/apis/request/v1alpha2"
+	"github.com/rossigee/provider-http/apis/request/v1beta1"
 	httpClient "github.com/rossigee/provider-http/internal/clients/http"
 )
 
 var (
-	testPostMapping = v1alpha2.Mapping{
+	testPostMapping = v1beta1.Mapping{
 		Method: "POST",
 		Body:   "{ username: .payload.body.username, email: .payload.body.email }",
 		URL:    ".payload.baseUrl",
 	}
 
-	testPutMapping = v1alpha2.Mapping{
+	testPutMapping = v1beta1.Mapping{
 		Method: "PUT",
 		Body:   "{ username: \"john_doe_new_username\" }",
 		URL:    "(.payload.baseUrl + \"/\" + .response.body.id)",
 	}
 
-	testGetMapping = v1alpha2.Mapping{
+	testGetMapping = v1beta1.Mapping{
 		Method: "GET",
 		URL:    "(.payload.baseUrl + \"/\" + .response.body.id)",
 	}
 
-	testDeleteMapping = v1alpha2.Mapping{
+	testDeleteMapping = v1beta1.Mapping{
 		Method: "DELETE",
 		URL:    "(.payload.baseUrl + \"/\" + .response.body.id)",
 	}
@@ -39,7 +39,7 @@ var (
 func Test_DefaultIsUpToDateCheck(t *testing.T) {
 	type args struct {
 		ctx         context.Context
-		cr          *v1alpha2.Request
+		cr          *v1beta1.Request
 		details     httpClient.HttpDetails
 		responseErr error
 	}
@@ -56,7 +56,7 @@ func Test_DefaultIsUpToDateCheck(t *testing.T) {
 		"ValidJSONSyncedState": {
 			args: args{
 				ctx: context.Background(),
-				cr:  &v1alpha2.Request{},
+				cr:  &v1beta1.Request{},
 				details: httpClient.HttpDetails{
 					HttpResponse: httpClient.HttpResponse{
 						Body:       ``,
@@ -74,21 +74,21 @@ func Test_DefaultIsUpToDateCheck(t *testing.T) {
 		"UnsyncedStateWithValidJSON": {
 			args: args{
 				ctx: context.Background(),
-				cr: &v1alpha2.Request{
-					Spec: v1alpha2.RequestSpec{
-						ForProvider: v1alpha2.RequestParameters{
-							Payload: v1alpha2.Payload{
+				cr: &v1beta1.Request{
+					Spec: v1beta1.RequestSpec{
+						ForProvider: v1beta1.RequestParameters{
+							Payload: v1beta1.Payload{
 								Body:    "{\"username\": \"john_doe\", \"email\": \"john.doe@example.com\"}",
 								BaseUrl: "https://api.example.com/users",
 							},
-							Mappings: []v1alpha2.Mapping{
+							Mappings: []v1beta1.Mapping{
 								testPostMapping,
 								testGetMapping,
 								testPutMapping,
 								testDeleteMapping,
 							},
-							ExpectedResponseCheck: v1alpha2.ExpectedResponseCheck{
-								Type: v1alpha2.ExpectedResponseCheckTypeDefault,
+							ExpectedResponseCheck: v1beta1.ExpectedResponseCheck{
+								Type: v1beta1.ExpectedResponseCheckTypeDefault,
 							},
 						},
 					},
@@ -109,21 +109,21 @@ func Test_DefaultIsUpToDateCheck(t *testing.T) {
 		"InvalidResponseJSON": {
 			args: args{
 				ctx: context.Background(),
-				cr: &v1alpha2.Request{
-					Spec: v1alpha2.RequestSpec{
-						ForProvider: v1alpha2.RequestParameters{
-							Payload: v1alpha2.Payload{
+				cr: &v1beta1.Request{
+					Spec: v1beta1.RequestSpec{
+						ForProvider: v1beta1.RequestParameters{
+							Payload: v1beta1.Payload{
 								Body:    "{\"username\": \"john_doe\", \"email\": \"john.doe@example.com\"}",
 								BaseUrl: "https://api.example.com/users",
 							},
-							Mappings: []v1alpha2.Mapping{
+							Mappings: []v1beta1.Mapping{
 								testPostMapping,
 								testGetMapping,
 								testPutMapping,
 								testDeleteMapping,
 							},
-							ExpectedResponseCheck: v1alpha2.ExpectedResponseCheck{
-								Type: v1alpha2.ExpectedResponseCheckTypeDefault,
+							ExpectedResponseCheck: v1beta1.ExpectedResponseCheck{
+								Type: v1beta1.ExpectedResponseCheckTypeDefault,
 							},
 						},
 					},
@@ -168,7 +168,7 @@ func Test_DefaultIsUpToDateCheck(t *testing.T) {
 func Test_CustomIsUpToDateCheck(t *testing.T) {
 	type args struct {
 		ctx         context.Context
-		cr          *v1alpha2.Request
+		cr          *v1beta1.Request
 		details     httpClient.HttpDetails
 		responseErr error
 	}
@@ -185,14 +185,14 @@ func Test_CustomIsUpToDateCheck(t *testing.T) {
 		"CustomCheckPasses": {
 			args: args{
 				ctx: context.Background(),
-				cr: &v1alpha2.Request{
-					Spec: v1alpha2.RequestSpec{
-						ForProvider: v1alpha2.RequestParameters{
-							Payload: v1alpha2.Payload{
+				cr: &v1beta1.Request{
+					Spec: v1beta1.RequestSpec{
+						ForProvider: v1beta1.RequestParameters{
+							Payload: v1beta1.Payload{
 								Body: `{"password": "password"}`,
 							},
-							ExpectedResponseCheck: v1alpha2.ExpectedResponseCheck{
-								Type:  v1alpha2.ExpectedResponseCheckTypeCustom,
+							ExpectedResponseCheck: v1beta1.ExpectedResponseCheck{
+								Type:  v1beta1.ExpectedResponseCheckTypeCustom,
 								Logic: `.response.body.password == .payload.body.password`,
 							},
 						},
@@ -215,14 +215,14 @@ func Test_CustomIsUpToDateCheck(t *testing.T) {
 		"CustomCheckFails": {
 			args: args{
 				ctx: context.Background(),
-				cr: &v1alpha2.Request{
-					Spec: v1alpha2.RequestSpec{
-						ForProvider: v1alpha2.RequestParameters{
-							Payload: v1alpha2.Payload{
+				cr: &v1beta1.Request{
+					Spec: v1beta1.RequestSpec{
+						ForProvider: v1beta1.RequestParameters{
+							Payload: v1beta1.Payload{
 								Body: `{"password": "password"}`,
 							},
-							ExpectedResponseCheck: v1alpha2.ExpectedResponseCheck{
-								Type:  v1alpha2.ExpectedResponseCheckTypeCustom,
+							ExpectedResponseCheck: v1beta1.ExpectedResponseCheck{
+								Type:  v1beta1.ExpectedResponseCheckTypeCustom,
 								Logic: `.response.body.password == .payload.body.password`,
 							},
 						},

@@ -29,7 +29,7 @@ import (
 	"github.com/google/go-cmp/cmp"
 	"github.com/pkg/errors"
 	"github.com/rossigee/provider-http/apis/common"
-	"github.com/rossigee/provider-http/apis/disposablerequest/v1alpha2"
+	"github.com/rossigee/provider-http/apis/disposablerequest/v1beta1"
 	httpClient "github.com/rossigee/provider-http/internal/clients/http"
 	"github.com/rossigee/provider-http/internal/utils"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -71,21 +71,21 @@ const (
 	testBody   = "{\"key1\": \"value1\"}"
 )
 
-type httpDisposableRequestModifier func(request *v1alpha2.DisposableRequest)
+type httpDisposableRequestModifier func(request *v1beta1.DisposableRequest)
 
-func httpDisposableRequest(rm ...httpDisposableRequestModifier) *v1alpha2.DisposableRequest {
-	r := &v1alpha2.DisposableRequest{
+func httpDisposableRequest(rm ...httpDisposableRequestModifier) *v1beta1.DisposableRequest {
+	r := &v1beta1.DisposableRequest{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      testDisposableRequestName,
 			Namespace: testNamespace,
 		},
-		Spec: v1alpha2.DisposableRequestSpec{
+		Spec: v1beta1.DisposableRequestSpec{
 			ClusterManagedResourceSpec: xpv1.ClusterManagedResourceSpec{
 				ProviderConfigReference: &xpv1.Reference{
 					Name: providerName,
 				},
 			},
-			ForProvider: v1alpha2.DisposableRequestParameters{
+			ForProvider: v1beta1.DisposableRequestParameters{
 				URL:         testURL,
 				Method:      testMethod,
 				Headers:     testHeaders,
@@ -93,7 +93,7 @@ func httpDisposableRequest(rm ...httpDisposableRequestModifier) *v1alpha2.Dispos
 				WaitTimeout: testTimeout,
 			},
 		},
-		Status: v1alpha2.DisposableRequestStatus{},
+		Status: v1beta1.DisposableRequestStatus{},
 	}
 
 	for _, m := range rm {
@@ -287,7 +287,7 @@ func Test_httpExternal_Update(t *testing.T) {
 
 func Test_deployAction(t *testing.T) {
 	type args struct {
-		cr        *v1alpha2.DisposableRequest
+		cr        *v1beta1.DisposableRequest
 		http      httpClient.Client
 		localKube client.Client
 	}
@@ -312,16 +312,16 @@ func Test_deployAction(t *testing.T) {
 					MockStatusUpdate: test.NewMockSubResourceUpdateFn(nil),
 					MockGet:          test.NewMockGetFn(nil),
 				},
-				cr: &v1alpha2.DisposableRequest{
-					Spec: v1alpha2.DisposableRequestSpec{
-						ForProvider: v1alpha2.DisposableRequestParameters{
+				cr: &v1beta1.DisposableRequest{
+					Spec: v1beta1.DisposableRequestSpec{
+						ForProvider: v1beta1.DisposableRequestParameters{
 							URL:     "invalid-url",
 							Method:  testMethod,
 							Headers: testHeaders,
 							Body:    testBody,
 						},
 					},
-					Status: v1alpha2.DisposableRequestStatus{},
+					Status: v1beta1.DisposableRequestStatus{},
 				},
 			},
 			want: want{
@@ -346,16 +346,16 @@ func Test_deployAction(t *testing.T) {
 					MockStatusUpdate: test.NewMockSubResourceUpdateFn(nil),
 					MockGet:          test.NewMockGetFn(nil),
 				},
-				cr: &v1alpha2.DisposableRequest{
-					Spec: v1alpha2.DisposableRequestSpec{
-						ForProvider: v1alpha2.DisposableRequestParameters{
+				cr: &v1beta1.DisposableRequest{
+					Spec: v1beta1.DisposableRequestSpec{
+						ForProvider: v1beta1.DisposableRequestParameters{
 							URL:     testURL,
 							Method:  testMethod,
 							Headers: testHeaders,
 							Body:    testBody,
 						},
 					},
-					Status: v1alpha2.DisposableRequestStatus{},
+					Status: v1beta1.DisposableRequestStatus{},
 				},
 			},
 			want: want{
@@ -382,16 +382,16 @@ func Test_deployAction(t *testing.T) {
 					MockStatusUpdate: test.NewMockSubResourceUpdateFn(nil),
 					MockGet:          test.NewMockGetFn(nil),
 				},
-				cr: &v1alpha2.DisposableRequest{
-					Spec: v1alpha2.DisposableRequestSpec{
-						ForProvider: v1alpha2.DisposableRequestParameters{
+				cr: &v1beta1.DisposableRequest{
+					Spec: v1beta1.DisposableRequestSpec{
+						ForProvider: v1beta1.DisposableRequestParameters{
 							URL:     testURL,
 							Method:  testMethod,
 							Headers: testHeaders,
 							Body:    testBody,
 						},
 					},
-					Status: v1alpha2.DisposableRequestStatus{},
+					Status: v1beta1.DisposableRequestStatus{},
 				},
 			},
 			want: want{

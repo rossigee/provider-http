@@ -7,7 +7,7 @@ import (
 	"github.com/crossplane/crossplane-runtime/v2/pkg/logging"
 	"github.com/pkg/errors"
 	"github.com/rossigee/provider-http/apis/common"
-	"github.com/rossigee/provider-http/apis/request/v1alpha2"
+	"github.com/rossigee/provider-http/apis/request/v1beta1"
 	httpClient "github.com/rossigee/provider-http/internal/clients/http"
 	kubehandler "github.com/rossigee/provider-http/internal/kube-handler"
 	corev1 "k8s.io/api/core/v1"
@@ -21,18 +21,18 @@ const (
 )
 
 // PatchSecretsIntoResponse patches secrets into the provided response.
-func PatchSecretsIntoResponse(ctx context.Context, localKube client.Client, response v1alpha2.Response, logger logging.Logger) (v1alpha2.Response, error) {
+func PatchSecretsIntoResponse(ctx context.Context, localKube client.Client, response v1beta1.Response, logger logging.Logger) (v1beta1.Response, error) {
 	patchedBody, err := PatchSecretsIntoString(ctx, localKube, response.Body, logger)
 	if err != nil {
-		return v1alpha2.Response{}, err
+		return v1beta1.Response{}, err
 	}
 
 	patchedHeaders, err := PatchSecretsIntoHeaders(ctx, localKube, response.Headers, logger)
 	if err != nil {
-		return v1alpha2.Response{}, err
+		return v1beta1.Response{}, err
 	}
 
-	return v1alpha2.Response{
+	return v1beta1.Response{
 		StatusCode: response.StatusCode,
 		Body:       patchedBody,
 		Headers:    patchedHeaders,

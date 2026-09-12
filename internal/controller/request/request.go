@@ -29,8 +29,8 @@ import (
 	"github.com/crossplane/crossplane-runtime/v2/pkg/resource"
 	xpv1 "github.com/crossplane/crossplane/apis/v2/core/v2"
 	"github.com/pkg/errors"
-	"github.com/rossigee/provider-http/apis/request/v1alpha2"
-	apisv1alpha1 "github.com/rossigee/provider-http/apis/v1alpha1"
+	"github.com/rossigee/provider-http/apis/request/v1beta1"
+	apisv1beta1 "github.com/rossigee/provider-http/apis/v1beta1"
 	httpClient "github.com/rossigee/provider-http/internal/clients/http"
 	"github.com/rossigee/provider-http/internal/controller/request/observe"
 	"github.com/rossigee/provider-http/internal/controller/request/requestgen"
@@ -61,7 +61,7 @@ const (
 
 // Setup adds a controller that reconciles Request managed resources.
 func Setup(mgr ctrl.Manager, o controller.Options, timeout time.Duration) error {
-	name := managed.ControllerName(v1alpha2.RequestGroupKind)
+	name := managed.ControllerName(v1beta1.RequestGroupKind)
 	opts := []managed.ReconcilerOption{
 		managed.WithExternalConnector(&connector{
 			logger:          o.Logger,
@@ -77,14 +77,14 @@ func Setup(mgr ctrl.Manager, o controller.Options, timeout time.Duration) error 
 		opts = append(opts, managed.WithManagementPolicies())
 	}
 	r := managed.NewReconciler(mgr,
-		resource.ManagedKind(v1alpha2.RequestGroupVersionKind),
+		resource.ManagedKind(v1beta1.RequestGroupVersionKind),
 		opts...)
 
 	return ctrl.NewControllerManagedBy(mgr).
 		Named(name).
 		WithOptions(o.ForControllerRuntime()).
 		WithEventFilter(resource.DesiredStateChanged()).
-		For(&v1alpha2.Request{}).
+		For(&v1beta1.Request{}).
 		Complete(ratelimiter.NewReconciler(name, r, o.GlobalRateLimiter))
 }
 
@@ -98,14 +98,14 @@ type connector struct {
 
 // Connect creates a new external client using the provider config.
 func (c *connector) Connect(ctx context.Context, mg resource.Managed) (managed.ExternalClient, error) {
-	cr, ok := mg.(*v1alpha2.Request)
+	cr, ok := mg.(*v1beta1.Request)
 	if !ok {
 		return nil, errors.New(errNotRequest)
 	}
 
 	l := c.logger.WithValues("request", cr.Name)
 
-	pc := &apisv1alpha1.ProviderConfig{}
+	pc := &apisv1beta1.ProviderConfig{}
 	n := types.NamespacedName{Name: cr.GetProviderConfigReference().Name}
 	if err := c.kube.Get(ctx, n, pc); err != nil {
 		return nil, errors.Wrap(err, errProviderNotRetrieved)
@@ -142,7 +142,7 @@ type external struct {
 }
 
 func (c *external) Observe(ctx context.Context, mg resource.Managed) (managed.ExternalObservation, error) {
-	cr, ok := mg.(*v1alpha2.Request)
+	cr, ok := mg.(*v1beta1.Request)
 	if !ok {
 		return managed.ExternalObservation{}, errors.New(errNotRequest)
 	}
@@ -192,7 +192,7 @@ func (c *external) Observe(ctx context.Context, mg resource.Managed) (managed.Ex
 }
 
 // deployAction executes the action based on the given Request resource and Mapping configuration.
-func (c *external) deployAction(ctx context.Context, cr *v1alpha2.Request, action string) error {
+func (c *external) deployAction(ctx context.Context, cr *v1beta1.Request, action string) error {
 	mapping, err := requestmapping.GetMapping(&cr.Spec.ForProvider, action, c.logger)
 	if err != nil {
 		c.logger.Info(err.Error())
@@ -216,14 +216,14 @@ func (c *external) deployAction(ctx context.Context, cr *v1alpha2.Request, actio
 }
 
 func (c *external) Create(ctx context.Context, mg resource.Managed) (managed.ExternalCreation, error) {
-	cr, ok := mg.(*v1alpha2.Request)
+	cr, ok := mg.(*v1beta1.Request)
 	if !ok {
 		return managed.ExternalCreation{}, errors.New(errNotRequest)
 	}
 	_, span := tracing.StartSpanWithAttrs(ctx, "request.create", "Request", cr.GetName(), "create")
 	defer span.End()
 
-	err := c.deployAction(ctx, cr, v1alpha2.ActionCreate)
+	err := c.deployAction(ctx, cr, v1beta1.ActionCreate)
 	if err != nil {
 		return managed.ExternalCreation{}, errors.Wrap(err, errFailedToSendHttpRequest)
 	}
@@ -237,25 +237,25 @@ func (c *external) Create(ctx context.Context, mg resource.Managed) (managed.Ext
 }
 
 func (c *external) Update(ctx context.Context, mg resource.Managed) (managed.ExternalUpdate, error) {
-	cr, ok := mg.(*v1alpha2.Request)
+	cr, ok := mg.(*v1beta1.Request)
 	if !ok {
 		return managed.ExternalUpdate{}, errors.New(errNotRequest)
 	}
 	_, span := tracing.StartSpanWithAttrs(ctx, "request.update", "Request", cr.GetName(), "update")
 	defer span.End()
 
-	return managed.ExternalUpdate{}, errors.Wrap(c.deployAction(ctx, cr, v1alpha2.ActionUpdate), errFailedToSendHttpRequest)
+	return managed.ExternalUpdate{}, errors.Wrap(c.deployAction(ctx, cr, v1beta1.ActionUpdate), errFailedToSendHttpRequest)
 }
 
 func (c *external) Delete(ctx context.Context, mg resource.Managed) (managed.ExternalDelete, error) {
-	cr, ok := mg.(*v1alpha2.Request)
+	cr, ok := mg.(*v1beta1.Request)
 	if !ok {
 		return managed.ExternalDelete{}, errors.New(errNotRequest)
 	}
 	_, span := tracing.StartSpanWithAttrs(ctx, "request.delete", "Request", cr.GetName(), "delete")
 	defer span.End()
 
-	return managed.ExternalDelete{}, errors.Wrap(c.deployAction(ctx, cr, v1alpha2.ActionRemove), errFailedToSendHttpRequest)
+	return managed.ExternalDelete{}, errors.Wrap(c.deployAction(ctx, cr, v1beta1.ActionRemove), errFailedToSendHttpRequest)
 }
 
 func (c *external) Disconnect(ctx context.Context) error {
@@ -264,7 +264,7 @@ func (c *external) Disconnect(ctx context.Context) error {
 }
 
 // generateConnectionDetails creates connection details from HTTP request configuration
-func (c *external) generateConnectionDetails(cr *v1alpha2.Request) managed.ConnectionDetails {
+func (c *external) generateConnectionDetails(cr *v1beta1.Request) managed.ConnectionDetails {
 	details := managed.ConnectionDetails{}
 
 	// Add basic request information from RequestDetails
@@ -282,7 +282,7 @@ func (c *external) generateConnectionDetails(cr *v1alpha2.Request) managed.Conne
 }
 
 // sendHTTPRequest sends HTTP request using the appropriate method based on TLS configuration
-func (c *external) sendHTTPRequest(ctx context.Context, method string, url string, body httpClient.Data, headers httpClient.Data, cr *v1alpha2.Request) (httpClient.HttpDetails, error) {
+func (c *external) sendHTTPRequest(ctx context.Context, method string, url string, body httpClient.Data, headers httpClient.Data, cr *v1beta1.Request) (httpClient.HttpDetails, error) {
 	// Use new TLS-aware method if TLS configuration is provided
 	if cr.Spec.ForProvider.TLSConfig != nil {
 		return c.http.SendRequestWithTLS(ctx, method, url, body, headers, cr.Spec.ForProvider.TLSConfig)

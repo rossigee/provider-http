@@ -30,8 +30,8 @@ import (
 	"github.com/crossplane/crossplane-runtime/v2/pkg/resource"
 	xpv1 "github.com/crossplane/crossplane/apis/v2/core/v2"
 	"github.com/pkg/errors"
-	"github.com/rossigee/provider-http/apis/disposablerequest/v1alpha2"
-	apisv1alpha1 "github.com/rossigee/provider-http/apis/v1alpha1"
+	"github.com/rossigee/provider-http/apis/disposablerequest/v1beta1"
+	apisv1beta1 "github.com/rossigee/provider-http/apis/v1beta1"
 	httpClient "github.com/rossigee/provider-http/internal/clients/http"
 	datapatcher "github.com/rossigee/provider-http/internal/data-patcher"
 	"github.com/rossigee/provider-http/internal/features"
@@ -64,7 +64,7 @@ const (
 
 // Setup adds a controller that reconciles DisposableRequest managed resources.
 func Setup(mgr ctrl.Manager, o controller.Options, timeout time.Duration) error {
-	name := managed.ControllerName(v1alpha2.DisposableRequestGroupKind)
+	name := managed.ControllerName(v1beta1.DisposableRequestGroupKind)
 	opts := []managed.ReconcilerOption{
 		managed.WithExternalConnector(&connector{
 			logger:          o.Logger,
@@ -81,14 +81,14 @@ func Setup(mgr ctrl.Manager, o controller.Options, timeout time.Duration) error 
 		opts = append(opts, managed.WithManagementPolicies())
 	}
 	r := managed.NewReconciler(mgr,
-		resource.ManagedKind(v1alpha2.DisposableRequestGroupVersionKind),
+		resource.ManagedKind(v1beta1.DisposableRequestGroupVersionKind),
 		opts...)
 
 	return ctrl.NewControllerManagedBy(mgr).
 		Named(name).
 		WithOptions(o.ForControllerRuntime()).
 		WithEventFilter(resource.DesiredStateChanged()).
-		For(&v1alpha2.DisposableRequest{}).
+		For(&v1beta1.DisposableRequest{}).
 		Complete(ratelimiter.NewReconciler(name, r, o.GlobalRateLimiter))
 }
 
@@ -100,14 +100,14 @@ type connector struct {
 
 // Connect returns a new ExternalClient.
 func (c *connector) Connect(ctx context.Context, mg resource.Managed) (managed.ExternalClient, error) {
-	cr, ok := mg.(*v1alpha2.DisposableRequest)
+	cr, ok := mg.(*v1beta1.DisposableRequest)
 	if !ok {
 		return nil, errors.New(errNotDisposableRequest)
 	}
 
 	l := c.logger.WithValues("disposableRequest", cr.Name)
 
-	pc := &apisv1alpha1.ProviderConfig{}
+	pc := &apisv1beta1.ProviderConfig{}
 	n := types.NamespacedName{Name: cr.GetProviderConfigReference().Name}
 	if err := c.kube.Get(ctx, n, pc); err != nil {
 		return nil, errors.Wrap(err, errProviderNotRetrieved)
@@ -142,7 +142,7 @@ type external struct {
 }
 
 func (c *external) Observe(ctx context.Context, mg resource.Managed) (managed.ExternalObservation, error) {
-	cr, ok := mg.(*v1alpha2.DisposableRequest)
+	cr, ok := mg.(*v1beta1.DisposableRequest)
 	if !ok {
 		return managed.ExternalObservation{}, errors.New(errNotDisposableRequest)
 	}
@@ -181,7 +181,7 @@ func (c *external) Observe(ctx context.Context, mg resource.Managed) (managed.Ex
 	}, nil
 }
 
-func (c *external) deployAction(ctx context.Context, cr *v1alpha2.DisposableRequest) error {
+func (c *external) deployAction(ctx context.Context, cr *v1beta1.DisposableRequest) error {
 	sensitiveBody, err := datapatcher.PatchSecretsIntoString(ctx, c.localKube, cr.Spec.ForProvider.Body, c.logger)
 	if err != nil {
 		return err
@@ -244,7 +244,7 @@ func (c *external) deployAction(ctx context.Context, cr *v1alpha2.DisposableRequ
 	return utils.SetRequestResourceStatus(*resource, resource.SetStatusCode(), resource.SetLastReconcileTime(), resource.SetHeaders(), resource.SetBody(), resource.SetSynced(), resource.SetRequestDetails())
 }
 
-func (c *external) isResponseAsExpected(cr *v1alpha2.DisposableRequest, res httpClient.HttpResponse) (bool, error) {
+func (c *external) isResponseAsExpected(cr *v1beta1.DisposableRequest, res httpClient.HttpResponse) (bool, error) {
 	// If no expected response is defined, consider it as expected.
 	if cr.Spec.ForProvider.ExpectedResponse == "" {
 		return true, nil
@@ -270,7 +270,7 @@ func (c *external) isResponseAsExpected(cr *v1alpha2.DisposableRequest, res http
 }
 
 func (c *external) Create(ctx context.Context, mg resource.Managed) (managed.ExternalCreation, error) {
-	cr, ok := mg.(*v1alpha2.DisposableRequest)
+	cr, ok := mg.(*v1beta1.DisposableRequest)
 	if !ok {
 		return managed.ExternalCreation{}, errors.New(errNotDisposableRequest)
 	}
@@ -285,7 +285,7 @@ func (c *external) Create(ctx context.Context, mg resource.Managed) (managed.Ext
 }
 
 func (c *external) Update(ctx context.Context, mg resource.Managed) (managed.ExternalUpdate, error) {
-	cr, ok := mg.(*v1alpha2.DisposableRequest)
+	cr, ok := mg.(*v1beta1.DisposableRequest)
 	if !ok {
 		return managed.ExternalUpdate{}, errors.New(errNotDisposableRequest)
 	}
@@ -316,7 +316,7 @@ func WithCustomPollIntervalHook() managed.ReconcilerOption {
 	return managed.WithPollIntervalHook(func(mg resource.Managed, pollInterval time.Duration) time.Duration {
 		defaultPollInterval := 30 * time.Second
 
-		cr, ok := mg.(*v1alpha2.DisposableRequest)
+		cr, ok := mg.(*v1beta1.DisposableRequest)
 		if !ok {
 			return defaultPollInterval
 		}
@@ -343,7 +343,7 @@ func WithCustomPollIntervalHook() managed.ReconcilerOption {
 }
 
 // sendHTTPRequest sends HTTP request using the appropriate method based on TLS configuration
-func (c *external) sendHTTPRequest(ctx context.Context, method string, url string, body httpClient.Data, headers httpClient.Data, cr *v1alpha2.DisposableRequest) (httpClient.HttpDetails, error) {
+func (c *external) sendHTTPRequest(ctx context.Context, method string, url string, body httpClient.Data, headers httpClient.Data, cr *v1beta1.DisposableRequest) (httpClient.HttpDetails, error) {
 	// Use new TLS-aware method if TLS configuration is provided
 	if cr.Spec.ForProvider.TLSConfig != nil {
 		return c.http.SendRequestWithTLS(ctx, method, url, body, headers, cr.Spec.ForProvider.TLSConfig)

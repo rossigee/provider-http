@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package v1alpha2
+package v1beta1
 
 import (
 	"reflect"
@@ -22,10 +22,10 @@ import (
 	"k8s.io/apimachinery/pkg/runtime/schema"
 )
 
-// Response type metadata.
+// ProviderConfig type metadata.
 var (
-	ResponseKind             = reflect.TypeOf(Response{}).Name()
-	ResponseGroupKind        = schema.GroupKind{Group: Group, Kind: ResponseKind}
-	ResponseKindAPIVersion   = ResponseKind + "." + SchemeGroupVersion.String()
-	ResponseGroupVersionKind = SchemeGroupVersion.WithKind(ResponseKind)
+	ProviderConfigKind             = reflect.TypeOf(ProviderConfig{}).Name()
+	ProviderConfigGroupKind        = schema.GroupKind{Group: Group, Kind: ProviderConfigKind}.String()
+	ProviderConfigKindAPIVersion   = ProviderConfigKind + "." + SchemeGroupVersion.String()
+	ProviderConfigGroupVersionKind = SchemeGroupVersion.WithKind(ProviderConfigKind)
 )

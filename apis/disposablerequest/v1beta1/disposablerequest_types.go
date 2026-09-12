@@ -20,6 +20,7 @@ import (
 	"reflect"
 
 	xpv1 "github.com/crossplane/crossplane/apis/v2/core/v2"
+	"github.com/rossigee/provider-http/apis/common"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 )
@@ -35,25 +36,38 @@ type DisposableRequestParameters struct {
 	// +kubebuilder:validation:XValidation:rule="self == oldSelf",message="Field 'forProvider.body' is immutable"
 	Body string `json:"body,omitempty"`
 
+	// WaitTimeout specifies the maximum time duration for waiting.
 	WaitTimeout *metav1.Duration `json:"waitTimeout,omitempty"`
 
 	// RollbackRetriesLimit is max number of attempts to retry HTTP request by sending again the request.
 	RollbackRetriesLimit *int32 `json:"rollbackRetriesLimit,omitempty"`
 
 	// InsecureSkipTLSVerify, when set to true, skips TLS certificate checks for the HTTP request
+	// Deprecated: Use TLSConfig.InsecureSkipVerify for new implementations.
 	InsecureSkipTLSVerify bool `json:"insecureSkipTLSVerify,omitempty"`
+
+	// TLSConfig specifies the TLS configuration for HTTP requests.
+	TLSConfig *common.TLSConfig `json:"tlsConfig,omitempty"`
 
 	// ExpectedResponse is a jq filter expression used to evaluate the HTTP response and determine if it matches the expected criteria.
 	// The expression should return a boolean; if true, the response is considered expected.
-	// Example: '.Body.job_status == "success"'
+	// Example: '.body.job_status == "success"'
 	ExpectedResponse string `json:"expectedResponse,omitempty"`
+
+	// NextReconcile specifies the duration after which the next reconcile should occur.
+	NextReconcile *metav1.Duration `json:"nextReconcile,omitempty"`
+
+	// ShouldLoopInfinitely specifies whether the reconciliation should loop indefinitely.
+	ShouldLoopInfinitely bool `json:"shouldLoopInfinitely,omitempty"`
+
+	// SecretInjectionConfig specifies the secrets receiving patches from response data.
+	SecretInjectionConfigs []common.SecretInjectionConfig `json:"secretInjectionConfigs,omitempty"`
 }
 
 // A DisposableRequestSpec defines the desired state of a DisposableRequest.
 type DisposableRequestSpec struct {
 	xpv1.ClusterManagedResourceSpec `json:",inline"`
-
-	ForProvider DisposableRequestParameters `json:"forProvider"`
+	ForProvider                     DisposableRequestParameters `json:"forProvider"`
 }
 
 type Response struct {
@@ -77,6 +91,9 @@ type DisposableRequestStatus struct {
 	Error                      string   `json:"error,omitempty"`
 	Synced                     bool     `json:"synced,omitempty"`
 	RequestDetails             Mapping  `json:"requestDetails,omitempty"`
+
+	// LastReconcileTime records the last time the resource was reconciled.
+	LastReconcileTime metav1.Time `json:"lastReconcileTime,omitempty"`
 }
 
 // +kubebuilder:object:root=true
@@ -87,7 +104,8 @@ type DisposableRequestStatus struct {
 // +kubebuilder:printcolumn:name="EXTERNAL-NAME",type="string",JSONPath=".metadata.annotations.crossplane.io/external-name"
 // +kubebuilder:printcolumn:name="AGE",type="date",JSONPath=".metadata.creationTimestamp"
 // +kubebuilder:subresource:status
-// +kubebuilder:resource:scope=Namespaced,categories={crossplane,managed,http}
+// +kubebuilder:resource:scope=Cluster,categories={crossplane,managed,http}
+// +kubebuilder:storageversion
 type DisposableRequest struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`

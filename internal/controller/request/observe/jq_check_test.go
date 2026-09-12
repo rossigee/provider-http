@@ -7,14 +7,14 @@ import (
 	"github.com/crossplane/crossplane-runtime/v2/pkg/logging"
 	"github.com/crossplane/crossplane-runtime/v2/pkg/test"
 	"github.com/google/go-cmp/cmp"
-	"github.com/rossigee/provider-http/apis/request/v1alpha2"
+	"github.com/rossigee/provider-http/apis/request/v1beta1"
 	httpClient "github.com/rossigee/provider-http/internal/clients/http"
 )
 
 func Test_CustomCheck(t *testing.T) {
 	type args struct {
 		ctx     context.Context
-		cr      *v1alpha2.Request
+		cr      *v1beta1.Request
 		details httpClient.HttpDetails
 		logic   string
 	}
@@ -31,14 +31,14 @@ func Test_CustomCheck(t *testing.T) {
 		"CustomCheckPasses": {
 			args: args{
 				ctx: context.Background(),
-				cr: &v1alpha2.Request{
-					Spec: v1alpha2.RequestSpec{
-						ForProvider: v1alpha2.RequestParameters{
-							Payload: v1alpha2.Payload{
+				cr: &v1beta1.Request{
+					Spec: v1beta1.RequestSpec{
+						ForProvider: v1beta1.RequestParameters{
+							Payload: v1beta1.Payload{
 								Body: `{"password": "password"}`,
 							},
-							ExpectedResponseCheck: v1alpha2.ExpectedResponseCheck{
-								Type:  v1alpha2.ExpectedResponseCheckTypeCustom,
+							ExpectedResponseCheck: v1beta1.ExpectedResponseCheck{
+								Type:  v1beta1.ExpectedResponseCheckTypeCustom,
 								Logic: `.response.body.password == .payload.body.password`,
 							},
 						},
@@ -61,18 +61,18 @@ func Test_CustomCheck(t *testing.T) {
 		"CustomCheckFails": {
 			args: args{
 				ctx: context.Background(),
-				cr: &v1alpha2.Request{
-					Spec: v1alpha2.RequestSpec{
-						ForProvider: v1alpha2.RequestParameters{
-							Payload: v1alpha2.Payload{
+				cr: &v1beta1.Request{
+					Spec: v1beta1.RequestSpec{
+						ForProvider: v1beta1.RequestParameters{
+							Payload: v1beta1.Payload{
 								Body: `{"password": "password"}`,
 							},
-							ExpectedResponseCheck: v1alpha2.ExpectedResponseCheck{
-								Type:  v1alpha2.ExpectedResponseCheckTypeCustom,
+							ExpectedResponseCheck: v1beta1.ExpectedResponseCheck{
+								Type:  v1beta1.ExpectedResponseCheckTypeCustom,
 								Logic: `.response.body.password == .payload.body.password`,
 							},
-							IsRemovedCheck: v1alpha2.ExpectedResponseCheck{
-								Type:  v1alpha2.ExpectedResponseCheckTypeCustom,
+							IsRemovedCheck: v1beta1.ExpectedResponseCheck{
+								Type:  v1beta1.ExpectedResponseCheckTypeCustom,
 								Logic: `.response.body.password == .payload.body.password`,
 							},
 						},

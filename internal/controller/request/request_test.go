@@ -11,7 +11,7 @@ import (
 	"github.com/google/go-cmp/cmp"
 	"github.com/pkg/errors"
 	"github.com/rossigee/provider-http/apis/common"
-	"github.com/rossigee/provider-http/apis/request/v1alpha2"
+	"github.com/rossigee/provider-http/apis/request/v1beta1"
 	httpClient "github.com/rossigee/provider-http/internal/clients/http"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"sigs.k8s.io/controller-runtime/pkg/client"
@@ -28,12 +28,12 @@ const (
 )
 
 var (
-	testForProvider = v1alpha2.RequestParameters{
-		Payload: v1alpha2.Payload{
+	testForProvider = v1beta1.RequestParameters{
+		Payload: v1beta1.Payload{
 			Body:    "{\"username\": \"john_doe\", \"email\": \"john.doe@example.com\"}",
 			BaseUrl: "https://api.example.com/users",
 		},
-		Mappings: []v1alpha2.Mapping{
+		Mappings: []v1beta1.Mapping{
 			testPostMapping,
 			testGetMapping,
 			testPutMapping,
@@ -42,15 +42,15 @@ var (
 	}
 )
 
-type httpRequestModifier func(request *v1alpha2.Request)
+type httpRequestModifier func(request *v1beta1.Request)
 
-func httpRequest(rm ...httpRequestModifier) *v1alpha2.Request {
-	r := &v1alpha2.Request{
+func httpRequest(rm ...httpRequestModifier) *v1beta1.Request {
+	r := &v1beta1.Request{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      testRequestName,
 			Namespace: testNamespace,
 		},
-		Spec: v1alpha2.RequestSpec{
+		Spec: v1beta1.RequestSpec{
 			ClusterManagedResourceSpec: xpv1.ClusterManagedResourceSpec{
 				ProviderConfigReference: &xpv1.Reference{
 					Name: providerName,
@@ -58,7 +58,7 @@ func httpRequest(rm ...httpRequestModifier) *v1alpha2.Request {
 			},
 			ForProvider: testForProvider,
 		},
-		Status: v1alpha2.RequestStatus{},
+		Status: v1beta1.RequestStatus{},
 	}
 
 	for _, m := range rm {
@@ -95,7 +95,7 @@ type MockSetRequestStatusFn func() error
 
 type MockResetFailuresFn func()
 
-type MockInitFn func(ctx context.Context, cr *v1alpha2.Request, res httpClient.HttpResponse)
+type MockInitFn func(ctx context.Context, cr *v1beta1.Request, res httpClient.HttpResponse)
 
 type MockStatusHandler struct {
 	MockSetRequest    MockSetRequestStatusFn
@@ -106,7 +106,7 @@ func (s *MockStatusHandler) ResetFailures() {
 	s.MockResetFailures()
 }
 
-func (s *MockStatusHandler) SetRequestStatus(ctx context.Context, cr *v1alpha2.Request, res httpClient.HttpResponse, err error) error {
+func (s *MockStatusHandler) SetRequestStatus(ctx context.Context, cr *v1beta1.Request, res httpClient.HttpResponse, err error) error {
 	return s.MockSetRequest()
 }
 

@@ -14,8 +14,4 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-// Package v1beta1 contains the v1beta1 group DisposableRequest resources of the HTTP provider.
-// +kubebuilder:object:generate=true
-// +groupName=http.m.crossplane.io
-// +versionName=v1beta1
 package v1beta1

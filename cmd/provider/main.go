@@ -29,8 +29,8 @@ import (
 	"github.com/crossplane/crossplane-runtime/v2/pkg/ratelimiter"
 	"github.com/crossplane/crossplane-runtime/v2/pkg/statemetrics"
 	"github.com/rossigee/provider-http/apis"
-	disposablerequestv1alpha1 "github.com/rossigee/provider-http/apis/disposablerequest/v1alpha1"
-	requestv1alpha1 "github.com/rossigee/provider-http/apis/request/v1alpha1"
+	disposablerequestv1beta1 "github.com/rossigee/provider-http/apis/disposablerequest/v1beta1"
+	requestv1beta1 "github.com/rossigee/provider-http/apis/request/v1beta1"
 	template "github.com/rossigee/provider-http/internal/controller"
 	"github.com/rossigee/provider-http/internal/features"
 	"github.com/rossigee/provider-http/internal/tracing"
@@ -138,8 +138,8 @@ func main() {
 
 	kingpin.FatalIfError(template.Setup(mgr, o, *timeout), "Cannot setup Template controllers")
 
-	kingpin.FatalIfError(mgr.Add(statemetrics.NewMRStateRecorder(mgr.GetClient(), o.Logger, o.MetricOptions.MRStateMetrics, &requestv1alpha1.RequestList{}, o.MetricOptions.PollStateMetricInterval)), "Cannot register state metrics for Request")
-	kingpin.FatalIfError(mgr.Add(statemetrics.NewMRStateRecorder(mgr.GetClient(), o.Logger, o.MetricOptions.MRStateMetrics, &disposablerequestv1alpha1.DisposableRequestList{}, o.MetricOptions.PollStateMetricInterval)), "Cannot register state metrics for DisposableRequest")
+	kingpin.FatalIfError(mgr.Add(statemetrics.NewMRStateRecorder(mgr.GetClient(), o.Logger, o.MetricOptions.MRStateMetrics, &requestv1beta1.RequestList{}, o.MetricOptions.PollStateMetricInterval)), "Cannot register state metrics for Request")
+	kingpin.FatalIfError(mgr.Add(statemetrics.NewMRStateRecorder(mgr.GetClient(), o.Logger, o.MetricOptions.MRStateMetrics, &disposablerequestv1beta1.DisposableRequestList{}, o.MetricOptions.PollStateMetricInterval)), "Cannot register state metrics for DisposableRequest")
 
 	kingpin.FatalIfError(mgr.AddHealthzCheck("healthz", healthz.Ping), "Cannot add health check")
 	kingpin.FatalIfError(mgr.AddReadyzCheck("readyz", healthz.Ping), "Cannot add ready check")

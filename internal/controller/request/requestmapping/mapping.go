@@ -6,7 +6,7 @@ import (
 
 	"github.com/crossplane/crossplane-runtime/v2/pkg/logging"
 	"github.com/pkg/errors"
-	"github.com/rossigee/provider-http/apis/request/v1alpha2"
+	"github.com/rossigee/provider-http/apis/request/v1beta1"
 )
 
 const (
@@ -16,15 +16,15 @@ const (
 var (
 	// actionToMathodFactoryMap maps action to the default corresponding HTTP method.
 	actionToMathodFactoryMap = map[string]string{
-		v1alpha2.ActionCreate:  http.MethodPost,
-		v1alpha2.ActionObserve: http.MethodGet,
-		v1alpha2.ActionUpdate:  http.MethodPut,
-		v1alpha2.ActionRemove:  http.MethodDelete,
+		v1beta1.ActionCreate:  http.MethodPost,
+		v1beta1.ActionObserve: http.MethodGet,
+		v1beta1.ActionUpdate:  http.MethodPut,
+		v1beta1.ActionRemove:  http.MethodDelete,
 	}
 )
 
 // getMappingByMethod returns the mapping for the given method from the request parameters.
-func getMappingByMethod(requestParams *v1alpha2.RequestParameters, method string) (*v1alpha2.Mapping, bool) {
+func getMappingByMethod(requestParams *v1beta1.RequestParameters, method string) (*v1beta1.Mapping, bool) {
 	for _, mapping := range requestParams.Mappings {
 		if mapping.Method == method {
 			return &mapping, true
@@ -34,7 +34,7 @@ func getMappingByMethod(requestParams *v1alpha2.RequestParameters, method string
 }
 
 // getMappingByAction returns the mapping for the given action from the request parameters.
-func getMappingByAction(requestParams *v1alpha2.RequestParameters, action string) (*v1alpha2.Mapping, bool) {
+func getMappingByAction(requestParams *v1beta1.RequestParameters, action string) (*v1beta1.Mapping, bool) {
 	for _, mapping := range requestParams.Mappings {
 		if mapping.Action == action {
 			return &mapping, true
@@ -46,7 +46,7 @@ func getMappingByAction(requestParams *v1alpha2.RequestParameters, action string
 // GetMapping retrieves the mapping based on the provided request parameters, method, and action.
 // It first attempts to find the mapping by the specified action. If found, it sets the method if it's not defined.
 // If no action is specified or the mapping by action is not found, it falls back to finding the mapping by the default method.
-func GetMapping(requestParams *v1alpha2.RequestParameters, action string, logger logging.Logger) (*v1alpha2.Mapping, error) {
+func GetMapping(requestParams *v1beta1.RequestParameters, action string, logger logging.Logger) (*v1beta1.Mapping, error) {
 	method := getDefaultMethodByAction(action)
 	if mapping, found := getMappingByAction(requestParams, action); found {
 		if mapping.Method == "" {

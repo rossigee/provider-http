@@ -7,7 +7,7 @@ import (
 
 	"github.com/crossplane/crossplane-runtime/v2/pkg/logging"
 	"github.com/pkg/errors"
-	"github.com/rossigee/provider-http/apis/request/v1alpha2"
+	"github.com/rossigee/provider-http/apis/request/v1beta1"
 	httpClient "github.com/rossigee/provider-http/internal/clients/http"
 	"github.com/rossigee/provider-http/internal/controller/request/requestprocessing"
 	datapatcher "github.com/rossigee/provider-http/internal/data-patcher"
@@ -23,7 +23,7 @@ type RequestDetails struct {
 }
 
 // GenerateRequestDetails generates request details.
-func GenerateRequestDetails(ctx context.Context, localKube client.Client, methodMapping v1alpha2.Mapping, forProvider v1alpha2.RequestParameters, response v1alpha2.Response, logger logging.Logger) (RequestDetails, error, bool) {
+func GenerateRequestDetails(ctx context.Context, localKube client.Client, methodMapping v1beta1.Mapping, forProvider v1beta1.RequestParameters, response v1beta1.Response, logger logging.Logger) (RequestDetails, error, bool) {
 	patchedResponse, err := datapatcher.PatchSecretsIntoResponse(ctx, localKube, response, logger)
 	if err != nil {
 		return RequestDetails{}, err, false
@@ -54,7 +54,7 @@ func GenerateRequestDetails(ctx context.Context, localKube client.Client, method
 
 // GenerateRequestContext creates a JSON-compatible map from the specified Request's ForProvider and Response fields.
 // It merges the two maps, converts JSON strings to nested maps, and returns the resulting map.
-func GenerateRequestContext(forProvider v1alpha2.RequestParameters, patchedResponse v1alpha2.Response) map[string]interface{} {
+func GenerateRequestContext(forProvider v1beta1.RequestParameters, patchedResponse v1beta1.Response) map[string]interface{} {
 	baseMap, _ := json_util.StructToMap(forProvider)
 	statusMap, _ := json_util.StructToMap(map[string]interface{}{
 		"response": patchedResponse,
@@ -73,7 +73,7 @@ func GenerateRequestContext(forProvider v1alpha2.RequestParameters, patchedRespo
 // details are valid, the function returns them. If not, it falls back to using the cached response in the Request's status
 // and attempts to generate request details again. The function returns the generated request details or an error if the
 // generation process fails.
-func GenerateValidRequestDetails(ctx context.Context, cr *v1alpha2.Request, mapping *v1alpha2.Mapping, localKube client.Client, logger logging.Logger) (RequestDetails, error) {
+func GenerateValidRequestDetails(ctx context.Context, cr *v1beta1.Request, mapping *v1beta1.Mapping, localKube client.Client, logger logging.Logger) (RequestDetails, error) {
 	requestDetails, _, ok := GenerateRequestDetails(ctx, localKube, *mapping, cr.Spec.ForProvider, cr.Status.Response, logger)
 	if IsRequestValid(requestDetails) && ok {
 		return requestDetails, nil

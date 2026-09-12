@@ -14,11 +14,11 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-// Package v1alpha1 contains the v1alpha1 group Sample resources of the http provider.
+// Package v1beta1 contains the core resources of the Http provider.
 // +kubebuilder:object:generate=true
-// +groupName=http.crossplane.io
-// +versionName=v1alpha1
-package v1alpha1
+// +groupName=http.m.crossplane.io
+// +versionName=v1beta1
+package v1beta1
 
 import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -28,8 +28,8 @@ import (
 
 // Package type metadata.
 const (
-	Group   = "http.crossplane.io"
-	Version = "v1alpha1"
+	Group   = "http.m.crossplane.io"
+	Version = "v1beta1"
 )
 
 var (
@@ -42,8 +42,10 @@ var (
 
 func addKnownTypes(s *runtime.Scheme) error {
 	s.AddKnownTypes(SchemeGroupVersion,
-		&Request{},
-		&RequestList{},
+		&ProviderConfigUsage{},
+		&ProviderConfigUsageList{},
+		&ProviderConfig{},
+		&ProviderConfigList{},
 	)
 	metav1.AddToGroupVersion(s, SchemeGroupVersion)
 	return nil

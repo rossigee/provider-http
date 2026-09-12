@@ -7,8 +7,8 @@ import (
 	"github.com/crossplane/crossplane-runtime/v2/pkg/test"
 	"github.com/google/go-cmp/cmp"
 	"github.com/pkg/errors"
-	v1alpha1_disposable "github.com/rossigee/provider-http/apis/disposablerequest/v1alpha1"
-	v1alpha1_request "github.com/rossigee/provider-http/apis/request/v1alpha1"
+	v1beta1_disposable "github.com/rossigee/provider-http/apis/disposablerequest/v1beta1"
+	v1beta1_request "github.com/rossigee/provider-http/apis/request/v1beta1"
 	httpClient "github.com/rossigee/provider-http/internal/clients/http"
 )
 
@@ -17,38 +17,38 @@ var (
 )
 
 var (
-	testPostMapping = v1alpha1_request.Mapping{
+	testPostMapping = v1beta1_request.Mapping{
 		Method: "POST",
 		Body:   "{ username: .payload.body.username, email: .payload.body.email }",
 		URL:    ".payload.baseUrl",
 	}
 
-	testPutMapping = v1alpha1_request.Mapping{
+	testPutMapping = v1beta1_request.Mapping{
 		Method: "PUT",
 		Body:   "{ username: \"john_doe_new_username\" }",
 		URL:    "(.payload.baseUrl + \"/\" + .response.body.id)",
 	}
 
-	testGetMapping = v1alpha1_request.Mapping{
+	testGetMapping = v1beta1_request.Mapping{
 		Method: "GET",
 		URL:    "(.payload.baseUrl + \"/\" + .response.body.id)",
 	}
 
-	testDeleteMapping = v1alpha1_request.Mapping{
+	testDeleteMapping = v1beta1_request.Mapping{
 		Method: "DELETE",
 		URL:    "(.payload.baseUrl + \"/\" + .response.body.id)",
 	}
 )
 
 var (
-	testDisposableForProvider = v1alpha1_disposable.DisposableRequestParameters{
+	testDisposableForProvider = v1beta1_disposable.DisposableRequestParameters{
 		Body:   "{\"key1\": \"value1\"}",
 		URL:    "http://example",
 		Method: "GET",
 	}
 
-	testDisposableCr = &v1alpha1_disposable.DisposableRequest{
-		Spec: v1alpha1_disposable.DisposableRequestSpec{
+	testDisposableCr = &v1beta1_disposable.DisposableRequest{
+		Spec: v1beta1_disposable.DisposableRequestSpec{
 			ForProvider: testDisposableForProvider,
 		},
 	}
@@ -67,12 +67,12 @@ var (
 )
 
 var (
-	testRequestForProvider = v1alpha1_request.RequestParameters{
-		Payload: v1alpha1_request.Payload{
+	testRequestForProvider = v1beta1_request.RequestParameters{
+		Payload: v1beta1_request.Payload{
 			Body:    "{\"username\": \"john_doe\", \"email\": \"john.doe@example.com\"}",
 			BaseUrl: "https://api.example.com/users",
 		},
-		Mappings: []v1alpha1_request.Mapping{
+		Mappings: []v1beta1_request.Mapping{
 			testPostMapping,
 			testGetMapping,
 			testPutMapping,
@@ -80,11 +80,11 @@ var (
 		},
 	}
 
-	testRequestCr = &v1alpha1_request.Request{
-		Spec: v1alpha1_request.RequestSpec{
+	testRequestCr = &v1beta1_request.Request{
+		Spec: v1beta1_request.RequestSpec{
 			ForProvider: testRequestForProvider,
 		},
-		Status: v1alpha1_request.RequestStatus{
+		Status: v1beta1_request.RequestStatus{
 			Failed: int32(3),
 		},
 	}

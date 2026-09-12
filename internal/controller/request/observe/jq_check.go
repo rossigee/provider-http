@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	"github.com/crossplane/crossplane-runtime/v2/pkg/logging"
-	"github.com/rossigee/provider-http/apis/request/v1alpha2"
+	"github.com/rossigee/provider-http/apis/request/v1beta1"
 	httpClient "github.com/rossigee/provider-http/internal/clients/http"
 	"github.com/rossigee/provider-http/internal/controller/request/requestgen"
 	"github.com/rossigee/provider-http/internal/controller/request/responseconverter"
@@ -17,7 +17,7 @@ import (
 
 // responseCheck is an interface for performing response checks.
 type responseCheck interface {
-	Check(ctx context.Context, cr *v1alpha2.Request, details httpClient.HttpDetails, responseErr error) (bool, error)
+	Check(ctx context.Context, cr *v1beta1.Request, details httpClient.HttpDetails, responseErr error) (bool, error)
 }
 
 // customCheck performs a custom response check using JQ logic.
@@ -28,7 +28,7 @@ type customCheck struct {
 }
 
 // Check performs a custom response check using JQ logic.
-func (c *customCheck) check(ctx context.Context, cr *v1alpha2.Request, details httpClient.HttpDetails, logic string) (bool, error) {
+func (c *customCheck) check(ctx context.Context, cr *v1beta1.Request, details httpClient.HttpDetails, logic string) (bool, error) {
 	// Convert response to a map and apply JQ logic
 	response := responseconverter.HttpResponseToV1alpha1Response(details.HttpResponse)
 

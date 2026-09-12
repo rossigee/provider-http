@@ -8,7 +8,7 @@ import (
 	"github.com/crossplane/crossplane-runtime/v2/pkg/test"
 	"github.com/google/go-cmp/cmp"
 	"github.com/pkg/errors"
-	"github.com/rossigee/provider-http/apis/request/v1alpha2"
+	"github.com/rossigee/provider-http/apis/request/v1beta1"
 	httpClient "github.com/rossigee/provider-http/internal/clients/http"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
@@ -29,36 +29,36 @@ const (
 )
 
 var (
-	testPostMapping = v1alpha2.Mapping{
+	testPostMapping = v1beta1.Mapping{
 		Method: "POST",
 		Body:   "{ username: .payload.body.username, email: .payload.body.email }",
 		URL:    ".payload.baseUrl",
 	}
 
-	testPutMapping = v1alpha2.Mapping{
+	testPutMapping = v1beta1.Mapping{
 		Method: "PUT",
 		Body:   "{ username: \"john_doe_new_username\" }",
 		URL:    "(.payload.baseUrl + \"/\" + .response.body.id)",
 	}
 
-	testGetMapping = v1alpha2.Mapping{
+	testGetMapping = v1beta1.Mapping{
 		Method: "GET",
 		URL:    "(.payload.baseUrl + \"/\" + .response.body.id)",
 	}
 
-	testDeleteMapping = v1alpha2.Mapping{
+	testDeleteMapping = v1beta1.Mapping{
 		Method: "DELETE",
 		URL:    "(.payload.baseUrl + \"/\" + .response.body.id)",
 	}
 )
 
 var (
-	testForProvider = v1alpha2.RequestParameters{
-		Payload: v1alpha2.Payload{
+	testForProvider = v1beta1.RequestParameters{
+		Payload: v1beta1.Payload{
 			Body:    "{\"username\": \"john_doe\", \"email\": \"john.doe@example.com\"}",
 			BaseUrl: "https://api.example.com/users",
 		},
-		Mappings: []v1alpha2.Mapping{
+		Mappings: []v1beta1.Mapping{
 			testPostMapping,
 			testGetMapping,
 			testPutMapping,
@@ -67,8 +67,8 @@ var (
 	}
 )
 
-var testCr = &v1alpha2.Request{
-	Spec: v1alpha2.RequestSpec{
+var testCr = &v1beta1.Request{
+	Spec: v1beta1.RequestSpec{
 		ForProvider: testForProvider,
 	},
 }
@@ -82,7 +82,7 @@ var testRequest = httpClient.HttpRequest{
 func Test_SetRequestStatus(t *testing.T) {
 	type args struct {
 		localKube      client.Client
-		cr             *v1alpha2.Request
+		cr             *v1beta1.Request
 		requestDetails httpClient.HttpDetails
 		err            error
 		isSynced       bool

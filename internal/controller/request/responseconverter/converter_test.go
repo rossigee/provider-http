@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
-	"github.com/rossigee/provider-http/apis/request/v1alpha2"
+	"github.com/rossigee/provider-http/apis/request/v1beta1"
 	httpClient "github.com/rossigee/provider-http/internal/clients/http"
 )
 
@@ -20,7 +20,7 @@ func Test_HttpResponseToV1alpha1Response(t *testing.T) {
 		httpResponse httpClient.HttpResponse
 	}
 	type want struct {
-		result v1alpha2.Response
+		result v1beta1.Response
 	}
 	cases := map[string]struct {
 		args args
@@ -35,7 +35,7 @@ func Test_HttpResponseToV1alpha1Response(t *testing.T) {
 				},
 			},
 			want: want{
-				result: v1alpha2.Response{
+				result: v1beta1.Response{
 					Body:       `{"email":"john.doe@example.com","name":"john_doe"}`,
 					Headers:    testHeaders,
 					StatusCode: 200,

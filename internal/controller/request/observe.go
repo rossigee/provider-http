@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"github.com/pkg/errors"
-	"github.com/rossigee/provider-http/apis/request/v1alpha2"
+	"github.com/rossigee/provider-http/apis/request/v1beta1"
 	httpClient "github.com/rossigee/provider-http/internal/clients/http"
 	"github.com/rossigee/provider-http/internal/controller/request/observe"
 	"github.com/rossigee/provider-http/internal/controller/request/requestgen"
@@ -45,8 +45,8 @@ func FailedObserve() ObserveRequestDetails {
 }
 
 // isUpToDate checks whether desired spec up to date with the observed state for a given request
-func (c *external) isUpToDate(ctx context.Context, cr *v1alpha2.Request) (ObserveRequestDetails, error) {
-	mapping, err := requestmapping.GetMapping(&cr.Spec.ForProvider, v1alpha2.ActionObserve, c.logger)
+func (c *external) isUpToDate(ctx context.Context, cr *v1beta1.Request) (ObserveRequestDetails, error) {
+	mapping, err := requestmapping.GetMapping(&cr.Spec.ForProvider, v1beta1.ActionObserve, c.logger)
 	if err != nil {
 		return FailedObserve(), err
 	}
@@ -83,7 +83,7 @@ func (c *external) isUpToDate(ctx context.Context, cr *v1alpha2.Request) (Observ
 }
 
 // determineIfUpToDate determines if the object is up to date based on the response check.
-func (c *external) determineIfUpToDate(ctx context.Context, cr *v1alpha2.Request, details httpClient.HttpDetails, responseErr error) (ObserveRequestDetails, error) {
+func (c *external) determineIfUpToDate(ctx context.Context, cr *v1beta1.Request, details httpClient.HttpDetails, responseErr error) (ObserveRequestDetails, error) {
 	responseChecker := observe.GetIsUpToDateResponseCheck(cr, c.localKube, c.logger, c.http)
 	if responseChecker == nil {
 		return FailedObserve(), errors.Errorf(errExpectedResponseCheckType, "expectedResponseCheck")
@@ -98,7 +98,7 @@ func (c *external) determineIfUpToDate(ctx context.Context, cr *v1alpha2.Request
 }
 
 // determineIfRemoved determines if the object is removed based on the response check.
-func (c *external) determineIfRemoved(ctx context.Context, cr *v1alpha2.Request, details httpClient.HttpDetails, responseErr error) error {
+func (c *external) determineIfRemoved(ctx context.Context, cr *v1beta1.Request, details httpClient.HttpDetails, responseErr error) error {
 	responseChecker := observe.GetIsRemovedResponseCheck(cr, c.localKube, c.logger, c.http)
 	if responseChecker == nil {
 		return errors.Errorf(errExpectedResponseCheckType, "isRemovedCheck")
@@ -108,13 +108,13 @@ func (c *external) determineIfRemoved(ctx context.Context, cr *v1alpha2.Request,
 }
 
 // isObjectValidForObservation checks if the object is valid for observation
-func (c *external) isObjectValidForObservation(cr *v1alpha2.Request) bool {
+func (c *external) isObjectValidForObservation(cr *v1beta1.Request) bool {
 	return cr.Status.Response.StatusCode != 0 &&
 		(cr.Status.RequestDetails.Method != http.MethodPost || !utils.IsHTTPError(cr.Status.Response.StatusCode))
 }
 
 // requestDetails generates the request details for a given method or action.
-func (c *external) requestDetails(ctx context.Context, cr *v1alpha2.Request, action string) (requestgen.RequestDetails, error) {
+func (c *external) requestDetails(ctx context.Context, cr *v1beta1.Request, action string) (requestgen.RequestDetails, error) {
 	mapping, err := requestmapping.GetMapping(&cr.Spec.ForProvider, action, c.logger)
 	if err != nil {
 		return requestgen.RequestDetails{}, err

@@ -8,44 +8,44 @@ import (
 	"github.com/crossplane/crossplane-runtime/v2/pkg/test"
 	"github.com/google/go-cmp/cmp"
 	"github.com/pkg/errors"
-	"github.com/rossigee/provider-http/apis/request/v1alpha2"
+	"github.com/rossigee/provider-http/apis/request/v1beta1"
 )
 
 var (
-	testPostMapping = v1alpha2.Mapping{
+	testPostMapping = v1beta1.Mapping{
 		Method: "POST",
-		Action: v1alpha2.ActionCreate,
+		Action: v1beta1.ActionCreate,
 		Body:   "{ username: .payload.body.username, email: .payload.body.email }",
 		URL:    ".payload.baseUrl",
 	}
 
-	testPutMapping = v1alpha2.Mapping{
+	testPutMapping = v1beta1.Mapping{
 		Method: "PUT",
-		Action: v1alpha2.ActionUpdate,
+		Action: v1beta1.ActionUpdate,
 		Body:   "{ username: \"john_doe_new_username\" }",
 		URL:    "(.payload.baseUrl + \"/\" + .response.body.id)",
 	}
 
-	testGetMapping = v1alpha2.Mapping{
+	testGetMapping = v1beta1.Mapping{
 		Method: "GET",
-		Action: v1alpha2.ActionObserve,
+		Action: v1beta1.ActionObserve,
 		URL:    "(.payload.baseUrl + \"/\" + .response.body.id)",
 	}
 
-	testDeleteMapping = v1alpha2.Mapping{
+	testDeleteMapping = v1beta1.Mapping{
 		Method: "DELETE",
-		Action: v1alpha2.ActionRemove,
+		Action: v1beta1.ActionRemove,
 		URL:    "(.payload.baseUrl + \"/\" + .response.body.id)",
 	}
 )
 
 func Test_getMappingByMethod(t *testing.T) {
 	type args struct {
-		requestParams *v1alpha2.RequestParameters
+		requestParams *v1beta1.RequestParameters
 		method        string
 	}
 	type want struct {
-		mapping *v1alpha2.Mapping
+		mapping *v1beta1.Mapping
 		ok      bool
 	}
 	cases := map[string]struct {
@@ -54,12 +54,12 @@ func Test_getMappingByMethod(t *testing.T) {
 	}{
 		"Fail": {
 			args: args{
-				requestParams: &v1alpha2.RequestParameters{
-					Payload: v1alpha2.Payload{
+				requestParams: &v1beta1.RequestParameters{
+					Payload: v1beta1.Payload{
 						Body:    "{\"username\": \"john_doe\", \"email\": \"john.doe@example.com\"}",
 						BaseUrl: "https://api.example.com/users",
 					},
-					Mappings: []v1alpha2.Mapping{
+					Mappings: []v1beta1.Mapping{
 						testGetMapping,
 						testPutMapping,
 						testDeleteMapping,
@@ -74,12 +74,12 @@ func Test_getMappingByMethod(t *testing.T) {
 		},
 		"Success": {
 			args: args{
-				requestParams: &v1alpha2.RequestParameters{
-					Payload: v1alpha2.Payload{
+				requestParams: &v1beta1.RequestParameters{
+					Payload: v1beta1.Payload{
 						Body:    "{\"username\": \"john_doe\", \"email\": \"john.doe@example.com\"}",
 						BaseUrl: "https://api.example.com/users",
 					},
-					Mappings: []v1alpha2.Mapping{
+					Mappings: []v1beta1.Mapping{
 						testPostMapping,
 						testGetMapping,
 						testPutMapping,
@@ -110,11 +110,11 @@ func Test_getMappingByMethod(t *testing.T) {
 
 func Test_getMappingByAction(t *testing.T) {
 	type args struct {
-		requestParams *v1alpha2.RequestParameters
+		requestParams *v1beta1.RequestParameters
 		action        string
 	}
 	type want struct {
-		mapping *v1alpha2.Mapping
+		mapping *v1beta1.Mapping
 		ok      bool
 	}
 	cases := map[string]struct {
@@ -123,18 +123,18 @@ func Test_getMappingByAction(t *testing.T) {
 	}{
 		"Fail": {
 			args: args{
-				requestParams: &v1alpha2.RequestParameters{
-					Payload: v1alpha2.Payload{
+				requestParams: &v1beta1.RequestParameters{
+					Payload: v1beta1.Payload{
 						Body:    "{\"username\": \"john_doe\", \"email\": \"john.doe@example.com\"}",
 						BaseUrl: "https://api.example.com/users",
 					},
-					Mappings: []v1alpha2.Mapping{
+					Mappings: []v1beta1.Mapping{
 						testGetMapping,
 						testPutMapping,
 						testDeleteMapping,
 					},
 				},
-				action: v1alpha2.ActionCreate,
+				action: v1beta1.ActionCreate,
 			},
 			want: want{
 				mapping: nil,
@@ -143,19 +143,19 @@ func Test_getMappingByAction(t *testing.T) {
 		},
 		"Success": {
 			args: args{
-				requestParams: &v1alpha2.RequestParameters{
-					Payload: v1alpha2.Payload{
+				requestParams: &v1beta1.RequestParameters{
+					Payload: v1beta1.Payload{
 						Body:    "{\"username\": \"john_doe\", \"email\": \"john.doe@example.com\"}",
 						BaseUrl: "https://api.example.com/users",
 					},
-					Mappings: []v1alpha2.Mapping{
+					Mappings: []v1beta1.Mapping{
 						testPostMapping,
 						testGetMapping,
 						testPutMapping,
 						testDeleteMapping,
 					},
 				},
-				action: v1alpha2.ActionCreate,
+				action: v1beta1.ActionCreate,
 			},
 			want: want{
 				mapping: &testPostMapping,
@@ -179,11 +179,11 @@ func Test_getMappingByAction(t *testing.T) {
 
 func Test_GetMapping(t *testing.T) {
 	type args struct {
-		requestParams *v1alpha2.RequestParameters
+		requestParams *v1beta1.RequestParameters
 		action        string
 	}
 	type want struct {
-		mapping *v1alpha2.Mapping
+		mapping *v1beta1.Mapping
 		err     error
 	}
 	cases := map[string]struct {
@@ -192,39 +192,39 @@ func Test_GetMapping(t *testing.T) {
 	}{
 		"Fail": {
 			args: args{
-				requestParams: &v1alpha2.RequestParameters{
-					Payload: v1alpha2.Payload{
+				requestParams: &v1beta1.RequestParameters{
+					Payload: v1beta1.Payload{
 						Body:    "{\"username\": \"john_doe\", \"email\": \"john.doe@example.com\"}",
 						BaseUrl: "https://api.example.com/users",
 					},
-					Mappings: []v1alpha2.Mapping{
+					Mappings: []v1beta1.Mapping{
 						testGetMapping,
 						testPutMapping,
 						testDeleteMapping,
 					},
 				},
-				action: v1alpha2.ActionCreate,
+				action: v1beta1.ActionCreate,
 			},
 			want: want{
 				mapping: nil,
-				err:     errors.Errorf(ErrMappingNotFound, v1alpha2.ActionCreate, http.MethodPost),
+				err:     errors.Errorf(ErrMappingNotFound, v1beta1.ActionCreate, http.MethodPost),
 			},
 		},
 		"Success": {
 			args: args{
-				requestParams: &v1alpha2.RequestParameters{
-					Payload: v1alpha2.Payload{
+				requestParams: &v1beta1.RequestParameters{
+					Payload: v1beta1.Payload{
 						Body:    "{\"username\": \"john_doe\", \"email\": \"john.doe@example.com\"}",
 						BaseUrl: "https://api.example.com/users",
 					},
-					Mappings: []v1alpha2.Mapping{
+					Mappings: []v1beta1.Mapping{
 						testPostMapping,
 						testGetMapping,
 						testPutMapping,
 						testDeleteMapping,
 					},
 				},
-				action: v1alpha2.ActionCreate,
+				action: v1beta1.ActionCreate,
 			},
 			want: want{
 				mapping: &testPostMapping,
@@ -233,14 +233,14 @@ func Test_GetMapping(t *testing.T) {
 		},
 		"SuccessWithoutMethod": {
 			args: args{
-				requestParams: &v1alpha2.RequestParameters{
-					Payload: v1alpha2.Payload{
+				requestParams: &v1beta1.RequestParameters{
+					Payload: v1beta1.Payload{
 						Body:    "{\"username\": \"john_doe\", \"email\": \"john.doe@example.com\"}",
 						BaseUrl: "https://api.example.com/users",
 					},
-					Mappings: []v1alpha2.Mapping{
+					Mappings: []v1beta1.Mapping{
 						{
-							Action: v1alpha2.ActionCreate,
+							Action: v1beta1.ActionCreate,
 							Body:   "{ username: .payload.body.username, email: .payload.body.email }",
 							URL:    ".payload.baseUrl",
 						},
@@ -249,7 +249,7 @@ func Test_GetMapping(t *testing.T) {
 						testDeleteMapping,
 					},
 				},
-				action: v1alpha2.ActionCreate,
+				action: v1beta1.ActionCreate,
 			},
 			want: want{
 				mapping: &testPostMapping,
@@ -258,12 +258,12 @@ func Test_GetMapping(t *testing.T) {
 		},
 		"SuccessWithoutAction": {
 			args: args{
-				requestParams: &v1alpha2.RequestParameters{
-					Payload: v1alpha2.Payload{
+				requestParams: &v1beta1.RequestParameters{
+					Payload: v1beta1.Payload{
 						Body:    "{\"username\": \"john_doe\", \"email\": \"john.doe@example.com\"}",
 						BaseUrl: "https://api.example.com/users",
 					},
-					Mappings: []v1alpha2.Mapping{
+					Mappings: []v1beta1.Mapping{
 						{
 							Method: http.MethodPost,
 							Body:   "{ username: .payload.body.username, email: .payload.body.email }",
@@ -274,10 +274,10 @@ func Test_GetMapping(t *testing.T) {
 						testDeleteMapping,
 					},
 				},
-				action: v1alpha2.ActionCreate,
+				action: v1beta1.ActionCreate,
 			},
 			want: want{
-				mapping: &v1alpha2.Mapping{
+				mapping: &v1beta1.Mapping{
 					Method: http.MethodPost,
 					Body:   "{ username: .payload.body.username, email: .payload.body.email }",
 					URL:    ".payload.baseUrl",
@@ -312,7 +312,7 @@ func Test_getDefaultMethodByAction(t *testing.T) {
 	}{
 		"ShouldReturnPostMethod": {
 			args: args{
-				action: v1alpha2.ActionCreate,
+				action: v1beta1.ActionCreate,
 			},
 			want: want{
 				method: http.MethodPost,
@@ -320,7 +320,7 @@ func Test_getDefaultMethodByAction(t *testing.T) {
 		},
 		"ShouldReturnGetMethod": {
 			args: args{
-				action: v1alpha2.ActionObserve,
+				action: v1beta1.ActionObserve,
 			},
 			want: want{
 				method: http.MethodGet,
@@ -328,7 +328,7 @@ func Test_getDefaultMethodByAction(t *testing.T) {
 		},
 		"ShouldReturnPutMethod": {
 			args: args{
-				action: v1alpha2.ActionUpdate,
+				action: v1beta1.ActionUpdate,
 			},
 			want: want{
 				method: http.MethodPut,
@@ -336,7 +336,7 @@ func Test_getDefaultMethodByAction(t *testing.T) {
 		},
 		"ShouldReturnDeleteMethod": {
 			args: args{
-				action: v1alpha2.ActionRemove,
+				action: v1beta1.ActionRemove,
 			},
 			want: want{
 				method: http.MethodDelete,

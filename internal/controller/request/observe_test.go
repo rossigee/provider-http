@@ -9,7 +9,7 @@ import (
 	"github.com/crossplane/crossplane-runtime/v2/pkg/test"
 	"github.com/google/go-cmp/cmp"
 	"github.com/pkg/errors"
-	"github.com/rossigee/provider-http/apis/request/v1alpha2"
+	"github.com/rossigee/provider-http/apis/request/v1beta1"
 	httpClient "github.com/rossigee/provider-http/internal/clients/http"
 	"github.com/rossigee/provider-http/internal/controller/request/observe"
 	"github.com/rossigee/provider-http/internal/controller/request/requestgen"
@@ -22,24 +22,24 @@ var (
 )
 
 var (
-	testPostMapping = v1alpha2.Mapping{
+	testPostMapping = v1beta1.Mapping{
 		Method: "POST",
 		Body:   "{ username: .payload.body.username, email: .payload.body.email }",
 		URL:    ".payload.baseUrl",
 	}
 
-	testPutMapping = v1alpha2.Mapping{
+	testPutMapping = v1beta1.Mapping{
 		Method: "PUT",
 		Body:   "{ username: \"john_doe_new_username\" }",
 		URL:    "(.payload.baseUrl + \"/\" + .response.body.id)",
 	}
 
-	testGetMapping = v1alpha2.Mapping{
+	testGetMapping = v1beta1.Mapping{
 		Method: "GET",
 		URL:    "(.payload.baseUrl + \"/\" + .response.body.id)",
 	}
 
-	testDeleteMapping = v1alpha2.Mapping{
+	testDeleteMapping = v1beta1.Mapping{
 		Method: "DELETE",
 		URL:    "(.payload.baseUrl + \"/\" + .response.body.id)",
 	}
@@ -49,7 +49,7 @@ func Test_isUpToDate(t *testing.T) {
 	type args struct {
 		http      httpClient.Client
 		localKube client.Client
-		mg        *v1alpha2.Request
+		mg        *v1beta1.Request
 	}
 	type want struct {
 		result ObserveRequestDetails
@@ -75,8 +75,8 @@ func Test_isUpToDate(t *testing.T) {
 				localKube: &test.MockClient{
 					MockStatusUpdate: test.NewMockSubResourceUpdateFn(nil),
 				},
-				mg: httpRequest(func(r *v1alpha2.Request) {
-					r.Spec.ForProvider.Mappings = []v1alpha2.Mapping{
+				mg: httpRequest(func(r *v1beta1.Request) {
+					r.Spec.ForProvider.Mappings = []v1beta1.Mapping{
 						{
 							Method: "GET",
 							URL:    "(\"http://some.org/\" + \"1423\")",
@@ -107,7 +107,7 @@ func Test_isUpToDate(t *testing.T) {
 				localKube: &test.MockClient{
 					MockStatusUpdate: test.NewMockSubResourceUpdateFn(nil),
 				},
-				mg: httpRequest(func(r *v1alpha2.Request) {
+				mg: httpRequest(func(r *v1beta1.Request) {
 					r.Status.Response.Body = ""
 					r.Status.Response.StatusCode = 0
 				}),
@@ -126,7 +126,7 @@ func Test_isUpToDate(t *testing.T) {
 				localKube: &test.MockClient{
 					MockStatusUpdate: test.NewMockSubResourceUpdateFn(nil),
 				},
-				mg: httpRequest(func(r *v1alpha2.Request) {
+				mg: httpRequest(func(r *v1beta1.Request) {
 					r.Status.RequestDetails.Method = http.MethodPost
 					r.Status.Response.StatusCode = 400
 				}),
@@ -150,7 +150,7 @@ func Test_isUpToDate(t *testing.T) {
 				localKube: &test.MockClient{
 					MockStatusUpdate: test.NewMockSubResourceUpdateFn(nil),
 				},
-				mg: httpRequest(func(r *v1alpha2.Request) {
+				mg: httpRequest(func(r *v1beta1.Request) {
 					r.Status.Response.StatusCode = http.StatusNotFound
 				}),
 			},
@@ -172,7 +172,7 @@ func Test_isUpToDate(t *testing.T) {
 				localKube: &test.MockClient{
 					MockStatusUpdate: test.NewMockSubResourceUpdateFn(nil),
 				},
-				mg: httpRequest(func(r *v1alpha2.Request) {
+				mg: httpRequest(func(r *v1beta1.Request) {
 					r.Status.Response.Body = `{"username":"john_doe_new_username"}`
 					r.Status.Response.StatusCode = http.StatusOK
 				}),
@@ -196,7 +196,7 @@ func Test_isUpToDate(t *testing.T) {
 				localKube: &test.MockClient{
 					MockStatusUpdate: test.NewMockSubResourceUpdateFn(nil),
 				},
-				mg: httpRequest(func(r *v1alpha2.Request) {
+				mg: httpRequest(func(r *v1beta1.Request) {
 					r.Status.Response.Body = `{"username":"john_doe_new_username"}`
 					r.Status.Response.StatusCode = http.StatusOK
 				}),
@@ -231,10 +231,10 @@ func Test_isUpToDate(t *testing.T) {
 				localKube: &test.MockClient{
 					MockStatusUpdate: test.NewMockSubResourceUpdateFn(nil),
 				},
-				mg: httpRequest(func(r *v1alpha2.Request) {
+				mg: httpRequest(func(r *v1beta1.Request) {
 					r.Status.Response.Body = `{"username":"john_doe_new_username"}`
 					r.Status.Response.StatusCode = 200
-					r.Spec.ForProvider.Mappings = []v1alpha2.Mapping{
+					r.Spec.ForProvider.Mappings = []v1beta1.Mapping{
 						testPostMapping,
 						testGetMapping,
 						testDeleteMapping,
@@ -271,7 +271,7 @@ func Test_isUpToDate(t *testing.T) {
 				localKube: &test.MockClient{
 					MockStatusUpdate: test.NewMockSubResourceUpdateFn(nil),
 				},
-				mg: httpRequest(func(r *v1alpha2.Request) {
+				mg: httpRequest(func(r *v1beta1.Request) {
 					r.Status.Response.Body = `{"username":"john_doe_new_username"}`
 					r.Status.Response.StatusCode = 200
 				}),
@@ -315,7 +315,7 @@ func Test_isUpToDate(t *testing.T) {
 func Test_determineResponseCheck(t *testing.T) {
 	type args struct {
 		ctx         context.Context
-		cr          *v1alpha2.Request
+		cr          *v1beta1.Request
 		details     httpClient.HttpDetails
 		responseErr error
 	}
@@ -332,21 +332,21 @@ func Test_determineResponseCheck(t *testing.T) {
 		"DefaultResponseCheckSynced": {
 			args: args{
 				ctx: context.Background(),
-				cr: &v1alpha2.Request{
-					Spec: v1alpha2.RequestSpec{
-						ForProvider: v1alpha2.RequestParameters{
-							Payload: v1alpha2.Payload{
+				cr: &v1beta1.Request{
+					Spec: v1beta1.RequestSpec{
+						ForProvider: v1beta1.RequestParameters{
+							Payload: v1beta1.Payload{
 								Body:    "{\"username\": \"john_doe\", \"email\": \"john.doe@example.com\"}",
 								BaseUrl: "https://api.example.com/users",
 							},
-							Mappings: []v1alpha2.Mapping{
+							Mappings: []v1beta1.Mapping{
 								testPostMapping,
 								testGetMapping,
 								testDeleteMapping,
 								testPutMapping,
 							},
-							ExpectedResponseCheck: v1alpha2.ExpectedResponseCheck{
-								Type: v1alpha2.ExpectedResponseCheckTypeDefault,
+							ExpectedResponseCheck: v1beta1.ExpectedResponseCheck{
+								Type: v1beta1.ExpectedResponseCheckTypeDefault,
 							},
 						},
 					},
@@ -376,21 +376,21 @@ func Test_determineResponseCheck(t *testing.T) {
 		"DefaultResponseCheckUnsynced": {
 			args: args{
 				ctx: context.Background(),
-				cr: &v1alpha2.Request{
-					Spec: v1alpha2.RequestSpec{
-						ForProvider: v1alpha2.RequestParameters{
-							Payload: v1alpha2.Payload{
+				cr: &v1beta1.Request{
+					Spec: v1beta1.RequestSpec{
+						ForProvider: v1beta1.RequestParameters{
+							Payload: v1beta1.Payload{
 								Body:    "{\"username\": \"john_doe\", \"email\": \"john.doe@example.com\"}",
 								BaseUrl: "https://api.example.com/users",
 							},
-							Mappings: []v1alpha2.Mapping{
+							Mappings: []v1beta1.Mapping{
 								testPostMapping,
 								testGetMapping,
 								testDeleteMapping,
 								testPutMapping,
 							},
-							ExpectedResponseCheck: v1alpha2.ExpectedResponseCheck{
-								Type: v1alpha2.ExpectedResponseCheckTypeDefault,
+							ExpectedResponseCheck: v1beta1.ExpectedResponseCheck{
+								Type: v1beta1.ExpectedResponseCheckTypeDefault,
 							},
 						},
 					},
@@ -419,11 +419,11 @@ func Test_determineResponseCheck(t *testing.T) {
 		"CustomResponseCheckFails": {
 			args: args{
 				ctx: context.Background(),
-				cr: &v1alpha2.Request{
-					Spec: v1alpha2.RequestSpec{
-						ForProvider: v1alpha2.RequestParameters{
-							ExpectedResponseCheck: v1alpha2.ExpectedResponseCheck{
-								Type:  v1alpha2.ExpectedResponseCheckTypeCustom,
+				cr: &v1beta1.Request{
+					Spec: v1beta1.RequestSpec{
+						ForProvider: v1beta1.RequestParameters{
+							ExpectedResponseCheck: v1beta1.ExpectedResponseCheck{
+								Type:  v1beta1.ExpectedResponseCheckTypeCustom,
 								Logic: `.foo == "baz"`,
 							},
 						},
@@ -453,10 +453,10 @@ func Test_determineResponseCheck(t *testing.T) {
 		"UnknownResponseCheckType": {
 			args: args{
 				ctx: context.Background(),
-				cr: &v1alpha2.Request{
-					Spec: v1alpha2.RequestSpec{
-						ForProvider: v1alpha2.RequestParameters{
-							ExpectedResponseCheck: v1alpha2.ExpectedResponseCheck{
+				cr: &v1beta1.Request{
+					Spec: v1beta1.RequestSpec{
+						ForProvider: v1beta1.RequestParameters{
+							ExpectedResponseCheck: v1beta1.ExpectedResponseCheck{
 								Type: "UnknownType",
 							},
 						},
@@ -509,7 +509,7 @@ func Test_determineResponseCheck(t *testing.T) {
 
 func Test_isObjectValidForObservation(t *testing.T) {
 	type args struct {
-		cr *v1alpha2.Request
+		cr *v1beta1.Request
 	}
 
 	type want struct {
@@ -522,13 +522,13 @@ func Test_isObjectValidForObservation(t *testing.T) {
 	}{
 		"ValidStatusCode": {
 			args: args{
-				cr: &v1alpha2.Request{
-					Status: v1alpha2.RequestStatus{
-						Response: v1alpha2.Response{
+				cr: &v1beta1.Request{
+					Status: v1beta1.RequestStatus{
+						Response: v1beta1.Response{
 							Body:       "",
 							StatusCode: http.StatusOK,
 						},
-						RequestDetails: v1alpha2.Mapping{
+						RequestDetails: v1beta1.Mapping{
 							Method: http.MethodGet,
 						},
 					},
@@ -540,9 +540,9 @@ func Test_isObjectValidForObservation(t *testing.T) {
 		},
 		"EmptyStatusCode": {
 			args: args{
-				cr: &v1alpha2.Request{
-					Status: v1alpha2.RequestStatus{
-						Response: v1alpha2.Response{
+				cr: &v1beta1.Request{
+					Status: v1beta1.RequestStatus{
+						Response: v1beta1.Response{
 							Body:       "",
 							StatusCode: 0,
 						},
@@ -555,13 +555,13 @@ func Test_isObjectValidForObservation(t *testing.T) {
 		},
 		"POSTMethodWithErrorResponse": {
 			args: args{
-				cr: &v1alpha2.Request{
-					Status: v1alpha2.RequestStatus{
-						Response: v1alpha2.Response{
+				cr: &v1beta1.Request{
+					Status: v1beta1.RequestStatus{
+						Response: v1beta1.Response{
 							Body:       "some response",
 							StatusCode: http.StatusInternalServerError,
 						},
-						RequestDetails: v1alpha2.Mapping{
+						RequestDetails: v1beta1.Mapping{
 							Method: http.MethodPost,
 						},
 					},
@@ -573,13 +573,13 @@ func Test_isObjectValidForObservation(t *testing.T) {
 		},
 		"POSTMethodWithoutErrorResponse": {
 			args: args{
-				cr: &v1alpha2.Request{
-					Status: v1alpha2.RequestStatus{
-						Response: v1alpha2.Response{
+				cr: &v1beta1.Request{
+					Status: v1beta1.RequestStatus{
+						Response: v1beta1.Response{
 							Body:       "some response",
 							StatusCode: http.StatusOK,
 						},
-						RequestDetails: v1alpha2.Mapping{
+						RequestDetails: v1beta1.Mapping{
 							Method: http.MethodPost,
 						},
 					},
@@ -609,7 +609,7 @@ func Test_isObjectValidForObservation(t *testing.T) {
 func Test_requestDetails(t *testing.T) {
 	type args struct {
 		ctx    context.Context
-		cr     *v1alpha2.Request
+		cr     *v1beta1.Request
 		action string
 	}
 
@@ -625,20 +625,20 @@ func Test_requestDetails(t *testing.T) {
 		"ValidMappingForGET": {
 			args: args{
 				ctx: context.Background(),
-				cr: &v1alpha2.Request{
-					Spec: v1alpha2.RequestSpec{
-						ForProvider: v1alpha2.RequestParameters{
-							Payload: v1alpha2.Payload{
+				cr: &v1beta1.Request{
+					Spec: v1beta1.RequestSpec{
+						ForProvider: v1beta1.RequestParameters{
+							Payload: v1beta1.Payload{
 								Body:    "{\"username\": \"john_doe\", \"email\": \"john.doe@example.com\"}",
 								BaseUrl: "https://api.example.com/users",
 							},
-							Mappings: []v1alpha2.Mapping{
+							Mappings: []v1beta1.Mapping{
 								testGetMapping,
 							},
 						},
 					},
 				},
-				action: v1alpha2.ActionObserve,
+				action: v1beta1.ActionObserve,
 			},
 			want: want{
 				result: requestgen.RequestDetails{
@@ -658,19 +658,19 @@ func Test_requestDetails(t *testing.T) {
 		"ValidMappingForPOST": {
 			args: args{
 				ctx: context.Background(),
-				cr: &v1alpha2.Request{
-					Spec: v1alpha2.RequestSpec{
-						ForProvider: v1alpha2.RequestParameters{
-							Payload: v1alpha2.Payload{
+				cr: &v1beta1.Request{
+					Spec: v1beta1.RequestSpec{
+						ForProvider: v1beta1.RequestParameters{
+							Payload: v1beta1.Payload{
 								Body:    "{\"username\": \"john_doe\", \"email\": \"john.doe@example.com\"}",
 								BaseUrl: "https://api.example.com/users",
-							}, Mappings: []v1alpha2.Mapping{
+							}, Mappings: []v1beta1.Mapping{
 								testPostMapping,
 							},
 						},
 					},
 				},
-				action: v1alpha2.ActionCreate,
+				action: v1beta1.ActionCreate,
 			},
 			want: want{
 				result: requestgen.RequestDetails{
@@ -690,9 +690,9 @@ func Test_requestDetails(t *testing.T) {
 		"MappingNotFound": {
 			args: args{
 				ctx: context.Background(),
-				cr: &v1alpha2.Request{
-					Spec: v1alpha2.RequestSpec{
-						ForProvider: v1alpha2.RequestParameters{},
+				cr: &v1beta1.Request{
+					Spec: v1beta1.RequestSpec{
+						ForProvider: v1beta1.RequestParameters{},
 					},
 				},
 				action: "UNKNOWN_METHOD",

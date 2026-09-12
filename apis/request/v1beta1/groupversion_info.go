@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-// Package v1beta1 contains the v1beta1 group Request resources of the http provider.
+// Package v1beta1 contains the v1alpha2 group Sample resources of the http provider.
 // +kubebuilder:object:generate=true
 // +groupName=http.m.crossplane.io
 // +versionName=v1beta1

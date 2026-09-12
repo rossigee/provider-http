@@ -12,7 +12,7 @@ spec:
   resources:
   - name: obtain-jwt-token
     base:
-      apiVersion: http.crossplane.io/v1alpha2
+      apiVersion: http.m.crossplane.io/v1beta1
       kind: DisposableRequest
       metadata:
         name: obtain-jwt-token
@@ -38,7 +38,7 @@ spec:
           name: http-conf
   - name: manage-namespace
     base:
-      apiVersion: http.crossplane.io/v1alpha2
+      apiVersion: http.m.crossplane.io/v1beta1
       kind: Request
       metadata:
         name: my-namespace
