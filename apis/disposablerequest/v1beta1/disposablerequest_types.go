@@ -17,6 +17,8 @@ limitations under the License.
 package v1beta1
 
 import (
+	"k8s.io/apimachinery/pkg/runtime"
+	"github.com/crossplane/crossplane-runtime/v2/pkg/resource"
 	"reflect"
 
 	xpv1 "github.com/crossplane/crossplane/apis/v2/core/v2"
@@ -66,7 +68,7 @@ type DisposableRequestParameters struct {
 
 // A DisposableRequestSpec defines the desired state of a DisposableRequest.
 type DisposableRequestSpec struct {
-	xpv1.ClusterManagedResourceSpec `json:",inline"`
+	xpv1.ManagedResourceSpec `json:",inline"`
 	ForProvider                     DisposableRequestParameters `json:"forProvider"`
 }
 
@@ -130,3 +132,70 @@ var (
 	DisposableRequestKindAPIVersion   = DisposableRequestKind + "." + SchemeGroupVersion.String()
 	DisposableRequestGroupVersionKind = SchemeGroupVersion.WithKind(DisposableRequestKind)
 )
+
+
+// GetCondition gets the condition from the resource status.
+func (mg *DisposableRequest) GetCondition(ct xpv1.ConditionType) xpv1.Condition {
+	return mg.Status.GetCondition(ct)
+}
+
+// SetConditions sets the conditions on the resource status.
+func (mg *DisposableRequest) SetConditions(c ...xpv1.Condition) {
+	mg.Status.SetConditions(c...)
+}
+
+// GetManagementPolicies gets the management policies for the resource.
+func (mg *DisposableRequest) GetManagementPolicies() xpv1.ManagementPolicies {
+	return mg.Spec.ManagementPolicies
+}
+
+// SetManagementPolicies sets the management policies for the resource.
+func (mg *DisposableRequest) SetManagementPolicies(mp xpv1.ManagementPolicies) {
+	mg.Spec.ManagementPolicies = mp
+}
+
+// DeepCopyObject returns a deep copy of this object as runtime.Object.
+func (in *DisposableRequest) DeepCopyObject() runtime.Object {
+	out := &DisposableRequest{}
+	in.DeepCopyInto(out)
+	return out
+}
+
+// DeepCopyInto fills DeepCopy receiver with DeepCopy of the provided receiver.
+func (in *DisposableRequest) DeepCopyInto(out *DisposableRequest) {
+	out.TypeMeta = in.TypeMeta
+	in.ObjectMeta.DeepCopyInto(&out.ObjectMeta)
+	out.Spec = in.Spec
+	out.Status = in.Status
+}
+
+// GetProviderConfigReference returns the ProviderConfig reference.
+func (mg *DisposableRequest) GetProviderConfigReference() *xpv1.Reference {
+	if mg.Spec.ProviderConfigReference != nil && mg.Spec.ProviderConfigReference.Name != "" {
+		return &xpv1.Reference{Name: mg.Spec.ProviderConfigReference.Name}
+	}
+	return nil
+}
+
+// GetItems returns the list items.
+func (l *DisposableRequestList) GetItems() []resource.Managed {
+	items := make([]resource.Managed, len(l.Items))
+	for i := range l.Items {
+		items[i] = &l.Items[i]
+	}
+	return items
+}
+
+// DeepCopyObject returns a deep copy of this object as runtime.Object.
+func (in *DisposableRequestList) DeepCopyObject() runtime.Object {
+	out := &DisposableRequestList{}
+	in.DeepCopyInto(out)
+	return out
+}
+
+// DeepCopyInto fills DeepCopy receiver with DeepCopy of the provided receiver.
+func (in *DisposableRequestList) DeepCopyInto(out *DisposableRequestList) {
+	out.TypeMeta = in.TypeMeta
+	in.ListMeta.DeepCopyInto(&out.ListMeta)
+	out.Items = append([]DisposableRequest(nil), in.Items...)
+}

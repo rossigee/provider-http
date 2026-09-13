@@ -80,8 +80,8 @@ func httpDisposableRequest(rm ...httpDisposableRequestModifier) *v1beta1.Disposa
 			Namespace: testNamespace,
 		},
 		Spec: v1beta1.DisposableRequestSpec{
-			ClusterManagedResourceSpec: xpv1.ClusterManagedResourceSpec{
-				ProviderConfigReference: &xpv1.Reference{
+			ManagedResourceSpec: xpv1.ManagedResourceSpec{
+				ProviderConfigReference: &xpv1.ProviderConfigReference{
 					Name: providerName,
 				},
 			},

@@ -51,8 +51,8 @@ func httpRequest(rm ...httpRequestModifier) *v1beta1.Request {
 			Namespace: testNamespace,
 		},
 		Spec: v1beta1.RequestSpec{
-			ClusterManagedResourceSpec: xpv1.ClusterManagedResourceSpec{
-				ProviderConfigReference: &xpv1.Reference{
+			ManagedResourceSpec: xpv1.ManagedResourceSpec{
+				ProviderConfigReference: &xpv1.ProviderConfigReference{
 					Name: providerName,
 				},
 			},
