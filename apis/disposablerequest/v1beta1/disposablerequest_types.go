@@ -17,9 +17,10 @@ limitations under the License.
 package v1beta1
 
 import (
-	"k8s.io/apimachinery/pkg/runtime"
-	"github.com/crossplane/crossplane-runtime/v2/pkg/resource"
 	"reflect"
+
+	"github.com/crossplane/crossplane-runtime/v2/pkg/resource"
+	"k8s.io/apimachinery/pkg/runtime"
 
 	xpv1 "github.com/crossplane/crossplane/apis/v2/core/v2"
 	"github.com/rossigee/provider-http/apis/common"
@@ -69,7 +70,7 @@ type DisposableRequestParameters struct {
 // A DisposableRequestSpec defines the desired state of a DisposableRequest.
 type DisposableRequestSpec struct {
 	xpv1.ManagedResourceSpec `json:",inline"`
-	ForProvider                     DisposableRequestParameters `json:"forProvider"`
+	ForProvider              DisposableRequestParameters `json:"forProvider"`
 }
 
 type Response struct {
@@ -132,7 +133,6 @@ var (
 	DisposableRequestKindAPIVersion   = DisposableRequestKind + "." + SchemeGroupVersion.String()
 	DisposableRequestGroupVersionKind = SchemeGroupVersion.WithKind(DisposableRequestKind)
 )
-
 
 // GetCondition gets the condition from the resource status.
 func (mg *DisposableRequest) GetCondition(ct xpv1.ConditionType) xpv1.Condition {

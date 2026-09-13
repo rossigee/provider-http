@@ -17,9 +17,10 @@ limitations under the License.
 package v1beta1
 
 import (
-	"k8s.io/apimachinery/pkg/runtime"
-	"github.com/crossplane/crossplane-runtime/v2/pkg/resource"
 	"reflect"
+
+	"github.com/crossplane/crossplane-runtime/v2/pkg/resource"
+	"k8s.io/apimachinery/pkg/runtime"
 
 	xpv1 "github.com/crossplane/crossplane/apis/v2/core/v2"
 	"github.com/rossigee/provider-http/apis/common"
@@ -111,7 +112,7 @@ type Payload struct {
 // A RequestSpec defines the desired state of a Request.
 type RequestSpec struct {
 	xpv1.ManagedResourceSpec `json:",inline"`
-	ForProvider                     RequestParameters `json:"forProvider"`
+	ForProvider              RequestParameters `json:"forProvider"`
 }
 
 // RequestObservation are the observable fields of a Request.
@@ -170,7 +171,6 @@ var (
 	RequestKindAPIVersion   = RequestKind + "." + SchemeGroupVersion.String()
 	RequestGroupVersionKind = SchemeGroupVersion.WithKind(RequestKind)
 )
-
 
 // GetCondition gets the condition from the resource status.
 func (mg *Request) GetCondition(ct xpv1.ConditionType) xpv1.Condition {
