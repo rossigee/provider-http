@@ -14,12 +14,18 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package request
+package config
 
 import (
+	"context"
 	"testing"
+
+	"github.com/crossplane/crossplane-runtime/v2/pkg/meta"
+	"github.com/crossplane/crossplane-runtime/v2/pkg/reconciler/managed"
+	"github.com/crossplane/crossplane-runtime/v2/pkg/resource"
 )
 
-func TestRequest(t *testing.T) {
+func TestProviderconfigReconciler(t *testing.T) {
+	// TODO: Implement comprehensive tests for Providerconfig controller
 	t.Skipf("Test implementation pending")
 }
