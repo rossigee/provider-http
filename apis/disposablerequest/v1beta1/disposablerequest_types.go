@@ -20,7 +20,6 @@ import (
 	"reflect"
 
 	"github.com/crossplane/crossplane-runtime/v2/pkg/resource"
-	"k8s.io/apimachinery/pkg/runtime"
 
 	xpv1 "github.com/crossplane/crossplane/apis/v2/core/v2"
 	"github.com/rossigee/provider-http/apis/common"
@@ -154,21 +153,6 @@ func (mg *DisposableRequest) SetManagementPolicies(mp xpv1.ManagementPolicies) {
 	mg.Spec.ManagementPolicies = mp
 }
 
-// DeepCopyObject returns a deep copy of this object as runtime.Object.
-func (in *DisposableRequest) DeepCopyObject() runtime.Object {
-	out := &DisposableRequest{}
-	in.DeepCopyInto(out)
-	return out
-}
-
-// DeepCopyInto fills DeepCopy receiver with DeepCopy of the provided receiver.
-func (in *DisposableRequest) DeepCopyInto(out *DisposableRequest) {
-	out.TypeMeta = in.TypeMeta
-	in.ObjectMeta.DeepCopyInto(&out.ObjectMeta)
-	out.Spec = in.Spec
-	out.Status = in.Status
-}
-
 // GetProviderConfigReference returns the ProviderConfig reference.
 func (mg *DisposableRequest) GetProviderConfigReference() *xpv1.Reference {
 	if mg.Spec.ProviderConfigReference != nil && mg.Spec.ProviderConfigReference.Name != "" {
@@ -184,18 +168,4 @@ func (l *DisposableRequestList) GetItems() []resource.Managed {
 		items[i] = &l.Items[i]
 	}
 	return items
-}
-
-// DeepCopyObject returns a deep copy of this object as runtime.Object.
-func (in *DisposableRequestList) DeepCopyObject() runtime.Object {
-	out := &DisposableRequestList{}
-	in.DeepCopyInto(out)
-	return out
-}
-
-// DeepCopyInto fills DeepCopy receiver with DeepCopy of the provided receiver.
-func (in *DisposableRequestList) DeepCopyInto(out *DisposableRequestList) {
-	out.TypeMeta = in.TypeMeta
-	in.ListMeta.DeepCopyInto(&out.ListMeta)
-	out.Items = append([]DisposableRequest(nil), in.Items...)
 }
