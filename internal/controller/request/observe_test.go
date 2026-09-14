@@ -9,6 +9,7 @@ import (
 	"github.com/crossplane/crossplane-runtime/v2/pkg/test"
 	"github.com/google/go-cmp/cmp"
 	"github.com/pkg/errors"
+	commonapi "github.com/rossigee/provider-http/apis/common"
 	"github.com/rossigee/provider-http/apis/request/v1beta1"
 	httpClient "github.com/rossigee/provider-http/internal/clients/http"
 	"github.com/rossigee/provider-http/internal/controller/request/observe"
@@ -44,6 +45,39 @@ var (
 		URL:    "(.payload.baseUrl + \"/\" + .response.body.id)",
 	}
 )
+
+// MockHttpClient mocks the httpClient.Client interface for testing.
+type MockHttpClient struct {
+	MockSendRequest         func(ctx context.Context, method string, url string, body, headers httpClient.Data, skipTLSVerify bool) (resp httpClient.HttpDetails, err error)
+	MockSendRequestWithTLS  func(ctx context.Context, method string, url string, body, headers httpClient.Data, tlsCfg *commonapi.TLSConfig) (resp httpClient.HttpDetails, err error)
+}
+
+func (m *MockHttpClient) SendRequest(ctx context.Context, method string, url string, body, headers httpClient.Data, skipTLSVerify bool) (httpClient.HttpDetails, error) {
+	if m.MockSendRequest != nil {
+		return m.MockSendRequest(ctx, method, url, body, headers, skipTLSVerify)
+	}
+	return httpClient.HttpDetails{}, nil
+}
+
+func (m *MockHttpClient) SendRequestWithTLS(ctx context.Context, method string, url string, body, headers httpClient.Data, tlsCfg *commonapi.TLSConfig) (httpClient.HttpDetails, error) {
+	if m.MockSendRequestWithTLS != nil {
+		return m.MockSendRequestWithTLS(ctx, method, url, body, headers, tlsCfg)
+	}
+	return httpClient.HttpDetails{}, nil
+}
+
+// httpRequest is a helper to create a Request resource with modifiers.
+func httpRequest(modifiers ...func(*v1beta1.Request)) *v1beta1.Request {
+	r := &v1beta1.Request{
+		Spec: v1beta1.RequestSpec{
+			ForProvider: v1beta1.RequestParameters{},
+		},
+	}
+	for _, m := range modifiers {
+		m(r)
+	}
+	return r
+}
 
 func Test_isUpToDate(t *testing.T) {
 	type args struct {

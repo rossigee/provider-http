@@ -17,12 +17,7 @@ limitations under the License.
 package config
 
 import (
-	"context"
 	"testing"
-
-	"github.com/crossplane/crossplane-runtime/v2/pkg/meta"
-	"github.com/crossplane/crossplane-runtime/v2/pkg/reconciler/managed"
-	"github.com/crossplane/crossplane-runtime/v2/pkg/resource"
 )
 
 func TestProviderconfigReconciler(t *testing.T) {
