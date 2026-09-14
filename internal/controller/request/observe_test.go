@@ -48,8 +48,8 @@ var (
 
 // MockHttpClient mocks the httpClient.Client interface for testing.
 type MockHttpClient struct {
-	MockSendRequest         func(ctx context.Context, method string, url string, body, headers httpClient.Data, skipTLSVerify bool) (resp httpClient.HttpDetails, err error)
-	MockSendRequestWithTLS  func(ctx context.Context, method string, url string, body, headers httpClient.Data, tlsCfg *commonapi.TLSConfig) (resp httpClient.HttpDetails, err error)
+	MockSendRequest        func(ctx context.Context, method string, url string, body, headers httpClient.Data, skipTLSVerify bool) (resp httpClient.HttpDetails, err error)
+	MockSendRequestWithTLS func(ctx context.Context, method string, url string, body, headers httpClient.Data, tlsCfg *commonapi.TLSConfig) (resp httpClient.HttpDetails, err error)
 }
 
 func (m *MockHttpClient) SendRequest(ctx context.Context, method string, url string, body, headers httpClient.Data, skipTLSVerify bool) (httpClient.HttpDetails, error) {
