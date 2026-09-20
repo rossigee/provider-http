@@ -44,6 +44,17 @@ var (
 		Method: "DELETE",
 		URL:    "(.payload.baseUrl + \"/\" + .response.body.id)",
 	}
+
+	testSimpleGetMapping = v1beta1.Mapping{
+		Method: "GET",
+		URL:    "\"http://api.example.com/users/test\"",
+	}
+
+	testSimplePutMapping = v1beta1.Mapping{
+		Method: "PUT",
+		Body:   "\"{\\\"username\\\":\\\"john_doe_new_username\\\"}\"",
+		URL:    "\"http://api.example.com/users/test\"",
+	}
 )
 
 // MockHttpClient mocks the httpClient.Client interface for testing.
@@ -144,6 +155,9 @@ func Test_isUpToDate(t *testing.T) {
 				mg: httpRequest(func(r *v1beta1.Request) {
 					r.Status.Response.Body = ""
 					r.Status.Response.StatusCode = 0
+					r.Spec.ForProvider.Mappings = []v1beta1.Mapping{
+						testSimpleGetMapping,
+					}
 				}),
 			},
 			want: want{
@@ -163,6 +177,9 @@ func Test_isUpToDate(t *testing.T) {
 				mg: httpRequest(func(r *v1beta1.Request) {
 					r.Status.RequestDetails.Method = http.MethodPost
 					r.Status.Response.StatusCode = 400
+					r.Spec.ForProvider.Mappings = []v1beta1.Mapping{
+						testSimpleGetMapping,
+					}
 				}),
 			},
 			want: want{
@@ -186,6 +203,9 @@ func Test_isUpToDate(t *testing.T) {
 				},
 				mg: httpRequest(func(r *v1beta1.Request) {
 					r.Status.Response.StatusCode = http.StatusNotFound
+					r.Spec.ForProvider.Mappings = []v1beta1.Mapping{
+						testSimpleGetMapping,
+					}
 				}),
 			},
 			want: want{
@@ -209,6 +229,10 @@ func Test_isUpToDate(t *testing.T) {
 				mg: httpRequest(func(r *v1beta1.Request) {
 					r.Status.Response.Body = `{"username":"john_doe_new_username"}`
 					r.Status.Response.StatusCode = http.StatusOK
+					r.Spec.ForProvider.Mappings = []v1beta1.Mapping{
+						testSimpleGetMapping,
+						testSimplePutMapping,
+					}
 				}),
 			},
 			want: want{
@@ -233,6 +257,10 @@ func Test_isUpToDate(t *testing.T) {
 				mg: httpRequest(func(r *v1beta1.Request) {
 					r.Status.Response.Body = `{"username":"john_doe_new_username"}`
 					r.Status.Response.StatusCode = http.StatusOK
+					r.Spec.ForProvider.Mappings = []v1beta1.Mapping{
+						testSimpleGetMapping,
+						testSimplePutMapping,
+					}
 				}),
 			},
 			want: want{
@@ -270,7 +298,7 @@ func Test_isUpToDate(t *testing.T) {
 					r.Status.Response.StatusCode = 200
 					r.Spec.ForProvider.Mappings = []v1beta1.Mapping{
 						testPostMapping,
-						testGetMapping,
+						testSimpleGetMapping,
 						testDeleteMapping,
 					}
 				}),
@@ -308,6 +336,9 @@ func Test_isUpToDate(t *testing.T) {
 				mg: httpRequest(func(r *v1beta1.Request) {
 					r.Status.Response.Body = `{"username":"john_doe_new_username"}`
 					r.Status.Response.StatusCode = 200
+					r.Spec.ForProvider.Mappings = []v1beta1.Mapping{
+						testSimpleGetMapping,
+					}
 				}),
 			},
 			want: want{
