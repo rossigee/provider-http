@@ -93,6 +93,13 @@ publish.artifacts: $(CROSSPLANE_CLI)
 	fi
 	$(foreach r,$(XPKG_REG_ORGS), $(foreach x,$(XPKGS),@$(MAKE) xpkg.release.publish.$(r).$(x)))
 	$(foreach r,$(REGISTRY_ORGS), $(foreach i,$(IMAGES),@$(MAKE) img.release.publish.$(r).$(i)))
+xpkg.release.publish.ghcr.io/rossigee.provider-http:
+	@$(foreach p,$(XPKG_LINUX_PLATFORMS),$(MAKE) xpkg.build.provider-http PLATFORM=$(p) || exit 1;)
+	@$(CROSSPLANE_CLI) xpkg push \
+		$(foreach p,$(XPKG_LINUX_PLATFORMS),--package-files $(XPKG_OUTPUT_DIR)/$(p)/provider-http-$(VERSION).xpkg ) \
+		ghcr.io/rossigee/provider-http:$(VERSION)
+	@$(OK) Pushed package ghcr.io/rossigee/provider-http:$(VERSION)
+
 
 
 # Generate a coverage report for cobertura applying exclusions on
@@ -160,3 +167,12 @@ go.mod.cachedir:
 
 vendor: modules.download
 vendor.check: modules.check
+
+# Neutralize the plain runtime image push. imagelight.mk injects
+# img.release.publish.<reg>.<img> as a publish.artifacts prerequisite on
+# release branches, and cluster/images img.publish would fail because the
+# runtime image is never built/tagged locally. The runtime binary is already
+# embedded in the xpkg, so publishing this image would only overwrite the
+# xpkg's package.yaml.
+img.release.publish.ghcr.io/rossigee.provider-http:
+	@:
