@@ -9,6 +9,7 @@ import (
 	"github.com/crossplane/crossplane-runtime/v2/pkg/test"
 	"github.com/google/go-cmp/cmp"
 	"github.com/pkg/errors"
+	commonapi "github.com/rossigee/provider-http/apis/common"
 	"github.com/rossigee/provider-http/apis/request/v1beta1"
 	httpClient "github.com/rossigee/provider-http/internal/clients/http"
 	"github.com/rossigee/provider-http/internal/controller/request/observe"
@@ -43,7 +44,51 @@ var (
 		Method: "DELETE",
 		URL:    "(.payload.baseUrl + \"/\" + .response.body.id)",
 	}
+
+	testSimpleGetMapping = v1beta1.Mapping{
+		Method: "GET",
+		URL:    "\"http://api.example.com/users/test\"",
+	}
+
+	testSimplePutMapping = v1beta1.Mapping{
+		Method: "PUT",
+		Body:   "\"{\\\"username\\\":\\\"john_doe_new_username\\\"}\"",
+		URL:    "\"http://api.example.com/users/test\"",
+	}
 )
+
+// MockHttpClient mocks the httpClient.Client interface for testing.
+type MockHttpClient struct {
+	MockSendRequest        func(ctx context.Context, method string, url string, body, headers httpClient.Data, skipTLSVerify bool) (resp httpClient.HttpDetails, err error)
+	MockSendRequestWithTLS func(ctx context.Context, method string, url string, body, headers httpClient.Data, tlsCfg *commonapi.TLSConfig) (resp httpClient.HttpDetails, err error)
+}
+
+func (m *MockHttpClient) SendRequest(ctx context.Context, method string, url string, body, headers httpClient.Data, skipTLSVerify bool) (httpClient.HttpDetails, error) {
+	if m.MockSendRequest != nil {
+		return m.MockSendRequest(ctx, method, url, body, headers, skipTLSVerify)
+	}
+	return httpClient.HttpDetails{}, nil
+}
+
+func (m *MockHttpClient) SendRequestWithTLS(ctx context.Context, method string, url string, body, headers httpClient.Data, tlsCfg *commonapi.TLSConfig) (httpClient.HttpDetails, error) {
+	if m.MockSendRequestWithTLS != nil {
+		return m.MockSendRequestWithTLS(ctx, method, url, body, headers, tlsCfg)
+	}
+	return httpClient.HttpDetails{}, nil
+}
+
+// httpRequest is a helper to create a Request resource with modifiers.
+func httpRequest(modifiers ...func(*v1beta1.Request)) *v1beta1.Request {
+	r := &v1beta1.Request{
+		Spec: v1beta1.RequestSpec{
+			ForProvider: v1beta1.RequestParameters{},
+		},
+	}
+	for _, m := range modifiers {
+		m(r)
+	}
+	return r
+}
 
 func Test_isUpToDate(t *testing.T) {
 	type args struct {
@@ -110,6 +155,9 @@ func Test_isUpToDate(t *testing.T) {
 				mg: httpRequest(func(r *v1beta1.Request) {
 					r.Status.Response.Body = ""
 					r.Status.Response.StatusCode = 0
+					r.Spec.ForProvider.Mappings = []v1beta1.Mapping{
+						testSimpleGetMapping,
+					}
 				}),
 			},
 			want: want{
@@ -129,6 +177,9 @@ func Test_isUpToDate(t *testing.T) {
 				mg: httpRequest(func(r *v1beta1.Request) {
 					r.Status.RequestDetails.Method = http.MethodPost
 					r.Status.Response.StatusCode = 400
+					r.Spec.ForProvider.Mappings = []v1beta1.Mapping{
+						testSimpleGetMapping,
+					}
 				}),
 			},
 			want: want{
@@ -152,6 +203,9 @@ func Test_isUpToDate(t *testing.T) {
 				},
 				mg: httpRequest(func(r *v1beta1.Request) {
 					r.Status.Response.StatusCode = http.StatusNotFound
+					r.Spec.ForProvider.Mappings = []v1beta1.Mapping{
+						testSimpleGetMapping,
+					}
 				}),
 			},
 			want: want{
@@ -175,6 +229,10 @@ func Test_isUpToDate(t *testing.T) {
 				mg: httpRequest(func(r *v1beta1.Request) {
 					r.Status.Response.Body = `{"username":"john_doe_new_username"}`
 					r.Status.Response.StatusCode = http.StatusOK
+					r.Spec.ForProvider.Mappings = []v1beta1.Mapping{
+						testSimpleGetMapping,
+						testSimplePutMapping,
+					}
 				}),
 			},
 			want: want{
@@ -199,6 +257,10 @@ func Test_isUpToDate(t *testing.T) {
 				mg: httpRequest(func(r *v1beta1.Request) {
 					r.Status.Response.Body = `{"username":"john_doe_new_username"}`
 					r.Status.Response.StatusCode = http.StatusOK
+					r.Spec.ForProvider.Mappings = []v1beta1.Mapping{
+						testSimpleGetMapping,
+						testSimplePutMapping,
+					}
 				}),
 			},
 			want: want{
@@ -236,7 +298,7 @@ func Test_isUpToDate(t *testing.T) {
 					r.Status.Response.StatusCode = 200
 					r.Spec.ForProvider.Mappings = []v1beta1.Mapping{
 						testPostMapping,
-						testGetMapping,
+						testSimpleGetMapping,
 						testDeleteMapping,
 					}
 				}),
@@ -274,6 +336,9 @@ func Test_isUpToDate(t *testing.T) {
 				mg: httpRequest(func(r *v1beta1.Request) {
 					r.Status.Response.Body = `{"username":"john_doe_new_username"}`
 					r.Status.Response.StatusCode = 200
+					r.Spec.ForProvider.Mappings = []v1beta1.Mapping{
+						testSimpleGetMapping,
+					}
 				}),
 			},
 			want: want{
