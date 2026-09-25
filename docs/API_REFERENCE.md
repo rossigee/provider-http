@@ -531,7 +531,7 @@ spec:
 ## Compatibility
 
 - **Kubernetes Version**: 1.20+
-- **Crossplane Version**: 1.14+
+- **Crossplane Version**: 2.5.0+
 - **HTTP Methods**: GET, POST, PUT, DELETE, PATCH, HEAD, OPTIONS
 
 ## Rate Limits

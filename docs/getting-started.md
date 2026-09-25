@@ -12,7 +12,7 @@ Provider HTTP enables managing arbitrary resources through HTTP requests. Use it
 
 ## Prerequisites
 
-- **Kubernetes cluster** with Crossplane v1.14+ installed
+- **Kubernetes cluster** with Crossplane v2.5.0+ installed
 - **HTTP endpoint** to manage resources against
 - `kubectl` configured to access your cluster
 - Basic understanding of HTTP methods (GET, POST, PUT, DELETE)
@@ -37,15 +37,7 @@ kubectl wait -n crossplane-system --for=condition=Ready pods -l app.kubernetes.i
 ### 2. Install Provider HTTP
 
 ```bash
-# Using Crossplane CLI
-kubectl crossplane install provider ghcr.io/rossigee/provider-http:v1.2.1
-
-# Or using Helm
-helm repo add crossplane-contrib https://charts.crossplane.io/contrib
-helm install provider-http \
-  crossplane-contrib/provider-http \
-  -n crossplane-system \
-  --version ">=1.2.1"
+kubectl crossplane install provider ghcr.io/rossigee/provider-http:v1.4.1
 ```
 
 Verify installation:

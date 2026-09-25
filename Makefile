@@ -45,7 +45,7 @@ UP_VERSION = v0.40.3
 UPTEST_VERSION = v0.11.1
 UP_CHANNEL = stable
 USE_HELM3 = true
-CROSSPLANE_VERSION = 2.0.2
+CROSSPLANE_VERSION = 2.5.0
 
 -include build/makelib/k8s_tools.mk
 
