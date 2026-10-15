@@ -12,7 +12,7 @@ A generic [Crossplane](https://crossplane.io/) provider for managing arbitrary r
 
 ## Container Registry
 
-- **Primary**: `ghcr.io/rossigee/provider-http:v1.2.1`
+- **Primary**: `ghcr.io/rossigee/provider-http:v1.4.1`
 
 ## Features
 
@@ -26,13 +26,13 @@ A generic [Crossplane](https://crossplane.io/) provider for managing arbitrary r
 
 ### Prerequisites
 
-- Kubernetes with Crossplane installed
+- Kubernetes with Crossplane v2.5.0 or later installed
 - An HTTP endpoint to manage resources against
 
 ### Installation
 
 ```bash
-kubectl crossplane install provider ghcr.io/rossigee/provider-http:v1.2.1
+kubectl crossplane install provider ghcr.io/rossigee/provider-http:v1.4.1
 ```
 
 ### Configuration
@@ -77,15 +77,11 @@ See `examples/sample/` for a full `Request` example covering CREATE/OBSERVE/UPDA
 
 ## Resource Types
 
-| Resource | API Group | Description |
-|----------|-----------|-------------|
-All resources are namespaced `http.m.crossplane.io/v1beta1` for Crossplane v2 multi-tenancy.
-
-| Resource | API Group | Description |
-|----------|-----------|-------------|
-| Request | `http.m.crossplane.io/v1beta1` | Full CRUD lifecycle mapped to configurable HTTP requests |
-| DisposableRequest | `http.m.crossplane.io/v1beta1` | One-shot HTTP request with no ongoing lifecycle |
-| ProviderConfig | `http.m.crossplane.io/v1beta1` | Provider-level credentials configuration (cluster-scoped) |
+| Resource | API Group | Scope | Description |
+|----------|-----------|-------|-------------|
+| Request | `http.m.crossplane.io/v1beta1` | Namespaced | Full CRUD lifecycle mapped to configurable HTTP requests |
+| DisposableRequest | `http.m.crossplane.io/v1beta1` | Namespaced | One-shot HTTP request with no ongoing lifecycle |
+| ProviderConfig | `http.m.crossplane.io/v1beta1` | Cluster-scoped | Provider-level credentials configuration |
 
 See [docs/index.md](docs/index.md) for the full reference and [API coverage gaps](docs/index.md#api-coverage-gaps).
 
@@ -104,6 +100,10 @@ make lint
 # Generate
 make generate
 ```
+
+## Release
+
+Release `v1.4.1` is published only from an exact SemVer tag at the current `origin/master` commit. The workflow builds and publishes `linux_amd64` and `linux_arm64` xpkg files, aliases `latest`, verifies equal digests and both architectures, and creates the GitHub Release.
 
 ## Contributing
 
