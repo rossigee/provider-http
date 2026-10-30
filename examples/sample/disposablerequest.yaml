@@ -18,7 +18,7 @@ spec:
         - application/json
       Authorization:
         - "Bearer {{ auth:default:token }}"
-    insecureSkipTLSVerify: true
+    insecureSkipTLSVerify: false
 
     # The 'expectedResponse' field is optional. If used, also set 'rollbackRetriesLimit', which determines the number of HTTP requests to be sent until the jq query returns true.
     expectedResponse: '.body.status == "sent"'

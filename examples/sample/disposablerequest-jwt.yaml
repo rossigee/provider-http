@@ -4,7 +4,7 @@ metadata:
   name: obtain-jwt-token
 spec:
   forProvider:
-    insecureSkipTLSVerify: true
+    insecureSkipTLSVerify: false
 
     # Injecting data from secrets is possible, simply use the following syntax: {{ name:namespace:key }} (supported for body and headers only)
     headers:
