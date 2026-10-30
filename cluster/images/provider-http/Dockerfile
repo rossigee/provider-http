@@ -12,7 +12,7 @@ LABEL org.opencontainers.image.documentation="https://github.com/rossigee/provid
 ARG TARGETOS
 ARG TARGETARCH
 
-ADD bin/$TARGETOS\_$TARGETARCH/provider /usr/local/bin/crossplane-http-provider
+COPY bin/$TARGETOS\_$TARGETARCH/provider /usr/local/bin/crossplane-http-provider
 
 USER 65532
 ENTRYPOINT ["crossplane-http-provider"]
