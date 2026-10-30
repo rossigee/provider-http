@@ -37,7 +37,7 @@ kubectl wait -n crossplane-system --for=condition=Ready pods -l app.kubernetes.i
 ### 2. Install Provider HTTP
 
 ```bash
-kubectl crossplane install provider ghcr.io/rossigee/provider-http:v1.4.1
+kubectl crossplane install provider ghcr.io/rossigee/provider-http:v1.4.2
 ```
 
 Verify installation:

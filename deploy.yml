@@ -4,4 +4,4 @@ kind: Provider
 metadata:
   name: http-provider
 spec:
-  package: ghcr.io/rossigee/provider-http:v1.4.1
+  package: ghcr.io/rossigee/provider-http:v1.4.2
