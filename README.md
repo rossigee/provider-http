@@ -12,7 +12,7 @@ A generic [Crossplane](https://crossplane.io/) provider for managing arbitrary r
 
 ## Container Registry
 
-- **Primary**: `ghcr.io/rossigee/provider-http:v1.4.1`
+- **Primary**: `ghcr.io/rossigee/provider-http:v1.4.2`
 
 ## Features
 
@@ -32,7 +32,7 @@ A generic [Crossplane](https://crossplane.io/) provider for managing arbitrary r
 ### Installation
 
 ```bash
-kubectl crossplane install provider ghcr.io/rossigee/provider-http:v1.4.1
+kubectl crossplane install provider ghcr.io/rossigee/provider-http:v1.4.2
 ```
 
 ### Configuration
