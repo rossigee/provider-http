@@ -50,7 +50,7 @@ spec:
 ## Usage
 
 ```yaml
-apiVersion: http.m.crossplane.io/v1beta1
+apiVersion: disposablerequest.http.m.crossplane.io/v1beta1
 kind: DisposableRequest
 metadata:
   name: send-notification
@@ -79,8 +79,8 @@ See `examples/sample/` for a full `Request` example covering CREATE/OBSERVE/UPDA
 
 | Resource | API Group | Scope | Description |
 |----------|-----------|-------|-------------|
-| Request | `http.m.crossplane.io/v1beta1` | Namespaced | Full CRUD lifecycle mapped to configurable HTTP requests |
-| DisposableRequest | `http.m.crossplane.io/v1beta1` | Namespaced | One-shot HTTP request with no ongoing lifecycle |
+| Request | `request.http.m.crossplane.io/v1beta1` | Namespaced | Full CRUD lifecycle mapped to configurable HTTP requests |
+| DisposableRequest | `disposablerequest.http.m.crossplane.io/v1beta1` | Namespaced | One-shot HTTP request with no ongoing lifecycle |
 | ProviderConfig | `http.m.crossplane.io/v1beta1` | Cluster-scoped | Provider-level credentials configuration |
 
 See [docs/index.md](docs/index.md) for the full reference and [API coverage gaps](docs/index.md#api-coverage-gaps).

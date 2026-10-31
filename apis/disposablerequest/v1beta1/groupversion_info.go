@@ -16,7 +16,7 @@ limitations under the License.
 
 // Package v1beta1 contains the v1alpha2 group Sample resources of the http provider.
 // +kubebuilder:object:generate=true
-// +groupName=http.m.crossplane.io
+// +groupName=disposablerequest.http.m.crossplane.io
 // +versionName=v1beta1
 package v1beta1
 
@@ -28,7 +28,7 @@ import (
 
 // Package type metadata.
 const (
-	Group   = "http.m.crossplane.io"
+	Group   = "disposablerequest.http.m.crossplane.io"
 	Version = "v1beta1"
 )
 

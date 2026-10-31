@@ -1,4 +1,4 @@
-apiVersion: http.m.crossplane.io/v1beta1
+apiVersion: request.http.m.crossplane.io/v1beta1
 kind: Request
 metadata:
   name: manage-user

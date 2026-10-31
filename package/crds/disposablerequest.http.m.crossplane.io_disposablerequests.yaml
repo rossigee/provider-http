@@ -4,9 +4,9 @@ kind: CustomResourceDefinition
 metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.22.0
-  name: disposablerequests.http.m.crossplane.io
+  name: disposablerequests.disposablerequest.http.m.crossplane.io
 spec:
-  group: http.m.crossplane.io
+  group: disposablerequest.http.m.crossplane.io
   names:
     categories:
     - crossplane
@@ -16,7 +16,7 @@ spec:
     listKind: DisposableRequestList
     plural: disposablerequests
     singular: disposablerequest
-  scope: Cluster
+  scope: Namespaced
   versions:
   - additionalPrinterColumns:
     - jsonPath: .status.conditions[?(@.type=='Ready')].status
