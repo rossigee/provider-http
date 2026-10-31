@@ -86,13 +86,16 @@ func (hc *client) SendRequest(ctx context.Context, method string, url string, bo
 		request.Header[authKey] = []string{hc.authorizationToken}
 	}
 
+	transport := &http.Transport{
+		// #nosec G402
+		TLSClientConfig: &tls.Config{InsecureSkipVerify: skipTLSVerify},
+		Proxy:           http.ProxyFromEnvironment, // Use proxy settings from environment
+	}
+	// Each call uses its own transport, so release its pooled connections when done.
+	defer transport.CloseIdleConnections()
 	client := &http.Client{
-		Transport: &http.Transport{
-			// #nosec G402
-			TLSClientConfig: &tls.Config{InsecureSkipVerify: skipTLSVerify},
-			Proxy:           http.ProxyFromEnvironment, // Use proxy settings from environment
-		},
-		Timeout: hc.timeout,
+		Transport: transport,
+		Timeout:   hc.timeout,
 	}
 
 	response, err := client.Do(request)
@@ -187,12 +190,15 @@ func (hc *client) SendRequestWithTLS(ctx context.Context, method string, url str
 		request.Header[authKey] = []string{hc.authorizationToken}
 	}
 
+	transport := &http.Transport{
+		TLSClientConfig: tlsClientConfig,
+		Proxy:           http.ProxyFromEnvironment, // Use proxy settings from environment
+	}
+	// Each call uses its own transport, so release its pooled connections when done.
+	defer transport.CloseIdleConnections()
 	client := &http.Client{
-		Transport: &http.Transport{
-			TLSClientConfig: tlsClientConfig,
-			Proxy:           http.ProxyFromEnvironment, // Use proxy settings from environment
-		},
-		Timeout: hc.timeout,
+		Transport: transport,
+		Timeout:   hc.timeout,
 	}
 
 	response, err := client.Do(request)
