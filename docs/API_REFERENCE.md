@@ -222,7 +222,7 @@ Configure TLS for HTTPS:
 
 ```yaml
 tlsConfig:
-  insecureSkipVerify: true         # Skip certificate validation
+  insecureSkipVerify: false        # Keep verification on; supply caBundle for private CAs
   caBundle:
     source: Secret
     secretRef:

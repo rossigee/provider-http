@@ -367,7 +367,7 @@ Configure TLS for HTTPS endpoints:
 ```yaml
 forProvider:
   tlsConfig:
-    insecureSkipVerify: true  # Skip cert validation (not recommended)
+    insecureSkipVerify: false  # Keep verification on; supply caBundle for private CAs
     caBundle:
       source: Secret
       secretRef:
