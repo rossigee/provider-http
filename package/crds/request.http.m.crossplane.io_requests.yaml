@@ -4,9 +4,9 @@ kind: CustomResourceDefinition
 metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.22.0
-  name: requests.http.m.crossplane.io
+  name: requests.request.http.m.crossplane.io
 spec:
-  group: http.m.crossplane.io
+  group: request.http.m.crossplane.io
   names:
     categories:
     - crossplane
@@ -16,7 +16,7 @@ spec:
     listKind: RequestList
     plural: requests
     singular: request
-  scope: Cluster
+  scope: Namespaced
   versions:
   - additionalPrinterColumns:
     - jsonPath: .status.conditions[?(@.type=='Ready')].status

@@ -1,4 +1,4 @@
-apiVersion: http.m.crossplane.io/v1beta1
+apiVersion: disposablerequest.http.m.crossplane.io/v1beta1
 kind: DisposableRequest
 metadata:
   name: obtain-jwt-token

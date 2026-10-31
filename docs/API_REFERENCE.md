@@ -86,7 +86,7 @@ Manages resources through complete HTTP lifecycle (Create/Observe/Update/Delete)
 ### Spec
 
 ```yaml
-apiVersion: http.m.crossplane.io/v1beta1
+apiVersion: request.http.m.crossplane.io/v1beta1
 kind: Request
 metadata:
   name: my-resource
@@ -257,7 +257,7 @@ Fire-and-forget one-shot HTTP request (webhooks, notifications).
 ### Spec
 
 ```yaml
-apiVersion: http.m.crossplane.io/v1beta1
+apiVersion: disposablerequest.http.m.crossplane.io/v1beta1
 kind: DisposableRequest
 metadata:
   name: webhook
@@ -434,7 +434,7 @@ spec:
 ### Simple POST Webhook
 
 ```yaml
-apiVersion: http.m.crossplane.io/v1beta1
+apiVersion: disposablerequest.http.m.crossplane.io/v1beta1
 kind: DisposableRequest
 metadata:
   name: notify-slack
@@ -456,7 +456,7 @@ spec:
 ### Full CRUD Resource
 
 ```yaml
-apiVersion: http.m.crossplane.io/v1beta1
+apiVersion: request.http.m.crossplane.io/v1beta1
 kind: Request
 metadata:
   name: managed-api-resource
@@ -504,7 +504,7 @@ spec:
 ### Secret Extraction
 
 ```yaml
-apiVersion: http.m.crossplane.io/v1beta1
+apiVersion: request.http.m.crossplane.io/v1beta1
 kind: Request
 metadata:
   name: get-api-token

@@ -107,7 +107,7 @@ Provider HTTP provides two main resource types:
 Send a one-shot HTTP POST to notify an external system:
 
 ```yaml
-apiVersion: http.m.crossplane.io/v1beta1
+apiVersion: disposablerequest.http.m.crossplane.io/v1beta1
 kind: DisposableRequest
 metadata:
   name: deployment-webhook
@@ -146,7 +146,7 @@ kubectl get disposablerequest deployment-webhook -o jsonpath='{.status.condition
 Manage a resource through complete CRUD lifecycle:
 
 ```yaml
-apiVersion: http.m.crossplane.io/v1beta1
+apiVersion: request.http.m.crossplane.io/v1beta1
 kind: Request
 metadata:
   name: managed-resource
@@ -202,7 +202,7 @@ kubectl apply -f managed-resource.yaml
 Poll an endpoint and extract response into status:
 
 ```yaml
-apiVersion: http.m.crossplane.io/v1beta1
+apiVersion: request.http.m.crossplane.io/v1beta1
 kind: Request
 metadata:
   name: status-monitor
@@ -225,7 +225,7 @@ spec:
 Extract sensitive data from API response into a Kubernetes Secret:
 
 ```yaml
-apiVersion: http.m.crossplane.io/v1beta1
+apiVersion: request.http.m.crossplane.io/v1beta1
 kind: Request
 metadata:
   name: api-token-fetcher
@@ -259,7 +259,7 @@ Result: Token is stored in Secret `api-token` in `default` namespace
 Reference credentials stored in Kubernetes Secret:
 
 ```yaml
-apiVersion: http.m.crossplane.io/v1beta1
+apiVersion: request.http.m.crossplane.io/v1beta1
 kind: Request
 metadata:
   name: authenticated-request
@@ -284,7 +284,7 @@ Syntax: `{{ secrets:secret-name:namespace:key }}`
 Check if resource is already deleted:
 
 ```yaml
-apiVersion: http.m.crossplane.io/v1beta1
+apiVersion: request.http.m.crossplane.io/v1beta1
 kind: Request
 metadata:
   name: conditional-delete
@@ -306,7 +306,7 @@ spec:
 Manage related resources through multiple API calls:
 
 ```yaml
-apiVersion: http.m.crossplane.io/v1beta1
+apiVersion: request.http.m.crossplane.io/v1beta1
 kind: Request
 metadata:
   name: complex-resource
