@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Breaking
+
+- Request and DisposableRequest are now namespaced and served from
+  `request.http.m.crossplane.io/v1beta1` and
+  `disposablerequest.http.m.crossplane.io/v1beta1`. ProviderConfig is unchanged.
+  Orphan existing Requests before removing the old CRDs, since deleting a
+  Request sends a remote call. See
+  [docs/migration-namespaced-requests.md](docs/migration-namespaced-requests.md).
+
 ## [1.4.1] - 2026-09-24
 
 ### Changed
