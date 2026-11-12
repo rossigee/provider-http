@@ -20,7 +20,7 @@ PLATFORMS ?= linux_amd64 linux_arm64
 # ====================================================================================
 # Setup Go
 
-GO_REQUIRED_VERSION ?= 1.27.3
+GO_REQUIRED_VERSION ?= 1.27.4
 
 # Set a sane default so that the nprocs calculation below is less noisy on the initial
 # loading of this file
