@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.4.3] - 2026-11-12
+
+### Changed
+- Built with Go 1.27.4 (previously 1.27.3).
+
 ### Breaking
 
 - Request and DisposableRequest are now namespaced and served from
